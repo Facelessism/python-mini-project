@@ -290,11 +290,28 @@ function getDiceRollingHTML() {
             <h2>🎲 Dice Rolling</h2>
             <div class="dice-container">
                 <div class="dice-display">
-                    <div class="dice" id="dice1">
-                        <div class="dice-face">⚀</div>
+                    <div class="dice-scene">
+                        <div class="dice-cube" id="dice1">
+                            <div class="cube-face face-1"></div>
+                            <div class="cube-face face-2"></div>
+                            <div class="cube-face face-3"></div>
+                            <div class="cube-face face-4"></div>
+                            <div class="cube-face face-5"></div>
+                            <div class="cube-face face-6"></div>
+                        </div>
+                        <div class="dice-shadow"></div>
                     </div>
-                    <div class="dice" id="dice2">
-                        <div class="dice-face">⚀</div>
+
+                    <div class="dice-scene">
+                        <div class="dice-cube" id="dice2">
+                            <div class="cube-face face-1"></div>
+                            <div class="cube-face face-2"></div>
+                            <div class="cube-face face-3"></div>
+                            <div class="cube-face face-4"></div>
+                            <div class="cube-face face-5"></div>
+                            <div class="cube-face face-6"></div>
+                        </div>
+                        <div class="dice-shadow"></div>
                     </div>
                 </div>
                 
@@ -318,23 +335,121 @@ function getDiceRollingHTML() {
                 gap: 2rem;
                 justify-content: center;
                 margin-bottom: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .dice-scene {
+                position: relative;
+                width: 120px;
+                height: 150px;
+                perspective: 700px;
+                transform-origin: center bottom;
             }
             
-            .dice {
+            .dice-cube {
+                --rx: 0deg;
+                --ry: 0deg;
                 width: 120px;
                 height: 120px;
-                background: white;
-                border-radius: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                transition: var(--transition);
+                position: relative;
+                transform-style: preserve-3d;
+                transform: rotateX(var(--rx)) rotateY(var(--ry));
+                transition: transform 1.3s cubic-bezier(0.2, 0.75, 0.15, 1), filter 0.3s ease;
+            }
+
+            .dice-shadow {
+                position: absolute;
+                left: 50%;
+                bottom: 6px;
+                width: 78px;
+                height: 14px;
+                transform: translateX(-50%);
+                border-radius: 50%;
+                background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.05) 70%, transparent 100%);
+                transition: opacity 0.3s ease;
+            }
+
+            .dice-scene.rolling .dice-shadow {
+                animation: diceShadowFloat 1.3s ease;
+            }
+
+            .dice-scene.impact {
+                animation: diceLanding 0.4s ease-out;
+            }
+
+            .dice-scene.impact .dice-shadow {
+                animation: diceShadowImpact 0.4s ease-out;
             }
             
-            .dice-face {
-                font-size: 6rem;
-                color: #ff6b6b;
+            .cube-face {
+                --size: 120px;
+                --dot: 14px;
+                position: absolute;
+                width: var(--size);
+                height: var(--size);
+                border-radius: 18px;
+                background: linear-gradient(160deg, #ffffff, #e6ebf2);
+                border: 2px solid #d8dee8;
+                box-shadow: inset -8px -8px 12px rgba(0, 0, 0, 0.08), inset 8px 8px 12px rgba(255, 255, 255, 0.85);
+            }
+
+            .cube-face::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 18px;
+                background-repeat: no-repeat;
+            }
+
+            .face-1 { transform: translateZ(60px); }
+            .face-2 { transform: rotateY(90deg) translateZ(60px); }
+            .face-3 { transform: rotateY(180deg) translateZ(60px); }
+            .face-4 { transform: rotateY(-90deg) translateZ(60px); }
+            .face-5 { transform: rotateX(90deg) translateZ(60px); }
+            .face-6 { transform: rotateX(-90deg) translateZ(60px); }
+
+            .face-1::before {
+                background-image: radial-gradient(circle at 50% 50%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
+            }
+
+            .face-2::before {
+                background-image:
+                    radial-gradient(circle at 28% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
+            }
+
+            .face-3::before {
+                background-image:
+                    radial-gradient(circle at 28% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 50% 50%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
+            }
+
+            .face-4::before {
+                background-image:
+                    radial-gradient(circle at 28% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 28% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
+            }
+
+            .face-5::before {
+                background-image:
+                    radial-gradient(circle at 28% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 28%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 50% 50%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 28% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 72%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
+            }
+
+            .face-6::before {
+                background-image:
+                    radial-gradient(circle at 28% 24%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 24%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 28% 50%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 50%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 28% 76%, #111 0 var(--dot), transparent calc(var(--dot) + 1px)),
+                    radial-gradient(circle at 72% 76%, #111 0 var(--dot), transparent calc(var(--dot) + 1px));
             }
             
             .dice-total {
@@ -358,12 +473,23 @@ function getDiceRollingHTML() {
                 transform: scale(1.05);
                 box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
             }
-            
-            @keyframes rollAnimation {
-                0%, 100% { transform: rotate(0deg); }
-                25% { transform: rotate(90deg) scale(1.2); }
-                50% { transform: rotate(180deg) scale(0.8); }
-                75% { transform: rotate(270deg) scale(1.2); }
+
+            @keyframes diceLanding {
+                0% { transform: translateY(-10px); }
+                55% { transform: translateY(4px); }
+                80% { transform: translateY(-2px); }
+                100% { transform: translateY(0); }
+            }
+
+            @keyframes diceShadowFloat {
+                0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.32; }
+                45% { transform: translateX(-50%) scale(0.72); opacity: 0.2; }
+            }
+
+            @keyframes diceShadowImpact {
+                0% { transform: translateX(-50%) scale(0.74); opacity: 0.2; }
+                55% { transform: translateX(-50%) scale(1.08); opacity: 0.38; }
+                100% { transform: translateX(-50%) scale(1); opacity: 0.32; }
             }
         </style>
     `;
@@ -372,37 +498,65 @@ function getDiceRollingHTML() {
 function initDiceRolling() {
     const dice1 = document.getElementById('dice1');
     const dice2 = document.getElementById('dice2');
+    const diceScene1 = dice1.closest('.dice-scene');
+    const diceScene2 = dice2.closest('.dice-scene');
     const rollBtn = document.getElementById('rollDice');
     const totalDisplay = document.getElementById('diceTotal');
-    
-    const diceFaces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+
+    const faceRotation = {
+        1: { x: 0, y: 0 },
+        2: { x: 0, y: -90 },
+        3: { x: 0, y: 180 },
+        4: { x: 0, y: 90 },
+        5: { x: -90, y: 0 },
+        6: { x: 90, y: 0 }
+    };
+
+    let spins1 = 0;
+    let spins2 = 0;
+
+    function setCubeFace(cube, value, spinSeed) {
+        const target = faceRotation[value];
+        const rx = target.x + 360 * (2 + (spinSeed % 3));
+        const ry = target.y + 360 * (3 + (spinSeed % 2));
+        cube.style.setProperty('--rx', `${rx}deg`);
+        cube.style.setProperty('--ry', `${ry}deg`);
+    }
+
+    function triggerLanding(scene) {
+        scene.classList.remove('impact');
+        void scene.offsetWidth;
+        scene.classList.add('impact');
+        setTimeout(() => {
+            scene.classList.remove('impact');
+        }, 420);
+    }
+
+    setCubeFace(dice1, 1, 0);
+    setCubeFace(dice2, 1, 1);
+    totalDisplay.textContent = '2';
     
     rollBtn.addEventListener('click', () => {
         rollBtn.disabled = true;
-        
-        // Animate rolling
-        let rolls = 0;
-        const rollInterval = setInterval(() => {
-            dice1.querySelector('.dice-face').textContent = diceFaces[Math.floor(Math.random() * 6)];
-            dice2.querySelector('.dice-face').textContent = diceFaces[Math.floor(Math.random() * 6)];
-            dice1.style.animation = 'rollAnimation 0.1s ease';
-            dice2.style.animation = 'rollAnimation 0.1s ease';
-            
-            rolls++;
-            if (rolls > 10) {
-                clearInterval(rollInterval);
-                
-                // Final roll
-                const value1 = Math.floor(Math.random() * 6) + 1;
-                const value2 = Math.floor(Math.random() * 6) + 1;
-                
-                dice1.querySelector('.dice-face').textContent = diceFaces[value1 - 1];
-                dice2.querySelector('.dice-face').textContent = diceFaces[value2 - 1];
-                totalDisplay.textContent = value1 + value2;
-                
-                rollBtn.disabled = false;
-            }
-        }, 100);
+        diceScene1.classList.add('rolling');
+        diceScene2.classList.add('rolling');
+
+        const value1 = Math.floor(Math.random() * 6) + 1;
+        const value2 = Math.floor(Math.random() * 6) + 1;
+        spins1 += 1;
+        spins2 += 1;
+
+        setCubeFace(dice1, value1, spins1);
+        setCubeFace(dice2, value2, spins2);
+
+        setTimeout(() => {
+            diceScene1.classList.remove('rolling');
+            diceScene2.classList.remove('rolling');
+            triggerLanding(diceScene1);
+            triggerLanding(diceScene2);
+            totalDisplay.textContent = value1 + value2;
+            rollBtn.disabled = false;
+        }, 1300);
     });
 }
 
@@ -414,9 +568,13 @@ function getCoinFlipHTML() {
         <div class="project-content">
             <h2>🪙 Coin Flip</h2>
             <div class="coin-container">
-                <div class="coin" id="coin">
-                    <div class="coin-face heads">👑</div>
-                    <div class="coin-face tails">🦅</div>
+                <div class="coin-scene">
+                    <div class="coin" id="coin">
+                        <div class="coin-face heads">👑</div>
+                        <div class="coin-edge"></div>
+                        <div class="coin-face tails">🦅</div>
+                    </div>
+                    <div class="coin-shadow"></div>
                 </div>
                 
                 <div class="coin-result" id="coinResult">Click to Flip!</div>
@@ -441,14 +599,25 @@ function getCoinFlipHTML() {
                 text-align: center;
                 padding: 3rem 2rem;
             }
+
+            .coin-scene {
+                position: relative;
+                width: 170px;
+                height: 205px;
+                perspective: 900px;
+                margin: 1rem auto 2rem;
+                transform-origin: center bottom;
+            }
             
             .coin {
-                width: 150px;
-                height: 150px;
-                margin: 2rem auto;
+                --flip-x: 0deg;
+                --flip-y: 0deg;
+                width: 170px;
+                height: 170px;
                 position: relative;
                 transform-style: preserve-3d;
-                transition: transform 1s;
+                transform: rotateX(var(--flip-x)) rotateY(var(--flip-y));
+                transition: transform 1.6s cubic-bezier(0.2, 0.8, 0.15, 1);
             }
             
             .coin-face {
@@ -459,14 +628,50 @@ function getCoinFlipHTML() {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                font-size: 8rem;
-                background: linear-gradient(135deg, #ffd700, #ffed4e);
+                font-size: 6rem;
+                background: radial-gradient(circle at 35% 30%, #fff5a6, #ffd54f 45%, #e1a600 100%);
                 border-radius: 50%;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                border: 5px solid #d79e00;
+                box-shadow: inset -6px -8px 10px rgba(0, 0, 0, 0.22), inset 6px 8px 12px rgba(255, 255, 255, 0.45), 0 12px 25px rgba(0, 0, 0, 0.35);
             }
+
+            .heads { transform: translateZ(8px); }
             
             .tails {
-                transform: rotateY(180deg);
+                transform: rotateY(180deg) translateZ(8px);
+            }
+
+            .coin-edge {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                border: 8px solid #b8860b;
+                transform: translateZ(0);
+                box-shadow: inset 0 0 0 2px rgba(255, 232, 145, 0.35);
+            }
+
+            .coin-shadow {
+                position: absolute;
+                left: 50%;
+                bottom: 6px;
+                width: 110px;
+                height: 16px;
+                transform: translateX(-50%);
+                border-radius: 50%;
+                background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.08) 72%, transparent 100%);
+            }
+
+            .coin-scene.rolling .coin-shadow {
+                animation: coinShadowFloat 1.6s ease;
+            }
+
+            .coin-scene.impact {
+                animation: coinLanding 0.45s ease-out;
+            }
+
+            .coin-scene.impact .coin-shadow {
+                animation: coinShadowImpact 0.45s ease-out;
             }
             
             .coin-result {
@@ -506,38 +711,79 @@ function getCoinFlipHTML() {
                 gap: 1rem;
                 align-items: center;
             }
+
+            @keyframes coinLanding {
+                0% { transform: translateY(-12px); }
+                55% { transform: translateY(5px); }
+                82% { transform: translateY(-2px); }
+                100% { transform: translateY(0); }
+            }
+
+            @keyframes coinShadowFloat {
+                0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+                45% { transform: translateX(-50%) scale(0.68); opacity: 0.2; }
+            }
+
+            @keyframes coinShadowImpact {
+                0% { transform: translateX(-50%) scale(0.72); opacity: 0.2; }
+                55% { transform: translateX(-50%) scale(1.12); opacity: 0.44; }
+                100% { transform: translateX(-50%) scale(1); opacity: 0.4; }
+            }
         </style>
     `;
 }
 
 function initCoinFlip() {
     const coin = document.getElementById('coin');
+    const coinScene = coin.closest('.coin-scene');
     const flipBtn = document.getElementById('flipCoin');
     const result = document.getElementById('coinResult');
+    const headsCountEl = document.getElementById('headsCount');
+    const tailsCountEl = document.getElementById('tailsCount');
     let headsCount = 0;
     let tailsCount = 0;
+    let spinCount = 0;
+
+    function setCoinFace(isHeads, seed) {
+        const targetY = isHeads ? 0 : 180;
+        const flipX = 360 * (4 + (seed % 3)) + 90;
+        const flipY = 360 * (3 + (seed % 2)) + targetY;
+        coin.style.setProperty('--flip-x', `${flipX}deg`);
+        coin.style.setProperty('--flip-y', `${flipY}deg`);
+    }
+
+    function triggerCoinLanding() {
+        coinScene.classList.remove('impact');
+        void coinScene.offsetWidth;
+        coinScene.classList.add('impact');
+        setTimeout(() => {
+            coinScene.classList.remove('impact');
+        }, 460);
+    }
     
     flipBtn.addEventListener('click', () => {
         flipBtn.disabled = true;
         result.textContent = 'Flipping...';
+        coinScene.classList.add('rolling');
         
         const isHeads = Math.random() < 0.5;
-        const rotations = 720 + (isHeads ? 0 : 180);
-        
-        coin.style.transform = `rotateY(${rotations}deg)`;
+        spinCount += 1;
+        setCoinFace(isHeads, spinCount);
         
         setTimeout(() => {
+            coinScene.classList.remove('rolling');
+            triggerCoinLanding();
             if (isHeads) {
                 result.textContent = '👑 Heads!';
                 headsCount++;
-                document.getElementById('headsCount').textContent = headsCount;
+                headsCountEl.textContent = headsCount;
             } else {
                 result.textContent = '🦅 Tails!';
                 tailsCount++;
-                document.getElementById('tailsCount').textContent = tailsCount;
+                tailsCountEl.textContent = tailsCount;
             }
             flipBtn.disabled = false;
-        }, 1000);
+        }, 1600);
     });
 }
 
