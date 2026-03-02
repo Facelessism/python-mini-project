@@ -145,7 +145,6 @@ function initYourProject() {
 - **Responsive Design** - Works on mobile, tablet, and desktop
 - **CSS Variables** - Use existing theme variables
 - **Animations** - Add smooth transitions and effects
-- **Canvas for Graphics** - Use HTML5 Canvas API for turtle projects
 - **Accessibility** - Use semantic HTML and proper labels
 
 ### ✅ Requirements
@@ -154,16 +153,12 @@ function initYourProject() {
 - **No External Dependencies** - Only use standard library
 - **Zero Setup** - Project should run immediately
 - **Cross-Platform** - Works on Windows, Mac, and Linux
-- **Turtle Graphics** - For visual projects, use Python's turtle module (standard library)
-  - Add `turtle.exitonclick()` to keep window open
-  - Include docstrings explaining the visual output
-  - Implement web version using Canvas API
 
 ### ✅ Naming Convention
 
 - Use hyphenated names: `My-Project-Name.py`
 - Be descriptive: `Rock-Paper-Scissor.py` not `game.py`
-- Use title case for multi-word names: `Turtle-Rainbow-Spiral.py`
+- Use title case for multi-word names: `Number-Guessing-Game.py`
 - Match existing naming pattern in repository
 
 ---

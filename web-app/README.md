@@ -1,6 +1,6 @@
 # 🌐 Python Mini Projects - Web Edition
 
-An interactive web application showcasing all 20+ Python mini projects with beautiful visualizations and animations.
+An interactive web application showcasing Python mini projects with beautiful visualizations and animations.
 
 ## ✨ Features
 
@@ -28,12 +28,6 @@ An interactive web application showcasing all 20+ Python mini projects with beau
 - **Calculator** - Full-featured calculator with power operations
 - **Collatz Conjecture** - Explore the 3n+1 problem (Coming Soon)
 - **Prime Analyzer** - Comprehensive prime number toolkit (Coming Soon)
-
-### 🐢 Graphics
-- **Turtle Mandala** - Animated mandala creation (Coming Soon)
-- **Turtle Star** - 18-pointed star pattern (Coming Soon)
-- **Turtle Rainbow Spiral** - Colorful spiral animation (Coming Soon)
-- **Turtle Rainbow Mandala** - 10-petal mandala (Coming Soon)
 
 ### 🔐 Utilities
 - **Morse Code** - Text to Morse with lights & sound (Coming Soon)
@@ -116,7 +110,7 @@ Edit CSS variables in `css/styles.css`:
 
 ### UX Features
 - Smooth transitions and animations
-- Category filtering (All, Games, Math, Graphics, Utilities)
+- Category filtering (All, Games, Math, Utilities)
 - Modal system for focused project interaction
 - Responsive design for all screen sizes
 - Theme persistence with localStorage

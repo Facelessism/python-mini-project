@@ -10,8 +10,4 @@
 
 # Standard library modules used:
 # - random (for games with randomization)
-# - turtle (for graphics projects - included in standard library)
 # - sys (for system operations in some projects)
-
-# Note: On some Linux systems, turtle graphics may require:
-# sudo apt-get install python3-tk
