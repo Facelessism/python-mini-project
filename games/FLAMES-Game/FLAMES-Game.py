@@ -27,6 +27,10 @@ else:
             name2_list.remove(char)
     
     count = len(name1_list) + len(name2_list)
+
+    total_len = len(original_name1) + len(original_name2)
+    matched_chars = total_len - count
+    love_score = 30 + round((matched_chars / total_len) * 70) if total_len > 0 else 0
     
     print(f"\nAfter removing common letters:")
     print(f"Remaining letters: {count}")
@@ -48,17 +52,30 @@ else:
     
     if result == 'F':
         relationship = "Friends"
+        emoji = "🤝"
     elif result == 'L':
         relationship = "Love"
+        emoji = "❤️"
     elif result == 'A':
         relationship = "Affection"
+        emoji = "😊"
     elif result == 'M':
         relationship = "Marriage"
+        emoji = "💍"
     elif result == 'E':
         relationship = "Enemies"
+        emoji = "😈"
     else:
         relationship = "Siblings"
+        emoji = "🏠"
+    
     
     print(f"\n{original_name1.capitalize()} & {original_name2.capitalize()}")
-    print(f"💖 {relationship} 💖")
+    print(f"💖 {relationship} {emoji} 💖")
+    print(f"Match Score: {love_score}%") # Added score display
     print("\n" + "=" * 50)
+
+    share_text = f"🔥 FLAMES Result: {original_name1.capitalize()} + {original_name2.capitalize()} = {relationship} {emoji} ({love_score}% Match!)"
+    print("COPY TO SHARE:")
+    print(share_text)
+    print("=" * 50)
