@@ -21,6 +21,7 @@ function getProjectHTML(projectName) {
         'morse-code': getMorseCodeHTML(),
         'tower-of-hanoi': getTowerOfHanoiHTML(),
         'number-converter': getNumberConverterHTML()
+        'typing-speed-tester': getTypingSpeedTesterHTML()
     };
     
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
@@ -47,6 +48,7 @@ function initializeProject(projectName) {
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
         'number-converter': initNumberConverter
+        'typing-speed-tester': initTypingSpeedTester,
     };
     
     if (initializers[projectName]) {
@@ -748,7 +750,7 @@ function initCoinFlip() {
 
     function setCoinFace(isHeads, seed) {
         const targetY = isHeads ? 0 : 180;
-        const flipX = 360 * (4 + (seed % 3)) + 90;
+        const flipX = 360 * (4 + (seed % 3));
         const flipY = 360 * (3 + (seed % 2)) + targetY;
         coin.style.setProperty('--flip-x', `${flipX}deg`);
         coin.style.setProperty('--flip-y', `${flipY}deg`);
@@ -914,6 +916,11 @@ function initNumberGuessing() {
     
     function makeGuess() {
         const guess = parseInt(guessInput.value);
+        if (guess < minRange || guess > maxRange) {
+            feedback.textContent = `⚠️ Please enter a number between ${minRange} and ${maxRange}`;
+            feedback.style.color = 'var(--warning-color)';
+            return;
+        }
         
         if (isNaN(guess) || guess < 1 || guess > 100) {
             feedback.textContent = '⚠️ Please enter a number between 1 and 100!';
@@ -923,6 +930,7 @@ function initNumberGuessing() {
         
         attempts++;
         attemptsDisplay.textContent = attempts;
+        const difference = Math.abs(guess - secretNumber);
         
         if (guess === secretNumber) {
             feedback.textContent = `🎉 Congratulations! You found it in ${attempts} attempts!`;
@@ -930,11 +938,19 @@ function initNumberGuessing() {
             guessInput.disabled = true;
             submitBtn.disabled = true;
         } else if (guess < secretNumber) {
-            feedback.textContent = '📈 Too low! Try higher!';
+            if (difference <= 5) {
+                feedback.textContent = '📈 Slightly low! Try a bit higher!';
+            }else {
+                feedback.textContent = '📈 Too low! Try higher!';
+            }
             feedback.style.color = 'var(--primary-color)';
             minRange = Math.max(minRange, guess + 1);
         } else {
-            feedback.textContent = '📉 Too high! Try lower!';
+            if (difference <= 5) {
+                feedback.textContent = '📉 Slightly high! Try a bit lower!';
+            } else {
+                feedback.textContent = '📉 Too high! Try lower!';
+            }
             feedback.style.color = 'var(--danger-color)';
             maxRange = Math.min(maxRange, guess - 1);
         }
@@ -3195,6 +3211,8 @@ function getTowerOfHanoiHTML() {
     `;
 }
 
+
+
 function initTowerOfHanoi() {
     const canvas = document.getElementById('hanoiCanvas');
     const ctx = canvas.getContext('2d');
@@ -3208,6 +3226,7 @@ function initTowerOfHanoi() {
     let diskCount = 3;
     let moveCount = 0;
     let isAnimating = false;
+    let shouldStop = false;
     
     const towerX = [200, 400, 600];
     const baseY = 350;
@@ -3219,6 +3238,10 @@ function initTowerOfHanoi() {
         towers = [[], [], []];
         moveCount = 0;
         diskCount = parseInt(diskCountInput.value) || 3;
+
+        //Reset animation state
+        isAnimating = false;
+        solveBtn.disabled = false;
         
         for (let i = diskCount; i >= 1; i--) {
             towers[0].push(i);
@@ -3272,6 +3295,8 @@ function initTowerOfHanoi() {
     }
     
     async function moveDisk(from, to) {
+        if(shouldStop) return;
+
         const disk = towers[from].pop();
         towers[to].push(disk);
         moveCount++;
@@ -3294,21 +3319,229 @@ function initTowerOfHanoi() {
     
     async function solve() {
         if (isAnimating) return;
+
+        if (diskCount < 3 || diskCount > 7) {
+            alert("Visualization supports only 3 to 7 disks");
+            return;
+        }
         
         isAnimating = true;
         solveBtn.disabled = true;
         
         await solveHanoi(diskCount, 0, 2, 1);
+
+        shouldStop = false;
         
         isAnimating = false;
         solveBtn.disabled = false;
     }
     
     solveBtn.addEventListener('click', solve);
-    resetBtn.addEventListener('click', initTowers);
+    resetBtn.addEventListener('click', () => {
+        shouldStop = true;
+        initTowers();
+    });
     diskCountInput.addEventListener('change', initTowers);
     
     initTowers();
+}
+
+function getTypingSpeedTesterHTML() {
+    return `
+        <div class="project-content">
+
+            <h2>⌨️ Typing Speed Tester</h2>
+
+            <p style="margin-bottom: 10px;">
+                Type the exact sentence shown below 👇
+            </p>
+
+            <div 
+                id="typingSentence"
+                style="
+                    background: #111827;
+                    padding: 15px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    font-size: 18px;
+                "
+            >
+                Click Start Test 🚀
+            </div>
+
+            <textarea
+                id="typingInput"
+                placeholder="Start typing here..."
+                rows="5"
+                disabled
+                style="
+                    width: 100%;
+                    padding: 15px;
+                    border-radius: 10px;
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                "
+            ></textarea>
+
+            <button
+                id="startTypingBtn"
+                class="btn-play"
+            >
+                Start Test 🚀
+            </button>
+
+            <div
+                id="typingResult"
+                style="
+                    margin-top: 25px;
+                    font-size: 18px;
+                    line-height: 1.8;
+                "
+            ></div>
+
+        </div>
+    `;
+}
+
+function initTypingSpeedTester() {
+
+    const sentences = [
+        "Python is fun to learn",
+        "Practice makes perfect",
+        "Open source is amazing",
+        "Typing speed improves daily",
+        "Coding becomes easier with practice"
+    ];
+
+    const sentenceElement =
+        document.getElementById("typingSentence");
+
+    const inputElement =
+        document.getElementById("typingInput");
+
+    const button =
+        document.getElementById("startTypingBtn");
+
+    const result =
+        document.getElementById("typingResult");
+
+    let startTime = null;
+    let currentSentence = "";
+
+    // Disable typing initially
+    inputElement.disabled = true;
+
+    // Start Test
+    button.onclick = function () {
+
+        // Random sentence
+        currentSentence =
+            sentences[Math.floor(Math.random() * sentences.length)];
+
+        // Show sentence
+        sentenceElement.innerText = currentSentence;
+
+        // Enable typing
+        inputElement.disabled = false;
+
+        // Clear textarea
+        inputElement.value = "";
+
+        // Focus cursor
+        inputElement.focus();
+
+        // Clear previous result
+        result.innerHTML = "";
+
+        // Start timer
+        startTime = new Date().getTime();
+    };
+
+    // Typing Event
+    inputElement.addEventListener("input", function () {
+
+        if (!startTime) return;
+
+        const typedText =
+            inputElement.value;
+
+        // Current time
+        const currentTime =
+            new Date().getTime();
+
+        // Total time in seconds
+        const totalTime =
+            (currentTime - startTime) / 1000;
+
+        // Correct characters
+        let correctChars = 0;
+
+        for (let i = 0; i < typedText.length; i++) {
+
+            if (
+                typedText[i]?.toLowerCase() ===
+                currentSentence[i]?.toLowerCase()
+            ) {
+                correctChars++;
+            }
+        }
+
+        // Accuracy
+        const accuracy =
+            Math.round(
+                (correctChars / currentSentence.length) * 100
+            );
+
+        // Words typed
+        const wordsTyped =
+            typedText.trim().split(" ").length;
+
+        // WPM
+        const wpm =
+            Math.round((wordsTyped / totalTime) * 60);
+
+        // If typing is wrong
+        if (
+            !currentSentence
+                .toLowerCase()
+                .startsWith(typedText.toLowerCase())
+        ) {
+
+            result.innerHTML = `
+                ❌ Wrong typing detected! <br><br>
+                🎯 Accuracy: ${accuracy}% 
+            `;
+
+            return;
+        }
+
+        // Show live stats
+        result.innerHTML = `
+            ⏱️ Time: ${totalTime.toFixed(1)} sec <br><br>
+            🚀 Speed: ${wpm} WPM <br><br>
+            🎯 Accuracy: ${accuracy}% 
+        `;
+
+        // Completed
+        if (
+            typedText.trim().toLowerCase() ===
+            currentSentence.trim().toLowerCase()
+        ) {
+
+            result.innerHTML = `
+                🎉 Test Completed Successfully! <br><br>
+
+                ⏱️ Total Time: ${totalTime.toFixed(1)} sec <br><br>
+
+                🚀 Typing Speed: ${wpm} WPM <br><br>
+
+                🎯 Accuracy: ${accuracy}% 
+            `;
+
+            // Disable typing after completion
+            inputElement.disabled = true;
+        }
+    });
 }
 
 function getProjectileMotionHTML() {
@@ -3434,6 +3667,10 @@ function getProjectileMotionHTML() {
         </style>
     `;
 }
+
+
+
+
 
 function initProjectileMotion() {
     const g = 9.81;
