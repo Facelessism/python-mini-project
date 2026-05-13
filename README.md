@@ -164,6 +164,18 @@ python games/Number-Guessing-Game/Number-Guessing-Game.py
 <tr>
 <td width="50%">
 
+#### 🧠 Emoji Memory Game
+Memorize a growing emoji sequence and repeat it correctly!
+- 🧩 Increasing difficulty with each level
+- 🧠 Memory training with fun emoji patterns
+- 🔁 Restart anytime and improve your high score
+```bash
+python games/Emoji-Memory-Game/emoji_memory_game.py
+```
+
+</td>
+<td width="50%">
+
 #### 🎮 Hangman Game
 Classic word-guessing game!
 - 📝 Random word selection
@@ -174,6 +186,9 @@ python games/Hangman-Game/Hangman-Game.py
 ```
 
 </td>
+</tr>
+
+<tr>
 <td width="50%">
 
 #### 💖 FLAMES Game
@@ -186,7 +201,8 @@ python games/FLAMES-Game/FLAMES-Game.py
 ```
 
 </td>
-</tr>
+<td width="50%">
+
 
 <tr>
 <td width="50%">
