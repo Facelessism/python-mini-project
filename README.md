@@ -6,7 +6,7 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Projects](https://img.shields.io/badge/projects-21-orange.svg)]()
+[![Projects](https://img.shields.io/badge/projects-22-orange.svg)]()
 [![Code Scanning](https://img.shields.io/badge/CodeQL-enabled-brightgreen.svg)]()
 
 **🚀 Perfect for beginners | 💡 Learn by doing | 🎨 Beautiful UI | ⚡ Zero setup required**
@@ -35,7 +35,7 @@ We built this collection to make learning Python **fun, interactive, and instant
 ## ⚡ Quick Start
 
 ### 🌐 **Try the Web App** (Recommended!)
-Experience all 21 projects in your browser with beautiful animations and visualizations!
+Experience all 22 projects in your browser with beautiful animations and visualizations!
 
 ```bash
 # Clone the repository
@@ -191,6 +191,20 @@ python games/FLAMES-Game/FLAMES-Game.py
 <tr>
 <td width="50%">
 
+
+#### 🔐 Password Forge
+Survive evolving firewall rules by continuously upgrading your password!
+- 🔓 Progressive rule unlocking
+- ❤️ Lives system
+- 🏆 Score tracking
+- 🎯 Multiple difficulty levels
+```bash
+python games/Password-Forge/Password-Forge.py
+```
+
+</td>
+
+
 #### 📐 AP/GP/AGP/HP Recognizer
 Identify progression types from a number sequence!
 - 🔍 Detects Arithmetic, Geometric, Arithmetic-Geometric, and Harmonic patterns
@@ -341,7 +355,7 @@ python utilities/Number-System-Converter/Number-System-Converter.py
 ## ✨ Features
 
 ### 🌐 Interactive Web Application
-- **All 21 Projects in Your Browser** - No Python installation required!
+- **All 22 Projects in Your Browser** - No Python installation required!
 - **Beautiful Animations** - Smooth transitions and visual effects
 - **Dark/Light Theme** - Toggle between themes for comfort
 - **Category Filtering** - Browse by Games, Math, or Utilities
@@ -396,7 +410,7 @@ Working through these projects, you'll master:
 
 3. **Open your browser** and visit `http://localhost:8000`
 
-4. **Enjoy all 21 projects** with beautiful animations! 🎉
+4. **Enjoy all 22 projects** with beautiful animations! 🎉
 
 ### 🐍 Python CLI Projects
 
