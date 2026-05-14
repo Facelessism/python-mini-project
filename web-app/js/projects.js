@@ -19,7 +19,8 @@ function getProjectHTML(projectName) {
         'coordinate-polar-transform': getCoordinatePolarTransformHTML(),
         'derivative-calculator': getDerivativeCalculatorHTML(),
         'morse-code': getMorseCodeHTML(),
-        'tower-of-hanoi': getTowerOfHanoiHTML()
+        'tower-of-hanoi': getTowerOfHanoiHTML(),
+        'snake-game': getsnakeGameHTML(),
     };
     
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
@@ -44,7 +45,8 @@ function initializeProject(projectName) {
         'coordinate-polar-transform': initCoordinatePolarTransform,
         'derivative-calculator': initDerivativeCalculator,
         'morse-code': initMorseCode,
-        'tower-of-hanoi': initTowerOfHanoi
+        'tower-of-hanoi': initTowerOfHanoi,
+        'snake-game': initSnakeGame,
     };
     
     if (initializers[projectName]) {
@@ -912,6 +914,11 @@ function initNumberGuessing() {
     
     function makeGuess() {
         const guess = parseInt(guessInput.value);
+        if (guess < minRange || guess > maxRange) {
+            feedback.textContent = `⚠️ Please enter a number between ${minRange} and ${maxRange}`;
+            feedback.style.color = 'var(--warning-color)';
+            return;
+        }
         
         if (isNaN(guess) || guess < 1 || guess > 100) {
             feedback.textContent = '⚠️ Please enter a number between 1 and 100!';
@@ -921,6 +928,7 @@ function initNumberGuessing() {
         
         attempts++;
         attemptsDisplay.textContent = attempts;
+        const difference = Math.abs(guess - secretNumber);
         
         if (guess === secretNumber) {
             feedback.textContent = `🎉 Congratulations! You found it in ${attempts} attempts!`;
@@ -928,11 +936,19 @@ function initNumberGuessing() {
             guessInput.disabled = true;
             submitBtn.disabled = true;
         } else if (guess < secretNumber) {
-            feedback.textContent = '📈 Too low! Try higher!';
+            if (difference <= 5) {
+                feedback.textContent = '📈 Slightly low! Try a bit higher!';
+            }else {
+                feedback.textContent = '📈 Too low! Try higher!';
+            }
             feedback.style.color = 'var(--primary-color)';
             minRange = Math.max(minRange, guess + 1);
         } else {
-            feedback.textContent = '📉 Too high! Try lower!';
+            if (difference <= 5) {
+                feedback.textContent = '📉 Slightly high! Try a bit lower!';
+            } else {
+                feedback.textContent = '📉 Too high! Try lower!';
+            }
             feedback.style.color = 'var(--danger-color)';
             maxRange = Math.min(maxRange, guess - 1);
         }
@@ -2619,8 +2635,7 @@ function initHangman() {
 
 // Collatz implementation is defined above.
 
-function getPrimeAnalyzerHTML() { return '<h2>🔱 Prime Analyzer - Coming Soon!</h2>'; }
-function initPrimeAnalyzer() {}
+
 
 // ============================================
 // MORSE CODE TRANSLATOR
@@ -2871,6 +2886,16 @@ function getPrimeAnalyzerHTML() {
                     </div>
                     <div class="primes-display" id="rangeDisplay"></div>
                 </div>
+
+                <div class="prime-factorization">
+                    <h3>Prime Factorization</h3>
+                    <div class="input-group">
+                        <input type="number" id="factorizeInput" placeholder="Enter a number">
+                        <button class="btn-check" id="factorizeBtn">Factorize</button>
+                    </div>
+                    <div class="factorization-display" id="factorizationDisplay"></div>
+                    <div id="factorizationDetails" class="factorization-details"></div>
+                </div>
             </div>
         </div>
         
@@ -2982,6 +3007,61 @@ function getPrimeAnalyzerHTML() {
                 background: var(--bg-color);
                 color: var(--text-color);
             }
+
+            .prime-factorization {
+                background: var(--surface-color);
+                padding: 1.5rem;
+                border-radius: 15px;
+                margin-bottom: 2rem;
+                border: 2px solid var(--border-color);
+            }
+
+            .prime-factorization h3 {
+                margin-bottom: 1rem;
+                color: var(--primary-color);
+            }
+
+            .factorization-display {
+                font-size: 1.5rem;
+                font-weight: bold;
+                padding: 1.5rem;
+                border-radius: 10px;
+                background: var(--bg-color);
+                text-align: center;
+                margin-top: 1rem;
+                color: var(--primary-color);
+                min-height: 4rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .factorization-details {
+                margin-top: 1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: left;
+            }
+
+            .detail-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 1rem;
+                background: rgba(99, 102, 241, 0.1);
+                border-radius: 8px;
+                font-size: 0.95rem;
+            }
+
+            .detail-label {
+                color: var(--text-secondary);
+                font-weight: 500;
+            }
+
+            .detail-value {
+                color: var(--primary-color);
+                font-weight: bold;
+            }
         </style>
     `;
 }
@@ -2997,6 +3077,10 @@ function initPrimeAnalyzer() {
     const rangeEnd = document.getElementById('rangeEnd');
     const rangeBtn = document.getElementById('rangeBtn');
     const rangeDisplay = document.getElementById('rangeDisplay');
+    const factorizeInput = document.getElementById('factorizeInput');
+    const factorizeBtn = document.getElementById('factorizeBtn');
+    const factorizationDisplay = document.getElementById('factorizationDisplay');
+    const factorizationDetails = document.getElementById('factorizationDetails');
     
     // Check if number is prime
     function isPrime(num) {
@@ -3074,6 +3158,56 @@ function initPrimeAnalyzer() {
         if (primes.length === 0) {
             rangeDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
+    }
+    
+    // Prime factorization
+    function factorize() {
+        let num = parseInt(factorizeInput.value);
+        const originalNum = num;
+        
+        if (isNaN(num)) {
+            factorizationDisplay.textContent = '⚠️ Please enter a valid number!';
+            factorizationDetails.innerHTML = '';
+            return;
+        }
+        
+        if (num < 2) {
+            factorizationDisplay.textContent = `❌ ${num} cannot be factorized into primes.`;
+            factorizationDetails.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Note:</span>
+                    <span class="detail-value">Prime numbers must be greater than 1</span>
+                </div>
+            `;
+            return;
+        }
+        
+        const factors = [];
+        let d = 2;
+        let tempNum = num;
+        while (d * d <= tempNum) {
+            while (tempNum % d === 0) {
+                factors.push(d);
+                tempNum /= d;
+            }
+            d++;
+        }
+        if (tempNum > 1) factors.push(tempNum);
+        
+        const uniqueFactors = [...new Set(factors)];
+        
+        factorizationDisplay.textContent = `${originalNum} = ${factors.join(' × ')}`;
+        
+        factorizationDetails.innerHTML = `
+            <div class="detail-item">
+                <span class="detail-label">Unique Prime Factors:</span>
+                <span class="detail-value">[${uniqueFactors.join(', ')}]</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Total Factors (with repetition):</span>
+                <span class="detail-value">${factors.length}</span>
+            </div>
+        `;
     }
     
     // Event listeners
@@ -3192,6 +3326,8 @@ function getTowerOfHanoiHTML() {
         </style>
     `;
 }
+
+
 
 function initTowerOfHanoi() {
     const canvas = document.getElementById('hanoiCanvas');
@@ -3326,6 +3462,204 @@ function initTowerOfHanoi() {
     initTowers();
 }
 
+function getTypingSpeedTesterHTML() {
+    return `
+        <div class="project-content">
+
+            <h2>⌨️ Typing Speed Tester</h2>
+
+            <p style="margin-bottom: 10px;">
+                Type the exact sentence shown below 👇
+            </p>
+
+            <div 
+                id="typingSentence"
+                style="
+                    background: #111827;
+                    padding: 15px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    font-size: 18px;
+                "
+            >
+                Click Start Test 🚀
+            </div>
+
+            <textarea
+                id="typingInput"
+                placeholder="Start typing here..."
+                rows="5"
+                disabled
+                style="
+                    width: 100%;
+                    padding: 15px;
+                    border-radius: 10px;
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                "
+            ></textarea>
+
+            <button
+                id="startTypingBtn"
+                class="btn-play"
+            >
+                Start Test 🚀
+            </button>
+
+            <div
+                id="typingResult"
+                style="
+                    margin-top: 25px;
+                    font-size: 18px;
+                    line-height: 1.8;
+                "
+            ></div>
+
+        </div>
+    `;
+}
+
+function initTypingSpeedTester() {
+
+    const sentences = [
+        "Python is fun to learn",
+        "Practice makes perfect",
+        "Open source is amazing",
+        "Typing speed improves daily",
+        "Coding becomes easier with practice"
+    ];
+
+    const sentenceElement =
+        document.getElementById("typingSentence");
+
+    const inputElement =
+        document.getElementById("typingInput");
+
+    const button =
+        document.getElementById("startTypingBtn");
+
+    const result =
+        document.getElementById("typingResult");
+
+    let startTime = null;
+    let currentSentence = "";
+
+    // Disable typing initially
+    inputElement.disabled = true;
+
+    // Start Test
+    button.onclick = function () {
+
+        // Random sentence
+        currentSentence =
+            sentences[Math.floor(Math.random() * sentences.length)];
+
+        // Show sentence
+        sentenceElement.innerText = currentSentence;
+
+        // Enable typing
+        inputElement.disabled = false;
+
+        // Clear textarea
+        inputElement.value = "";
+
+        // Focus cursor
+        inputElement.focus();
+
+        // Clear previous result
+        result.innerHTML = "";
+
+        // Start timer
+        startTime = new Date().getTime();
+    };
+
+    // Typing Event
+    inputElement.addEventListener("input", function () {
+
+        if (!startTime) return;
+
+        const typedText =
+            inputElement.value;
+
+        // Current time
+        const currentTime =
+            new Date().getTime();
+
+        // Total time in seconds
+        const totalTime =
+            (currentTime - startTime) / 1000;
+
+        // Correct characters
+        let correctChars = 0;
+
+        for (let i = 0; i < typedText.length; i++) {
+
+            if (
+                typedText[i]?.toLowerCase() ===
+                currentSentence[i]?.toLowerCase()
+            ) {
+                correctChars++;
+            }
+        }
+
+        // Accuracy
+        const accuracy =
+            Math.round(
+                (correctChars / currentSentence.length) * 100
+            );
+
+        // Words typed
+        const wordsTyped =
+            typedText.trim().split(" ").length;
+
+        // WPM
+        const wpm =
+            Math.round((wordsTyped / totalTime) * 60);
+
+        // If typing is wrong
+        if (
+            !currentSentence
+                .toLowerCase()
+                .startsWith(typedText.toLowerCase())
+        ) {
+
+            result.innerHTML = `
+                ❌ Wrong typing detected! <br><br>
+                🎯 Accuracy: ${accuracy}% 
+            `;
+
+            return;
+        }
+
+        // Show live stats
+        result.innerHTML = `
+            ⏱️ Time: ${totalTime.toFixed(1)} sec <br><br>
+            🚀 Speed: ${wpm} WPM <br><br>
+            🎯 Accuracy: ${accuracy}% 
+        `;
+
+        // Completed
+        if (
+            typedText.trim().toLowerCase() ===
+            currentSentence.trim().toLowerCase()
+        ) {
+
+            result.innerHTML = `
+                🎉 Test Completed Successfully! <br><br>
+
+                ⏱️ Total Time: ${totalTime.toFixed(1)} sec <br><br>
+
+                🚀 Typing Speed: ${wpm} WPM <br><br>
+
+                🎯 Accuracy: ${accuracy}% 
+            `;
+
+            // Disable typing after completion
+            inputElement.disabled = true;
+        }
+    });
+}
+
 function getProjectileMotionHTML() {
     return `
         <div class="project-content">
@@ -3449,6 +3783,10 @@ function getProjectileMotionHTML() {
         </style>
     `;
 }
+
+
+
+
 
 function initProjectileMotion() {
     const g = 9.81;
@@ -4090,11 +4428,11 @@ function getDerivativeCalculatorHTML() {
                 background: var(--surface-color);
                 border: 1px solid var(--border-color);
                 border-radius: 12px;
-                padding: 1rem;
-                text-align: left;
-                white-space: pre-line;
-                min-height: 110px;
-                line-height: 1.7;
+                padding: 1.5rem;
+                margin-top: 1.5rem;
+                font-family: monospace;
+                white-space: pre-wrap;
+                word-wrap: break-word;
             }
         </style>
     `;
@@ -4257,3 +4595,248 @@ function initDerivativeCalculator() {
         output.textContent = `f(x) = ${polynomialToString(data.coeffs)}\n\nDerivative used: ${polynomialToString(nth)}\nValue at x = ${formatNumber(data.x)} is ${formatNumber(value)}`;
     });
 }
+// ============================================
+// SNAKE GAME
+// ============================================
+function getsnakeGameHTML() {
+    return `
+        <div class="project-content">
+            <h2>🐍 Classic Snake Game</h2>
+            <div class="snake-container">
+                <div class="game-area">
+                    <div id="canvas-wrapper">
+                        <canvas id="snakeCanvas" width="600" height="400"></canvas>
+                        
+                        <div id="game-over-overlay" class="hidden">
+                            <h1>GAME OVER!!</h1>
+                            <p>Score: <span id="final-score">0</span></p>
+                            <button id="overlayRestartBtn" class="btn-primary">Restart Game</button>
+                        </div>
+                    </div>
+
+                    <div id="score-board">
+                        <div class="score-card">
+                            <span>Score</span>
+                            <div id="score">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="startGameBtn" class="btn-primary">Start Game</button>
+                    <button id="restartSnakeBtn" class="btn-primary">Restart Game</button>
+                </div>
+                <div class="instruction-box">
+                    <p>Use arrow keys to control the snake.</p>
+                    <p>Eat the red food to grow. Don't hit the walls or yourself!</p>
+                </div>
+            </div>
+        </div>
+        <style>
+            .snake-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            .game-area {
+                display: flex;
+                align-items: flex-start;
+                gap: 20px;
+                margin-bottom: 25px;
+                width: 100%;
+                max-width: 850px;
+                justify-content: center;
+                flex-wrap: nowrap;
+            }
+            #canvas-wrapper {
+                position: relative;
+                border: 4px solid #2ecc71;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            }
+            #snakeCanvas {
+                background-color: #1b262c;
+                background-image: 
+                    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+                background-size: 20px 20px;
+                display: block;
+            }
+            #score-board {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .score-card {
+                background: linear-gradient(135deg, #2ecc71, #27ae60);
+                color: white;
+                padding: 10px 25px;
+                border-radius: 10px;
+                text-align: center;
+                min-width: 120px;
+                box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            }
+            .score-card span {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+            .score-card div {
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .button-group {
+                display: flex;
+                justify-content: center;
+                gap: 30px; /* Space between buttons fixed */
+                margin-top: 10px;
+                margin-right: 140px; /* Offset to align with canvas center */
+            }
+            .instruction-box {
+                margin-top: 20px;
+                margin-right: 140px;
+                text-align: center;
+                color: #7f8c8d;
+                font-size: 15px;
+            }
+            #game-over-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(27, 38, 44, 0.9);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 10;
+                color: #2ecc71;
+            }
+            #game-over-overlay h1 { font-size: 3rem; margin-bottom: 10px; }
+            .hidden { display: none !important; }
+            .btn-primary {
+                background-color: #2ecc71;
+                color: white;
+                border: none;
+                padding: 12px 25px;
+                border-radius: 8px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            .btn-primary:hover {
+                background-color: #27ae60;
+                transform: translateY(-2px);
+            }
+        </style>
+    `;
+}
+
+// --- GAME LOGIC ---
+let direction = {x: 0, y: 0}; 
+let speed = 7; 
+let score = 0;
+let lastPaintTime = 0;
+let snakeArr = [{x: 13, y: 10}]; 
+let food = {x: 6, y: 7};
+
+function main(ctime) {
+    window.requestAnimationFrame(main);
+    if((ctime - lastPaintTime)/1000 < 1/speed){
+        return;
+    }
+    lastPaintTime = ctime;
+    gameEngine();
+}
+
+function isCollide(snake) {
+    // Hits itself
+    for (let i = 1; i < snakeArr.length; i++) {
+        if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+    }
+    // Hits walls
+    if(snake[0].x >= 30 || snake[0].x < 0 || snake[0].y >= 20 || snake[0].y < 0) return true;
+    
+    return false;
+}
+
+function gameEngine() {
+    if(isCollide(snakeArr)){
+        direction = {x: 0, y: 0};
+        document.getElementById('final-score').innerHTML = score;
+        document.getElementById('game-over-overlay').classList.remove('hidden');
+        snakeArr = [{x: 13, y: 10}];
+        score = 0;
+        document.getElementById('score').innerHTML = score;
+        return;
+    }
+
+    // Eating food
+    if(snakeArr[0].y === food.y && snakeArr[0].x === food.x){
+        score += 1;
+        document.getElementById('score').innerHTML = score;
+        snakeArr.unshift({x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y});
+        let a = 2, b = 16;
+        food = {x: Math.round(a + (b-a)* Math.random()), y: Math.round(a + (b-a)* Math.random())};
+    }
+
+    // Moving snake (only if direction is set)
+    if (direction.x !== 0 || direction.y !== 0) {
+        for (let i = snakeArr.length - 2; i>=0; i--) { 
+            snakeArr[i+1] = {...snakeArr[i]};
+        }
+        snakeArr[0].x += direction.x;
+        snakeArr[0].y += direction.y;
+    }
+
+    const canvas = document.getElementById('snakeCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Snake
+    snakeArr.forEach((e, index)=>{
+        ctx.fillStyle = index === 0 ? "orange" : "#2ecc71";
+        ctx.fillRect(e.x * 20, e.y * 20, 18, 18);
+    });
+
+    // Draw Food
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x * 20, food.y * 20, 18, 18);
+}
+
+// IMPORTANT: Function to initialize listeners after HTML is loaded
+function initSnakeGame() {
+    window.requestAnimationFrame(main);
+
+    document.getElementById('startGameBtn').addEventListener('click', () => {
+        direction = {x: 1, y: 0}; // Start moving right
+    });
+
+    document.getElementById('restartSnakeBtn').addEventListener('click', () => {
+        location.reload();
+    });
+
+    document.getElementById('overlayRestartBtn').addEventListener('click', () => {
+        document.getElementById('game-over-overlay').classList.add('hidden');
+        direction = {x: 0, y: 0};
+        snakeArr = [{x: 13, y: 10}];
+        score = 0;
+        document.getElementById('score').innerHTML = score;
+    });
+
+    window.addEventListener('keydown', e =>{
+        switch (e.key) {
+            case "ArrowUp":    if(direction.y !== 1) {direction.x = 0; direction.y = -1;} break;
+            case "ArrowDown":  if(direction.y !== -1) {direction.x = 0; direction.y = 1;} break;
+            case "ArrowLeft":  if(direction.x !== 1) {direction.x = -1; direction.y = 0;} break;
+            case "ArrowRight": if(direction.x !== -1) {direction.x = 1; direction.y = 0;} break;
+        }
+    });
+}
+
+// Call initSnakeGame() after you inject getsnakeGameHTML() into your page.
