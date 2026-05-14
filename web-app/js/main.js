@@ -44,6 +44,41 @@ themeToggle.innerHTML =
         : '<i class="fas fa-moon" aria-hidden="true"></i>';
 updateThemeToggleAria(savedTheme === 'light');
 
+// Audio Controller Setup
+const soundToggle = document.getElementById('soundToggle');
+
+function updateSoundToggleUI(isMuted) {
+    soundToggle.innerHTML = isMuted
+        ? '<i class="fas fa-volume-mute" aria-hidden="true"></i>'
+        : '<i class="fas fa-volume-up" aria-hidden="true"></i>';
+    soundToggle.setAttribute('aria-label', isMuted ? 'Unmute sounds' : 'Mute sounds');
+}
+
+// Initial UI state
+updateSoundToggleUI(audioController.isMuted);
+
+// Toggle sound
+soundToggle.addEventListener('click', () => {
+    const isMuted = audioController.toggleMute();
+    updateSoundToggleUI(isMuted);
+    // Play a click sound if unmuted
+    if (!isMuted) {
+        audioController.play('click');
+    }
+});
+
+// Initialize audio on first interaction
+const initAudio = () => {
+    audioController.init();
+    document.removeEventListener('click', initAudio);
+    document.removeEventListener('keydown', initAudio);
+    document.removeEventListener('touchstart', initAudio);
+};
+
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+document.addEventListener('touchstart', initAudio);
+
 // Filtering Logic
 const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
 const projectCards = document.querySelectorAll('.project-card');

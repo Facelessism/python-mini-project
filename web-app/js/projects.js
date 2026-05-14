@@ -261,6 +261,7 @@ function initRockPaperScissor() {
         
         if (playerChoice === computerChoice) {
             result = "It's a tie! 🤝";
+            audioController.play('click');
         } else if (
             (playerChoice === 'rock' && computerChoice === 'scissors') ||
             (playerChoice === 'paper' && computerChoice === 'rock') ||
@@ -268,9 +269,11 @@ function initRockPaperScissor() {
         ) {
             result = 'You win! 🎉';
             playerScore++;
+            audioController.play('win');
         } else {
             result = 'Computer wins! 🤖';
             computerScore++;
+            audioController.play('loss');
         }
         
         document.getElementById('resultMessage').textContent = result;
@@ -540,6 +543,7 @@ function initDiceRolling() {
     
     rollBtn.addEventListener('click', () => {
         rollBtn.disabled = true;
+        audioController.play('dice');
         diceScene1.classList.add('rolling');
         diceScene2.classList.add('rolling');
 
@@ -765,6 +769,7 @@ function initCoinFlip() {
     
     flipBtn.addEventListener('click', () => {
         flipBtn.disabled = true;
+        audioController.play('coin');
         result.textContent = 'Flipping...';
         coinScene.classList.add('rolling');
         
