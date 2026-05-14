@@ -61,7 +61,7 @@ backToTopButton.addEventListener('click', () => {
 });
 
 // Category Filtering
-const tabs = document.querySelectorAll('.tab');
+// const tabs = document.querySelectorAll('.tab');
 
 // Category Filtering (tabs)
 
