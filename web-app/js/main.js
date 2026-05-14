@@ -3,6 +3,7 @@ const themeToggle = document.getElementById('themeToggle');
 const themeColorMeta = document.getElementById('themeColorMeta');
 const html = document.documentElement;
 const mainContent = document.getElementById('main-content');
+let recentSearches = [];
 
 function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -171,14 +172,21 @@ function highlightMatch(text, query) {
 
 // Render recent searches
 function renderRecentSearches() {
-    if (recentSearches.length === 0) {
-        recentSearchesSection.style.display = 'none';
-        tipsSection.style.display = 'block';
-        resultsSection.style.display = 'none';
-        return;
+    if (recentSearchesSection) {
+    recentSearchesSection.style.display = 'none';
+    }
+
+    if (tipsSection) {
+    tipsSection.style.display = 'block';
+    }
+
+    if (resultsSection) {
+    resultsSection.style.display = 'none';
     }
     
+    if (recentSearchesList) {
     recentSearchesList.innerHTML = '';
+    }
     recentSearches.slice(0, 5).forEach((search) => {
         const item = document.createElement('div');
         item.className = 'dropdown-recent-item';
@@ -212,9 +220,13 @@ function renderRecentSearches() {
         recentSearchesList.appendChild(item);
     });
     
+    if (recentSearchesSection && resultsSection && tipsSection) {
     recentSearchesSection.style.display = 'block';
     resultsSection.style.display = 'none';
     tipsSection.style.display = 'block';
+}
+
+    
 }
 
 function applyCategoryFilter(category) {
