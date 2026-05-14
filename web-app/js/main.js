@@ -22,28 +22,58 @@ themeToggle.innerHTML = savedTheme === 'light'
     ? '<i class="fas fa-sun"></i>' 
     : '<i class="fas fa-moon"></i>';
 
-// Category Filtering
+// Filtering Logic
 const tabs = document.querySelectorAll('.tab');
 const projectCards = document.querySelectorAll('.project-card');
+const searchInput = document.getElementById('projectSearch');
+const noResults = document.getElementById('noResults');
 
+let activeCategory = 'all';
+let searchQuery = '';
+
+function filterProjects() {
+    let visibleCount = 0;
+    
+    projectCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const description = card.querySelector('p').textContent.toLowerCase();
+        
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesSearch = title.includes(searchQuery) || description.includes(searchQuery);
+        
+        if (matchesCategory && matchesSearch) {
+            card.style.display = 'block';
+            card.style.animation = 'fadeIn 0.6s ease';
+            visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+    
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
+}
+
+// Category Tab Click
 tabs.forEach(tab => {
     tab.addEventListener('click', () => {
-        // Update active tab
         tabs.forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         
-        const category = tab.getAttribute('data-category');
-        
-        // Filter projects
-        projectCards.forEach(card => {
-            if (category === 'all' || card.getAttribute('data-category') === category) {
-                card.style.display = 'block';
-                card.style.animation = 'fadeIn 0.6s ease';
-            } else {
-                card.style.display = 'none';
-            }
-        });
+        activeCategory = tab.getAttribute('data-category');
+        filterProjects();
     });
+});
+
+// Search Input Change
+searchInput.addEventListener('input', (e) => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    filterProjects();
 });
 
 // Modal Management

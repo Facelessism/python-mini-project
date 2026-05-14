@@ -20,9 +20,15 @@
         </div>
     </nav>
 
-    <!-- Category Tabs -->
+    <!-- Search & Category Tabs -->
     <section class="tabs-section">
         <div class="container">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="projectSearch" placeholder="Search for projects (e.g. 'rock', 'dice', 'prime')...">
+                </div>
+            </div>
             <div class="tabs">
                 <button class="tab active" data-category="all">🌟 All Projects</button>
                 <button class="tab" data-category="games">🎮 Games</button>
@@ -35,6 +41,11 @@
     <!-- Projects Grid -->
     <section class="projects-section">
         <div class="container">
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>No projects found</h3>
+                <p>Try adjusting your search or category filters</p>
+            </div>
             <div class="projects-grid" id="projectsGrid">
                 
                 <!-- Games -->
