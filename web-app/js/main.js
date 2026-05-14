@@ -44,8 +44,27 @@ themeToggle.innerHTML =
         : '<i class="fas fa-moon" aria-hidden="true"></i>';
 updateThemeToggleAria(savedTheme === 'light');
 
+
+// Back to Top Button
+const backToTopButton = document.getElementById('backToTop');
+
+const toggleBackToTopButton = () => {
+    backToTopButton.classList.toggle('visible', window.scrollY > 300);
+};
+
+window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
+toggleBackToTopButton();
+
+backToTopButton.addEventListener('click', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+});
+
+// Category Filtering
+const tabs = document.querySelectorAll('.tab');
+
 // Category Filtering (tabs)
-const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
+
 const projectCards = document.querySelectorAll('.project-card');
 const tabs = document.querySelectorAll('.tab');
 const searchInput = document.getElementById('projectSearch');
