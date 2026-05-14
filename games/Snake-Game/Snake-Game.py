@@ -1,159 +1,169 @@
 import turtle
-import time
 import random
+import time
 
 screen = turtle.Screen()
-screen.title("Classic Snake Game")
+screen.title("Snake")
 screen.bgcolor("black")
-screen.setup(width=600, height=600)
+screen.setup(700, 700)
 screen.tracer(0)
 
+box = turtle.Turtle()
+box.hideturtle()
+box.color("white")
+box.pensize(3)
+box.penup()
+box.goto(-300, 300)
+box.pendown()
+
+for _ in range(4):
+    box.forward(600)
+    box.right(90)
+
 head = turtle.Turtle()
-head.speed(0)
 head.shape("square")
 head.color("green")
 head.penup()
-head.goto(0, 0)
 head.direction = "stop"
 
 food = turtle.Turtle()
-food.speed(0)
 food.shape("circle")
 food.color("red")
 food.penup()
-food.goto(100, 100)
+food.goto(0, 100)
 
-segments = []
+parts = []
 
 score = 0
 
-pen = turtle.Turtle()
-pen.speed(0)
-pen.color("white")
-pen.penup()
-pen.hideturtle()
-pen.goto(0, 260)
-pen.write("Score: 0", align="center", font=("Arial", 20, "normal"))
+score_text = turtle.Turtle()
+score_text.hideturtle()
+score_text.color("white")
+score_text.penup()
+score_text.goto(0, 320)
+score_text.write("Score: 0", align="center", font=("Arial", 18, "normal"))
 
 
-def go_up():
+def move_up():
     if head.direction != "down":
         head.direction = "up"
 
 
-def go_down():
+def move_down():
     if head.direction != "up":
         head.direction = "down"
 
 
-def go_left():
+def move_left():
     if head.direction != "right":
         head.direction = "left"
 
 
-def go_right():
+def move_right():
     if head.direction != "left":
         head.direction = "right"
 
 
-def move():
-    x = head.xcor()
-    y = head.ycor()
+screen.listen()
+screen.onkeypress(move_up, "Up")
+screen.onkeypress(move_down, "Down")
+screen.onkeypress(move_left, "Left")
+screen.onkeypress(move_right, "Right")
 
+
+def move():
     if head.direction == "up":
-        head.sety(y + 20)
+        head.sety(head.ycor() + 20)
 
     if head.direction == "down":
-        head.sety(y - 20)
+        head.sety(head.ycor() - 20)
 
     if head.direction == "left":
-        head.setx(x - 20)
+        head.setx(head.xcor() - 20)
 
     if head.direction == "right":
-        head.setx(x + 20)
+        head.setx(head.xcor() + 20)
 
-screen.listen()
-screen.onkeypress(go_up, "Up")
-screen.onkeypress(go_down, "Down")
-screen.onkeypress(go_left, "Left")
-screen.onkeypress(go_right, "Right")
 
 while True:
     screen.update()
 
     if (
-        head.xcor() > 290 or
-        head.xcor() < -290 or
-        head.ycor() > 290 or
-        head.ycor() < -290
+        head.xcor() > 280 or
+        head.xcor() < -280 or
+        head.ycor() > 280 or
+        head.ycor() < -280
     ):
         time.sleep(1)
+
         head.goto(0, 0)
         head.direction = "stop"
 
-        for segment in segments:
-            segment.goto(1000, 1000)
+        for p in parts:
+            p.goto(1000, 1000)
 
-        segments.clear()
+        parts.clear()
+
         score = 0
-        pen.clear()
-        pen.write(
+
+        score_text.clear()
+        score_text.write(
             f"Score: {score}",
             align="center",
-            font=("Arial", 20, "normal")
+            font=("Arial", 18, "normal")
         )
 
-    if head.distance(food) < 20:
-        x = random.randint(-280, 280)
-        y = random.randint(-280, 280)
+    if head.distance(food) < 15:
+        x = random.randint(-14, 14) * 20
+        y = random.randint(-14, 14) * 20
+
         food.goto(x, y)
 
-        new_segment = turtle.Turtle()
-        new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("lightgreen")
-        new_segment.penup()
-        segments.append(new_segment)
+        new_part = turtle.Turtle()
+        new_part.shape("square")
+        new_part.color("lightgreen")
+        new_part.penup()
+
+        parts.append(new_part)
 
         score += 1
-        pen.clear()
-        pen.write(
+
+        score_text.clear()
+        score_text.write(
             f"Score: {score}",
             align="center",
-            font=("Arial", 20, "normal")
+            font=("Arial", 18, "normal")
         )
 
-    for i in range(len(segments) - 1, 0, -1):
-        x = segments[i - 1].xcor()
-        y = segments[i - 1].ycor()
-        segments[i].goto(x, y)
+    for i in range(len(parts) - 1, 0, -1):
+        x = parts[i - 1].xcor()
+        y = parts[i - 1].ycor()
+        parts[i].goto(x, y)
 
-    if len(segments) > 0:
-        x = head.xcor()
-        y = head.ycor()
-        segments[0].goto(x, y)
+    if len(parts) > 0:
+        parts[0].goto(head.xcor(), head.ycor())
 
     move()
 
-    for segment in segments:
-        if segment.distance(head) < 20:
+    for p in parts:
+        if p.distance(head) < 20:
             time.sleep(1)
+
             head.goto(0, 0)
             head.direction = "stop"
 
-            for seg in segments:
-                seg.goto(1000, 1000)
+            for s in parts:
+                s.goto(1000, 1000)
 
-            segments.clear()
+            parts.clear()
 
             score = 0
-            pen.clear()
-            pen.write(
+
+            score_text.clear()
+            score_text.write(
                 f"Score: {score}",
                 align="center",
-                font=("Arial", 20, "normal")
+                font=("Arial", 18, "normal")
             )
 
     time.sleep(0.1)
-
-screen.mainloop()
