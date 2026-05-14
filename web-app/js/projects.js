@@ -1650,8 +1650,10 @@ function initFlames() {
                     <div style="font-size: 0.85rem; font-style: italic; opacity: 0.9; margin-top: 5px;">"${final.vibe}"</div>
                 </div>
 
-                <button class="copy-btn" onclick="copyFlamesResult(\`${share_text.replace(/`/g, '\\`')}\`)" 
-                    style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s;">
+                <button class="copy-btn" 
+                        data-share="${share_text}" 
+                        onclick="copyFlamesResult(this.getAttribute('data-share'))" 
+                        style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">
                     📋 Copy Result
                 </button>
             </div>
