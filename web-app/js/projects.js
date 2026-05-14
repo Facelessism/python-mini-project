@@ -20,7 +20,9 @@ function getProjectHTML(projectName) {
         'coordinate-polar-transform': getCoordinatePolarTransformHTML(),
         'derivative-calculator': getDerivativeCalculatorHTML(),
         'morse-code': getMorseCodeHTML(),
-        'tower-of-hanoi': getTowerOfHanoiHTML()
+        'tower-of-hanoi': getTowerOfHanoiHTML(),
+        'snake-game': getsnakeGameHTML(),
+        'password-forge': getPasswordForgeHTML(),
     };
 
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
@@ -45,7 +47,8 @@ function initializeProject(projectName) {
         'coordinate-polar-transform': initCoordinatePolarTransform,
         'derivative-calculator': initDerivativeCalculator,
         'morse-code': initMorseCode,
-        'tower-of-hanoi': initTowerOfHanoi
+        'tower-of-hanoi': initTowerOfHanoi,
+        'snake-game': initSnakeGame,
     };
 
     if (initializers[projectName]) {
