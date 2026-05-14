@@ -20,7 +20,7 @@ function getProjectHTML(projectName) {
         'derivative-calculator': getDerivativeCalculatorHTML(),
         'morse-code': getMorseCodeHTML(),
         'tower-of-hanoi': getTowerOfHanoiHTML(),
-        'number-converter': getNumberConverterHTML()
+        'number-converter': getNumberConverterHTML(),
         'typing-speed-tester': getTypingSpeedTesterHTML()
     };
     
@@ -47,7 +47,7 @@ function initializeProject(projectName) {
         'derivative-calculator': initDerivativeCalculator,
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
-        'number-converter': initNumberConverter
+        'number-converter': initNumberConverter,
         'typing-speed-tester': initTypingSpeedTester,
     };
     
@@ -3670,8 +3670,6 @@ function getProjectileMotionHTML() {
 
 
 
-
-
 function initProjectileMotion() {
     const g = 9.81;
     const canvas = document.getElementById('projectileCanvas');
@@ -3686,57 +3684,114 @@ function initProjectileMotion() {
     const heightEl = document.getElementById('projHeight');
     const resultEl = document.getElementById('projectileResult');
 
-    function drawScene(points, xMax, yMax) {
+   function drawScene(points, xMax, yMax) {
         const width = canvas.width;
         const height = canvas.height;
-        const marginLeft = 50;
-        const marginBottom = 35;
-        const marginTop = 20;
-        const usableWidth = width - marginLeft - 20;
-        const usableHeight = height - marginTop - marginBottom;
 
-        const mapX = (x) => marginLeft + (x / xMax) * usableWidth;
-        const mapY = (y) => height - marginBottom - (y / yMax) * usableHeight;
+        const marginLeft = 35;
+        const marginBottom = 25;
+        const marginTop = 10;
+        const marginRight = 10;
 
+        const usableWidth = width - marginLeft - marginRight;
+        const usableHeight = height - marginTop - marginBottom - 5;
+
+        // Maintain proportional scaling
+        const scale = Math.min(
+            usableWidth / xMax,
+            usableHeight / yMax
+        );
+
+        const mapX = (x) => marginLeft + x * scale;
+        const mapY = (y) => height - marginBottom - y * scale;
+
+        // Clear canvas
         ctx.clearRect(0, 0, width, height);
 
+        // Background
         ctx.fillStyle = '#0f172a10';
         ctx.fillRect(0, 0, width, height);
 
+        // Axes
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 2;
+
         ctx.beginPath();
+
+        // Y-axis
         ctx.moveTo(marginLeft, marginTop);
         ctx.lineTo(marginLeft, height - marginBottom);
-        ctx.lineTo(width - 20, height - marginBottom);
+
+        // X-axis
+        ctx.lineTo(width - marginRight, height - marginBottom);
+
         ctx.stroke();
 
+        // Axis labels
         ctx.fillStyle = '#64748b';
         ctx.font = '12px Arial';
-        ctx.fillText('Height (m)', 8, marginTop + 12);
-        ctx.fillText('Distance (m)', width - 95, height - 10);
 
+        ctx.fillText(
+            'Height (m)',
+            8,
+            marginTop + 12
+        );
+
+        ctx.fillText(
+            'Distance (m)',
+            width - 95,
+            height - 10
+        );
+
+        // Draw trajectory
         if (points.length > 1) {
             ctx.strokeStyle = '#2563eb';
             ctx.lineWidth = 3;
+
             ctx.beginPath();
-            ctx.moveTo(mapX(points[0].x), mapY(points[0].y));
+
+            ctx.moveTo(
+                mapX(points[0].x),
+                mapY(points[0].y)
+            );
+
             for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(mapX(points[i].x), mapY(points[i].y));
+                ctx.lineTo(
+                    mapX(points[i].x),
+                    mapY(points[i].y)
+                );
             }
+
             ctx.stroke();
 
+            // Landing point
             const landing = points[points.length - 1];
+
             ctx.fillStyle = '#ef4444';
+
             ctx.beginPath();
-            ctx.arc(mapX(landing.x), mapY(landing.y), 6, 0, Math.PI * 2);
+
+            ctx.arc(
+                mapX(landing.x),
+                mapY(landing.y),
+                6,
+                0,
+                Math.PI * 2
+            );
+
             ctx.fill();
         }
     }
-
     function simulate() {
         const speed = Math.max(1, Number(speedInput.value) || 1);
-        const angleDeg = Math.min(89, Math.max(1, Number(angleInput.value) || 45));
+        const rawAngle = Number(angleInput.value);
+
+        const angleDeg = Math.min(
+            89,
+            Math.max(1, isNaN(rawAngle) ? 45 : rawAngle)
+        );
+
+        angleInput.value = angleDeg;
 
         const angleRad = angleDeg * Math.PI / 180;
         const totalTime = (2 * speed * Math.sin(angleRad)) / g;
