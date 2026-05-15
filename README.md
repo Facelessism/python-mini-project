@@ -11,7 +11,7 @@
 
 **🚀 Perfect for beginners | 💡 Learn by doing | 🎨 Beautiful UI | ⚡ Zero setup required**
 
-[Quick Start](#-quick-start) • [Projects](#-projects) • [Features](#-features) • [Contributing](#-contributing)
+[Quick Start](#-quick-start) • [Projects](#-projects) • [Features](#-features)
 
 ---
 
@@ -64,51 +64,17 @@ python games/Rock-Paper-Scissor/Rock-Paper-Scissor.py
 
 ---
 
-## 🎮 Projects
+---
 
-### 🚀 **Physics & Simulation**
+## 🙌 Contributors
 
-#### 🎯 Projectile Motion Game
-Launch projectiles and visualize trajectory stats!
-- 🚀 Simple launch simulation
-- 📊 Shows TOF, Hmax, and Range
-- 📈 Matplotlib plot for each launch
-```bash
-python math/Projectile-Motion-Game/Projectile-Motion-Game.py
-```
+<div align="center">
 
-### 🎲 **Games** - Test Your Luck & Skills!
+A big thank you to everyone who's contributed to this project — your improvements keep it growing! If you'd like to contribute, please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-<table>
-<tr>
-<td width="50%">
+</div>
 
-#### 🪨 Rock, Paper, Scissors
-Battle against the computer in this classic game!
-- 🎯 Interactive gameplay
-- 🤖 Smart computer opponent
-- 🎨 Visual feedback for wins/losses
-```bash
-python games/Rock-Paper-Scissor/Rock-Paper-Scissor.py
-```
-
-</td>
-<td width="50%">
-
-#### 🎲 Dice Rolling
-Roll two dice and see your fortune!
-- ⚀⚁⚂ Realistic dice emojis
-- 📊 Total calculation
-- 🎰 Perfect for board game nights
-```bash
-python games/Roling-Dice/Roling-Dice.py
-```
-
-</td>
-</tr>
-
-<tr>
-<td width="50%">
+---
 
 #### 🧭 Coordinate to Polar Transformation
 Convert Cartesian coordinates into polar representation!
@@ -469,14 +435,7 @@ python utilities/Productivity-Pet/Productivity-Pet.py
 
 Working through these projects, you'll master:
 
-- ✅ **User Input & Output** - Interactive console applications
-- ✅ **Control Flow** - if/elif/else, while loops
-- ✅ **Data Structures** - Lists, dictionaries, arrays
-- ✅ **Randomization** - Using the random module
-- ✅ **String Manipulation** - Text processing and formatting
-- ✅ **Mathematical Operations** - Calculations and algorithms
-- ✅ **Geometric Patterns** - Understanding shapes and symmetry
-- ✅ **Logic & Problem Solving** - Building real-world applications
+
 
 ---
 

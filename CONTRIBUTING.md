@@ -264,6 +264,21 @@ Found a bug? Help us improve!
 
 ---
 
+## 🏷️ Issue Levels
+
+We label issues by difficulty and type to help contributors find the right tasks. Use these levels when filing or triaging issues.
+
+- **beginner** — Great for new contributors. Small, well-scoped tasks with clear instructions (good-first-issue / easy fixes).
+- **intermediate** — Requires some familiarity with the codebase and minor design/logic changes.
+- **advanced** — Involves architecture, refactoring, or larger feature work.
+- **bug** — A reproducible defect; include steps to reproduce and an expected vs actual description.
+- **enhancement** — A non-critical improvement or new feature request.
+- **documentation** — Docs, examples, or README updates.
+- **design** — Changes to UI, web-app visuals, or user experience.
+
+When creating an issue, add one difficulty label (`beginner`, `intermediate`, or `advanced`) and one type label (`type:bug`, `type:feature`, `type:docs`, `type:design`, `type:devops`, `type:refactor`) where appropriate.
+
+
 ## 💡 Suggesting Features
 
 Have an idea? We'd love to hear it!
@@ -297,14 +312,6 @@ Have an idea? We'd love to hear it!
 - **How**: How you implemented it
 - **Testing**: How you tested it (Python + Web if applicable)
 - **Screenshots**: If UI changes (especially for web app)
-
-### Example PR Title
-
-- ✅ Good: `Add: Hangman game with emoji UI and web version`
-- ✅ Good: `Fix: Dice roller emoji display bug in web app`
-- ✅ Good: `Enhance: Add dark mode toggle to web interface`
-- ❌ Bad: `Update`
-- ❌ Bad: `Fixed stuff`
 
 ---
 

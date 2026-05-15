@@ -1,84 +1,50 @@
-
-
 documentation:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.md'
-      - 'docs/**'
+  - '**/*.md'
+  - 'docs/**'
 
 python:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
-
+  - '**/*.py'
 
 github-actions:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '.github/**'
-
+  - '.github/**'
 
 enhancement:
-  - changed-files:
-    - any-glob-to-any-file:
-
-      - 'src/**'
-      - '*/**.py'
+  - 'src/**'
+  - '*/**.py'
 
 beginner:
-  - changed-files:
-
-    - any-glob-to-any-file:
-      - '**/*.md'
+  - '**/*.md'
 
 intermediate:
-
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
-
+  - '**/*.py'
 
 advanced:
-  - changed-files:
-    - any-glob-to-any-file:
-      - '.github/**'
-      - 'tests/**'
+  - '.github/**'
+  - 'tests/**'
 
 "type:design":
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'web-app/**'
-      - 'web-app/*.html'
-      - 'web-app/js/**'
-      - 'web-app/css/**'
+  - 'web-app/**'
+  - 'web-app/*.html'
+  - 'web-app/js/**'
+  - 'web-app/css/**'
 
 "type:feature":
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
+  - '**/*.py'
 
 "type:docs":
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.md'
-      - 'README.html'
-      - 'docs/**'
+  - '**/*.md'
+  - 'README.html'
+  - 'docs/**'
 
 "type:devops":
-  - changed-files:
-    - any-glob-to-any-file:
-      - '.github/**'
-      - '.github/workflows/**'
+  - '.github/**'
+  - '.github/workflows/**'
 
 "type:refactor":
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
-      - 'web-app/**'
+  - '**/*.py'
+  - 'web-app/**'
 
 "type:bug":
-  - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.py'
-      - 'tests/**'
+  - '**/*.py'
+  - 'tests/**'
 
