@@ -1,0 +1,3 @@
+MAX_ATTEMPTS = 8
+
+WORDS = [ "karate", "judo", "taekwondo", "aikido", "kungfu", "muaythai", "capoeira", "boxing", "python", "javascript", "algorithm", "compiler", "debugger", "recursion", "variable", "function", "database", "network", "kernel", "encryption", "github", "docker", "linux", "server", "cloud", "runtime", "binary", "pointer", "thread", "naruto", "sasuke", "goku", "luffy", "zoro", "gojo", "tanjiro", "levi", "eren", "light", "lelouch", "pikachu" ]
