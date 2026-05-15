@@ -62,11 +62,14 @@ backToTopButton.addEventListener('click', () => {
 
 // Category Filtering
 const tabs = document.querySelectorAll('.tab');
+const projectCards = document.querySelectorAll('.project-card');
+
+let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+let currentSearchQuery = '';
+let selectedSuggestionIndex = -1;
+let currentCategory = 'all';
 
 // Category Filtering (tabs)
-
-const projectCards = document.querySelectorAll('.project-card');
-const tabs = document.querySelectorAll('.tab');
 const searchInput = document.getElementById('projectSearch');
 const searchClear = document.getElementById('searchClear');
 const searchDropdown = document.getElementById('searchDropdown');
@@ -171,10 +174,12 @@ function highlightMatch(text, query) {
 
 // Render recent searches
 function renderRecentSearches() {
+    if (!recentSearchesSection) return;
+    
     if (recentSearches.length === 0) {
         recentSearchesSection.style.display = 'none';
-        tipsSection.style.display = 'block';
-        resultsSection.style.display = 'none';
+        if (tipsSection) tipsSection.style.display = 'block';
+        if (resultsSection) resultsSection.style.display = 'none';
         return;
     }
     
