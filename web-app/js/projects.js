@@ -5448,234 +5448,138 @@ function initPasswordForge() {
         }
     });
 }
-// ─────────────────────────────────────────────────────────────────────────────
-// WHACK-A-MOLE — paste both functions into projects.js
-// Then wire them in getProjectHTML() and initializeProject() like other games:
-//
-//   getProjectHTML()     → case 'whack-a-mole': return getWhackaMoleHTML();
-//   initializeProject()  → case 'whack-a-mole': initWhackaMole(); break;
-// ─────────────────────────────────────────────────────────────────────────────
 
-function getWhackaMoleHTML() {
+// ============================================
+// 🧩 NUMBER SLIDING PUZZLE (NEW ADDED GAME)
+// ============================================
+
+function getNumberSlidingPuzzleHTML() {
     return `
         <div class="project-content">
-            <h2>🔨 Whack-a-Mole</h2>
-            <p class="project-desc">Smash every mole before it disappears!</p>
+            <h2>🧩 Number Sliding Puzzle</h2>
 
-            <div class="wam-stats">
-                <div class="wam-stat">🎯 Score<br><span id="wam-score">0</span></div>
-                <div class="wam-stat">⏱️ Time<br><span id="wam-timer">30s</span></div>
-                <div class="wam-stat">🔥 Streak<br><span id="wam-streak">0</span></div>
-                <div class="wam-stat">❌ Misses<br><span id="wam-misses">0</span></div>
-            </div>
+            <div class="game-container">
+                <p>Arrange numbers from 1 to 8 in order</p>
 
-            <div class="wam-difficulty" id="wam-difficulty">
-                <button class="wam-btn-diff active" data-speed="1200" data-window="1000">😊 Easy</button>
-                <button class="wam-btn-diff"        data-speed="800"  data-window="700" >😤 Medium</button>
-                <button class="wam-btn-diff"        data-speed="500"  data-window="450" >🔥 Hard</button>
-            </div>
+                <div id="puzzleBoard" class="puzzle-board"></div>
 
-            <div class="wam-grid" id="wam-grid">
-                ${Array.from({ length: 9 }, (_, i) => `
-                <div class="wam-hole" id="wam-hole-${i}">
-                    <div class="wam-mole" id="wam-mole-${i}">🐭</div>
-                </div>`).join('')}
-            </div>
+                <p>Moves: <span id="moveCount">0</span></p>
 
-            <div class="wam-actions">
-                <button id="wam-start" class="btn-calculate">▶ Start Game</button>
-            </div>
+                <button id="resetPuzzle" class="btn-reset">Restart Game</button>
 
-            <div id="wam-result" class="wam-result" style="display:none">
-                <h3 id="wam-result-title">🏁 Game Over!</h3>
-                <p  id="wam-result-stats"></p>
-                <button id="wam-play-again" class="btn-calculate">Play Again</button>
+                <div id="winMessage"></div>
             </div>
         </div>
-
-        <style>
-            .wam-stats { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; margin:1rem 0; }
-            .wam-stat  { background:var(--card-bg,#1e293b); border-radius:10px;
-                         padding:0.5rem 1rem; font-size:0.8rem;
-                         color:var(--text-secondary); min-width:70px; text-align:center; }
-            .wam-stat span { display:block; font-size:1.3rem; font-weight:700;
-                             color:var(--primary-color,#6366f1); margin-top:2px; }
-
-            .wam-difficulty { text-align:center; margin-bottom:1rem; }
-            .wam-btn-diff   { background:var(--card-bg,#1e293b); border:2px solid transparent;
-                              border-radius:8px; padding:0.4rem 1rem; cursor:pointer;
-                              color:inherit; margin:0.2rem; font-size:0.9rem; transition:all 0.2s; }
-            .wam-btn-diff.active { border-color:var(--primary-color,#6366f1);
-                                   background:rgba(99,102,241,0.15); }
-
-            .wam-grid { display:grid; grid-template-columns:repeat(3,1fr);
-                        gap:12px; max-width:360px; margin:0 auto 1.2rem; }
-
-            .wam-hole { background:var(--card-bg,#1e293b); border-radius:50%;
-                        aspect-ratio:1; display:flex; align-items:flex-end;
-                        justify-content:center; overflow:hidden; cursor:pointer;
-                        border:3px solid transparent; transition:border-color 0.15s; }
-            .wam-hole:hover  { border-color:rgba(99,102,241,0.4); }
-            .wam-hole.active { border-color:var(--primary-color,#6366f1); }
-            .wam-hole.hit    { border-color:#22c55e; animation:wam-pop 0.25s ease; }
-            .wam-hole.miss   { border-color:#ef4444; animation:wam-shake 0.3s ease; }
-
-            .wam-mole { font-size:2.4rem; line-height:1;
-                        transform:translateY(100%);
-                        transition:transform 0.18s cubic-bezier(.34,1.56,.64,1);
-                        pointer-events:none; user-select:none; }
-            .wam-hole.active .wam-mole { transform:translateY(10%); }
-            .wam-hole.hit    .wam-mole,
-            .wam-hole.miss   .wam-mole { transform:translateY(100%); }
-
-            @keyframes wam-pop   { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
-            @keyframes wam-shake { 0%,100%{transform:translateX(0)} 33%{transform:translateX(-5px)} 66%{transform:translateX(5px)} }
-
-            .wam-actions { text-align:center; margin-bottom:1rem; }
-            .wam-result  { padding:1.5rem; background:rgba(99,102,241,0.1);
-                           border:1px solid var(--primary-color,#6366f1);
-                           border-radius:14px; margin-top:0.5rem; text-align:center; }
-            .wam-result h3 { margin:0 0 0.5rem; font-size:1.4rem; }
-            .wam-result p  { margin:0 0 1rem; color:var(--text-secondary); line-height:1.8; }
-        </style>
     `;
 }
 
+// ============================================
+// 🧠 NUMBER SLIDING PUZZLE LOGIC
+// ============================================
 
-function initWhackaMole() {
-    const GAME_DURATION = 30;
+function initNumberSlidingPuzzle() {
+    let moves = 0;
+    let puzzle = [];
 
-    let speed = 1200;
-    let window_ = 1000;
-    let score = 0, misses = 0, streak = 0, bestStreak = 0;
-    let timeLeft = GAME_DURATION;
-    let activeMoles = new Set();
-    let spawnTimer = null;
-    let gameTimer = null;
-    let moleTimers = {};
-    let running = false;
+    function chunk(arr) {
+        return [
+            arr.slice(0, 3),
+            arr.slice(3, 6),
+            arr.slice(6, 9)
+        ];
+    }
 
-    const $ = id => document.getElementById(id);
-    const scoreEl = $('wam-score');
-    const timerEl = $('wam-timer');
-    const streakEl = $('wam-streak');
-    const missEl = $('wam-misses');
-    const resultEl = $('wam-result');
-    const resultTitle = $('wam-result-title');
-    const resultStats = $('wam-result-stats');
-    const startBtn = $('wam-start');
-    const againBtn = $('wam-play-again');
-    const diffEl = $('wam-difficulty');
+    function shuffle() {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 
-    document.querySelectorAll('.wam-btn-diff').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if (running) return;
-            document.querySelectorAll('.wam-btn-diff').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            speed = parseInt(btn.dataset.speed);
-            window_ = parseInt(btn.dataset.window);
+        do {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        } while (JSON.stringify(chunk(arr)) === JSON.stringify([
+            [1,2,3],
+            [4,5,6],
+            [7,8,0]
+        ]));
+
+        return chunk(arr);
+    }
+
+    function render() {
+        const board = document.getElementById("puzzleBoard");
+        const moveText = document.getElementById("moveCount");
+
+        board.innerHTML = "";
+        moveText.textContent = moves;
+
+        puzzle.forEach((row, i) => {
+            row.forEach((val, j) => {
+                const div = document.createElement("div");
+                div.className = "tile";
+
+                if (val === 0) {
+                    div.classList.add("empty");
+                } else {
+                    div.textContent = val;
+                    div.onclick = () => moveTile(i, j);
+                }
+
+                board.appendChild(div);
+            });
         });
-    });
 
-    const getHole = i => $(`wam-hole-${i}`);
-
-    function showMole(i) {
-        getHole(i).classList.add('active');
-        activeMoles.add(i);
-        moleTimers[i] = setTimeout(() => {
-            if (!activeMoles.has(i)) return;
-            hideMole(i, false);
-            misses++;
-            streak = 0;
-            missEl.textContent = misses;
-            streakEl.textContent = streak;
-        }, window_);
+        if (isWin()) {
+            document.getElementById("winMessage").textContent =
+                "🎉 Puzzle Solved!";
+        }
     }
 
-    function hideMole(i, wasHit) {
-        clearTimeout(moleTimers[i]);
-        activeMoles.delete(i);
-        const hole = getHole(i);
-        hole.classList.remove('active');
-        hole.classList.add(wasHit ? 'hit' : 'miss');
-        setTimeout(() => hole.classList.remove('hit', 'miss'), 350);
+    function findEmpty() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (puzzle[i][j] === 0) return [i, j];
+            }
+        }
     }
 
-    function spawnMole() {
-        const free = Array.from({ length: 9 }, (_, i) => i).filter(i => !activeMoles.has(i));
-        if (free.length) showMole(free[Math.floor(Math.random() * free.length)]);
+    function moveTile(i, j) {
+        const [ei, ej] = findEmpty();
+
+        const isAdjacent =
+            (Math.abs(i - ei) === 1 && j === ej) ||
+            (Math.abs(j - ej) === 1 && i === ei);
+
+        if (!isAdjacent) return;
+
+        [puzzle[i][j], puzzle[ei][ej]] = [0, puzzle[i][j]];
+        moves++;
+        render();
     }
 
-    function onWhack(i) {
-        if (!running || !activeMoles.has(i)) return;
-        hideMole(i, true);
-        streak++;
-        if (streak > bestStreak) bestStreak = streak;
-        score += streak >= 5 ? 20 : streak >= 3 ? 15 : 10;
-        scoreEl.textContent = score;
-        streakEl.textContent = streak;
+    function isWin() {
+        let expected = 1;
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (i === 2 && j === 2) {
+                    if (puzzle[i][j] !== 0) return false;
+                } else {
+                    if (puzzle[i][j] !== expected++) return false;
+                }
+            }
+        }
+        return true;
     }
 
-    for (let i = 0; i < 9; i++) {
-        (idx => getHole(idx).addEventListener('click', () => onWhack(idx)))(i);
+    function resetGame() {
+        moves = 0;
+        puzzle = shuffle();
+        document.getElementById("winMessage").textContent = "";
+        render();
     }
 
-    function startGame() {
-        score = misses = streak = bestStreak = 0;
-        timeLeft = GAME_DURATION;
-        activeMoles.clear();
-        Object.values(moleTimers).forEach(clearTimeout);
-        moleTimers = {};
-        running = true;
+    document.getElementById("resetPuzzle").onclick = resetGame;
 
-        for (let i = 0; i < 9; i++) getHole(i).classList.remove('active', 'hit', 'miss');
-        scoreEl.textContent = '0';
-        streakEl.textContent = '0';
-        missEl.textContent = '0';
-        timerEl.textContent = `${GAME_DURATION}s`;
-        resultEl.style.display = 'none';
-        startBtn.style.display = 'none';
-        diffEl.style.display = 'none';
-
-        gameTimer = setInterval(() => {
-            timeLeft--;
-            timerEl.textContent = `${timeLeft}s`;
-            if (timeLeft <= 0) endGame();
-        }, 1000);
-
-        spawnMole();
-        spawnTimer = setInterval(spawnMole, speed);
-    }
-
-    function endGame() {
-        running = false;
-        clearInterval(gameTimer);
-        clearInterval(spawnTimer);
-        Object.values(moleTimers).forEach(clearTimeout);
-        [...activeMoles].forEach(i => getHole(i).classList.remove('active'));
-        activeMoles.clear();
-
-        const acc = (score + misses * 10) > 0
-            ? Math.round((score / (score + misses * 10)) * 100)
-            : 0;
-        const grade = acc >= 85 ? '🌟 Legendary!'
-            : acc >= 65 ? '👏 Sharp reflexes!'
-                : acc >= 45 ? '😅 Keep practising!'
-                    : '🐭 Moles win!';
-
-        resultTitle.textContent = '🏁 Game Over!';
-        resultStats.innerHTML =
-            `🎯 Score: <b>${score}</b><br>` +
-            `❌ Misses: <b>${misses}</b><br>` +
-            `🔥 Best Streak: <b>${bestStreak}</b><br>` +
-            `📊 Accuracy: <b>${acc}%</b><br><br>${grade}`;
-        resultEl.style.display = 'block';
-    }
-
-    startBtn.addEventListener('click', startGame);
-    againBtn.addEventListener('click', () => {
-        resultEl.style.display = 'none';
-        startBtn.style.display = 'inline-block';
-        diffEl.style.display = 'block';
-    });
+    resetGame();
 }
