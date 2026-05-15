@@ -22,6 +22,7 @@ function getProjectHTML(projectName) {
         'tower-of-hanoi': getTowerOfHanoiHTML(),
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
+        'number-sliding-puzzle': getNumberSlidingPuzzleHTML(),
     };
     
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
@@ -48,6 +49,7 @@ function initializeProject(projectName) {
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
         'snake-game': initSnakeGame,
+        'number-sliding-puzzle': initNumberSlidingPuzzle,
     };
     
     if (initializers[projectName]) {
@@ -4940,4 +4942,139 @@ function initPasswordForge() {
             result.textContent = "❌ Password does not meet all rules!";
         }
     });
+}
+
+// ============================================
+// 🧩 NUMBER SLIDING PUZZLE (NEW ADDED GAME)
+// ============================================
+
+function getNumberSlidingPuzzleHTML() {
+    return `
+        <div class="project-content">
+            <h2>🧩 Number Sliding Puzzle</h2>
+
+            <div class="game-container">
+                <p>Arrange numbers from 1 to 8 in order</p>
+
+                <div id="puzzleBoard" class="puzzle-board"></div>
+
+                <p>Moves: <span id="moveCount">0</span></p>
+
+                <button id="resetPuzzle" class="btn-reset">Restart Game</button>
+
+                <div id="winMessage"></div>
+            </div>
+        </div>
+    `;
+}
+
+// ============================================
+// 🧠 NUMBER SLIDING PUZZLE LOGIC
+// ============================================
+
+function initNumberSlidingPuzzle() {
+    let moves = 0;
+    let puzzle = [];
+
+    function chunk(arr) {
+        return [
+            arr.slice(0, 3),
+            arr.slice(3, 6),
+            arr.slice(6, 9)
+        ];
+    }
+
+    function shuffle() {
+        let arr = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+
+        do {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+        } while (JSON.stringify(chunk(arr)) === JSON.stringify([
+            [1,2,3],
+            [4,5,6],
+            [7,8,0]
+        ]));
+
+        return chunk(arr);
+    }
+
+    function render() {
+        const board = document.getElementById("puzzleBoard");
+        const moveText = document.getElementById("moveCount");
+
+        board.innerHTML = "";
+        moveText.textContent = moves;
+
+        puzzle.forEach((row, i) => {
+            row.forEach((val, j) => {
+                const div = document.createElement("div");
+                div.className = "tile";
+
+                if (val === 0) {
+                    div.classList.add("empty");
+                } else {
+                    div.textContent = val;
+                    div.onclick = () => moveTile(i, j);
+                }
+
+                board.appendChild(div);
+            });
+        });
+
+        if (isWin()) {
+            document.getElementById("winMessage").textContent =
+                "🎉 Puzzle Solved!";
+        }
+    }
+
+    function findEmpty() {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (puzzle[i][j] === 0) return [i, j];
+            }
+        }
+    }
+
+    function moveTile(i, j) {
+        const [ei, ej] = findEmpty();
+
+        const isAdjacent =
+            (Math.abs(i - ei) === 1 && j === ej) ||
+            (Math.abs(j - ej) === 1 && i === ei);
+
+        if (!isAdjacent) return;
+
+        [puzzle[i][j], puzzle[ei][ej]] = [0, puzzle[i][j]];
+        moves++;
+        render();
+    }
+
+    function isWin() {
+        let expected = 1;
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                if (i === 2 && j === 2) {
+                    if (puzzle[i][j] !== 0) return false;
+                } else {
+                    if (puzzle[i][j] !== expected++) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function resetGame() {
+        moves = 0;
+        puzzle = shuffle();
+        document.getElementById("winMessage").textContent = "";
+        render();
+    }
+
+    document.getElementById("resetPuzzle").onclick = resetGame;
+
+    resetGame();
 }
