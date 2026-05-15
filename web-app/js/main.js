@@ -45,29 +45,39 @@ themeToggle.innerHTML =
         : '<i class="fas fa-moon" aria-hidden="true"></i>';
 updateThemeToggleAria(savedTheme === 'light');
 
+// Audio Controller Setup
+const soundToggle = document.getElementById('soundToggle');
 
-// Back to Top Button
-const backToTopButton = document.getElementById('backToTop');
+function updateSoundToggleUI(isMuted) {
+    soundToggle.innerHTML = isMuted
+        ? '<i class="fas fa-volume-mute" aria-hidden="true"></i>'
+        : '<i class="fas fa-volume-up" aria-hidden="true"></i>';
+    soundToggle.setAttribute('aria-label', isMuted ? 'Unmute sounds' : 'Mute sounds');
+}
 
-const toggleBackToTopButton = () => {
-    backToTopButton.classList.toggle('visible', window.scrollY > 300);
-};
+// Initial UI state
+updateSoundToggleUI(audioController.isMuted);
 
-window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
-toggleBackToTopButton();
-
-backToTopButton.addEventListener('click', () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+// Toggle sound
+soundToggle.addEventListener('click', () => {
+    const isMuted = audioController.toggleMute();
+    updateSoundToggleUI(isMuted);
+    // Play a click sound if unmuted
+    if (!isMuted) {
+        audioController.play('click');
+    }
 });
 
 // Category Filtering
 // const tabs = document.querySelectorAll('.tab');
 
-// Category Filtering (tabs)
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+document.addEventListener('touchstart', initAudio);
 
+// Filtering Logic
+const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
 const projectCards = document.querySelectorAll('.project-card');
-const tabs = document.querySelectorAll('.tab');
 const searchInput = document.getElementById('projectSearch');
 const searchClear = document.getElementById('searchClear');
 const searchDropdown = document.getElementById('searchDropdown');
@@ -77,6 +87,16 @@ const emptyState = document.getElementById('emptyState');
 const resultsList = document.getElementById('resultsList');
 const resultsSection = document.getElementById('resultsSection');
 const recentSearchesList = document.getElementById('recentSearchesList');
+let recentSearches = [];
+try {
+    const parsed = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    recentSearches = Array.isArray(parsed) ? parsed : [];
+} catch (e) {
+    recentSearches = [];
+}
+let currentCategory = 'all';
+let currentSearchQuery = '';
+let selectedSuggestionIndex = -1;
 const recentSearchesSection = document.getElementById('recentSearchesSection');
 const tipsSection = document.getElementById('tipsSection');
 
@@ -89,76 +109,16 @@ function debounce(func, delay) {
     };
 }
 
-// Get all matching projects for search query
-function getMatchingProjects(query) {
-    if (!query) return [];
-    
-    const matches = [];
-    projectCards.forEach(card => {
+function filterProjects() {
+    let visibleCount = 0;
+
+    projectCards.forEach((card) => {
         const category = card.getAttribute('data-category');
         const title = card.querySelector('h3').textContent.toLowerCase();
         const description = card.querySelector('p').textContent.toLowerCase();
-        const tags = (card.getAttribute('data-tags') || '').toLowerCase();
-        
-        const categoryMatch = currentCategory === 'all' || category === currentCategory;
-        const searchMatch = title.includes(query) || 
-                           description.includes(query) || 
-                           tags.includes(query);
-        
-        if (categoryMatch && searchMatch) {
-            const project = {
-                card: card,
-                title: card.querySelector('h3').textContent,
-                tags: card.getAttribute('data-tags') || '',
-                category: category
-            };
-            matches.push(project);
-        }
-    });
-    
-    return matches;
-}
 
-// Render autocomplete suggestions
-function renderSuggestions(query) {
-    if (!query) {
-        renderRecentSearches();
-        return;
-    }
-    
-    const matches = getMatchingProjects(query);
-    
-    if (matches.length === 0) {
-        resultsSection.style.display = 'none';
-        recentSearchesSection.style.display = 'none';
-        tipsSection.style.display = 'block';
-        return;
-    }
-    
-    resultsList.innerHTML = '';
-    matches.slice(0, 8).forEach((project, index) => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item' + (index === selectedSuggestionIndex ? ' selected' : '');
-        item.innerHTML = `
-            <div class="dropdown-item-icon">
-                ${project.card.querySelector('.card-icon').textContent}
-            </div>
-            <div class="dropdown-item-text">${highlightMatch(project.title, query)}</div>
-            <span class="dropdown-item-tag">${project.category}</span>
-        `;
-        item.addEventListener('click', () => selectSuggestion(project.title));
-        item.addEventListener('mouseenter', () => {
-            selectedSuggestionIndex = index;
-            updateSuggestionHighlight();
-        });
-        resultsList.appendChild(item);
-    });
-    
-    resultsSection.style.display = 'block';
-    recentSearchesSection.style.display = 'none';
-    tipsSection.style.display = 'none';
-    selectedSuggestionIndex = -1;
-}
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesSearch = title.includes(searchQuery) || description.includes(searchQuery);
 
 // Highlight matching text in suggestions
 function highlightMatch(text, query) {
@@ -238,10 +198,18 @@ function applyCategoryFilter(category) {
             } else {
                 card.style.animation = 'none';
             }
+            visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
 }
 
 function moveTabFocus(fromIndex, delta) {
@@ -254,7 +222,8 @@ function moveTabFocus(fromIndex, delta) {
         t.setAttribute('tabindex', selected ? '0' : '-1');
     });
     tabs[next].focus();
-    applyCategoryFilter(tabs[next].getAttribute('data-category'));
+    activeCategory = tabs[next].getAttribute('data-category');
+    filterProjects();
 }
 
 tabs.forEach((tab, index) => {
@@ -265,7 +234,8 @@ tabs.forEach((tab, index) => {
             t.setAttribute('aria-selected', selected ? 'true' : 'false');
             t.setAttribute('tabindex', selected ? '0' : '-1');
         });
-        applyCategoryFilter(tab.getAttribute('data-category'));
+        activeCategory = tab.getAttribute('data-category');
+        filterProjects();
     });
 
     tab.addEventListener('keydown', (e) => {
@@ -290,7 +260,8 @@ tabs.forEach((tab, index) => {
 });
 
 // Initialize
-renderRecentSearches();
+// renderRecentSearches() disabled: recentSearchesSection element
+// does not exist in current HTML, causing null reference error.
 
 // Modal Management
 const modal = document.getElementById('projectModal');
