@@ -160,6 +160,76 @@ body {
     color: white;
 }
 
+/* Tabs Wrapper */
+.tabs-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.tabs-wrapper .tabs {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Random Project Button */
+.btn-random-project {
+    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    border: 2px solid var(--secondary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-random-project:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+}
+
+.btn-random-project:active {
+    transform: translateY(0);
+}
+
+/* Shuffle Animation */
+@keyframes shuffle {
+    0% {
+        transform: rotateZ(0deg) scale(1);
+    }
+    25% {
+        transform: rotateZ(-10deg) scale(1.05);
+    }
+    50% {
+        transform: rotateZ(10deg) scale(1.05);
+    }
+    75% {
+        transform: rotateZ(-5deg) scale(1.05);
+    }
+    100% {
+        transform: rotateZ(0deg) scale(1);
+    }
+}
+
+.btn-random-project.shuffle {
+    animation: shuffle 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-random-project i {
+    font-size: 1.1rem;
+}
+
 /* Projects Section */
 .projects-section {
     padding: 4rem 0;
@@ -364,6 +434,16 @@ body {
         grid-template-columns: 1fr;
     }
     
+    .tabs-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .tabs-wrapper .tabs {
+        min-width: unset;
+    }
+    
     .tabs {
         gap: 0.5rem;
     }
@@ -371,6 +451,12 @@ body {
     .tab {
         padding: 0.5rem 1rem;
         font-size: 0.9rem;
+    }
+    
+    .btn-random-project {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
     }
 }
 

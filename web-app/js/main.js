@@ -75,6 +75,46 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Random Project Generator
+const randomProjectBtn = document.getElementById('randomProjectBtn');
+
+function getRandomProject() {
+    // Get all visible project cards (based on current filter)
+    const visibleCards = Array.from(projectCards).filter(card => {
+        return card.style.display !== 'none';
+    });
+    
+    if (visibleCards.length === 0) {
+        // If no cards are visible (shouldn't happen), get all cards
+        return projectCards[Math.floor(Math.random() * projectCards.length)];
+    }
+    
+    return visibleCards[Math.floor(Math.random() * visibleCards.length)];
+}
+
+function selectRandomProject() {
+    const randomCard = getRandomProject();
+    
+    // Add shuffle animation to the button
+    randomProjectBtn.classList.add('shuffle');
+    
+    // Remove animation class after it completes
+    setTimeout(() => {
+        randomProjectBtn.classList.remove('shuffle');
+    }, 600);
+    
+    // Open the random project after a short delay for effect
+    setTimeout(() => {
+        const projectName = randomCard.getAttribute('data-project');
+        openProject(projectName);
+        
+        // Optional: Scroll to project card smoothly
+        randomCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+}
+
+randomProjectBtn.addEventListener('click', selectRandomProject);
+
 // Open Project Modal
 projectCards.forEach(card => {
     const playButton = card.querySelector('.btn-play');
