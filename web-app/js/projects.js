@@ -22,8 +22,9 @@ function getProjectHTML(projectName) {
         'tower-of-hanoi': getTowerOfHanoiHTML(),
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
+        'whack-a-mole': getWhackaMoleHTML(),
     };
-    
+
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
 }
 
@@ -48,8 +49,9 @@ function initializeProject(projectName) {
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
         'snake-game': initSnakeGame,
+        'whack-a-mole': initWhackaMole,
     };
-    
+
     if (initializers[projectName]) {
         initializers[projectName]();
     }
@@ -229,20 +231,20 @@ function getRockPaperScissorHTML() {
 function initRockPaperScissor() {
     let playerScore = 0;
     let computerScore = 0;
-    
+
     const choices = ['rock', 'paper', 'scissors'];
     const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
-    
+
     const choiceBtns = document.querySelectorAll('.choice-btn');
     const resetBtn = document.getElementById('resetRPS');
-    
+
     choiceBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const playerChoice = btn.getAttribute('data-choice');
             playRound(playerChoice);
         });
     });
-    
+
     resetBtn.addEventListener('click', () => {
         playerScore = 0;
         computerScore = 0;
@@ -251,15 +253,15 @@ function initRockPaperScissor() {
         document.getElementById('playerChoice').textContent = '❓';
         document.getElementById('computerChoice').textContent = '❓';
     });
-    
+
     function playRound(playerChoice) {
         const computerChoice = choices[Math.floor(Math.random() * 3)];
-        
+
         document.getElementById('playerChoice').textContent = emojis[playerChoice];
         document.getElementById('computerChoice').textContent = emojis[computerChoice];
-        
+
         let result = '';
-        
+
         if (playerChoice === computerChoice) {
             result = "It's a tie! 🤝";
         } else if (
@@ -273,11 +275,11 @@ function initRockPaperScissor() {
             result = 'Computer wins! 🤖';
             computerScore++;
         }
-        
+
         document.getElementById('resultMessage').textContent = result;
         updateScore();
     }
-    
+
     function updateScore() {
         document.getElementById('playerScore').textContent = playerScore;
         document.getElementById('computerScore').textContent = computerScore;
@@ -538,7 +540,7 @@ function initDiceRolling() {
     setCubeFace(dice1, 1, 0);
     setCubeFace(dice2, 1, 1);
     totalDisplay.textContent = '2';
-    
+
     rollBtn.addEventListener('click', () => {
         rollBtn.disabled = true;
         diceScene1.classList.add('rolling');
@@ -763,16 +765,16 @@ function initCoinFlip() {
             coinScene.classList.remove('impact');
         }, 460);
     }
-    
+
     flipBtn.addEventListener('click', () => {
         flipBtn.disabled = true;
         result.textContent = 'Flipping...';
         coinScene.classList.add('rolling');
-        
+
         const isHeads = Math.random() < 0.5;
         spinCount += 1;
         setCoinFace(isHeads, spinCount);
-        
+
         setTimeout(() => {
             coinScene.classList.remove('rolling');
             triggerCoinLanding();
@@ -887,19 +889,19 @@ function initNumberGuessing() {
     let attempts = 0;
     let minRange = 1;
     let maxRange = 100;
-    
+
     const guessInput = document.getElementById('guessInput');
     const submitBtn = document.getElementById('submitGuess');
     const feedback = document.getElementById('feedback');
     const attemptsDisplay = document.getElementById('attempts');
     const rangeDisplay = document.getElementById('range');
     const resetBtn = document.getElementById('resetGuessing');
-    
+
     submitBtn.addEventListener('click', makeGuess);
     guessInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') makeGuess();
     });
-    
+
     resetBtn.addEventListener('click', () => {
         secretNumber = Math.floor(Math.random() * 100) + 1;
         attempts = 0;
@@ -912,7 +914,7 @@ function initNumberGuessing() {
         guessInput.disabled = false;
         submitBtn.disabled = false;
     });
-    
+
     function makeGuess() {
         const guess = parseInt(guessInput.value);
         if (guess < minRange || guess > maxRange) {
@@ -920,17 +922,17 @@ function initNumberGuessing() {
             feedback.style.color = 'var(--warning-color)';
             return;
         }
-        
+
         if (isNaN(guess) || guess < 1 || guess > 100) {
             feedback.textContent = '⚠️ Please enter a number between 1 and 100!';
             feedback.style.color = 'var(--warning-color)';
             return;
         }
-        
+
         attempts++;
         attemptsDisplay.textContent = attempts;
         const difference = Math.abs(guess - secretNumber);
-        
+
         if (guess === secretNumber) {
             feedback.textContent = `🎉 Congratulations! You found it in ${attempts} attempts!`;
             feedback.style.color = 'var(--success-color)';
@@ -939,7 +941,7 @@ function initNumberGuessing() {
         } else if (guess < secretNumber) {
             if (difference <= 5) {
                 feedback.textContent = '📈 Slightly low! Try a bit higher!';
-            }else {
+            } else {
                 feedback.textContent = '📈 Too low! Try higher!';
             }
             feedback.style.color = 'var(--primary-color)';
@@ -953,7 +955,7 @@ function initNumberGuessing() {
             feedback.style.color = 'var(--danger-color)';
             maxRange = Math.min(maxRange, guess - 1);
         }
-        
+
         rangeDisplay.textContent = `${minRange}-${maxRange}`;
         guessInput.value = '';
     }
@@ -1063,36 +1065,36 @@ function initPascalTriangle() {
     const rowsInput = document.getElementById('pascalRows');
     const generateBtn = document.getElementById('generatePascal');
     const display = document.getElementById('pascalDisplay');
-    
+
     function generatePascal() {
         const rows = parseInt(rowsInput.value) || 7;
         display.innerHTML = '';
-        
+
         const triangle = [];
-        
+
         for (let i = 0; i < rows; i++) {
             triangle[i] = [];
             const row = document.createElement('div');
             row.className = 'pascal-row';
-            
+
             for (let j = 0; j <= i; j++) {
                 if (j === 0 || j === i) {
                     triangle[i][j] = 1;
                 } else {
-                    triangle[i][j] = triangle[i-1][j-1] + triangle[i-1][j];
+                    triangle[i][j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
                 }
-                
+
                 const hexagon = document.createElement('div');
                 hexagon.className = 'hexagon';
                 hexagon.innerHTML = `<div class="hexagon-inner">${triangle[i][j]}</div>`;
                 hexagon.style.animationDelay = `${(i + j) * 0.05}s`;
                 row.appendChild(hexagon);
             }
-            
+
             display.appendChild(row);
         }
     }
-    
+
     generateBtn.addEventListener('click', generatePascal);
     generatePascal(); // Initial generation
 }
@@ -1211,22 +1213,22 @@ function initCalculator() {
     let currentValue = '0';
     let previousValue = '';
     let operation = '';
-    
+
     document.querySelectorAll('.calc-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const value = btn.getAttribute('data-value');
             const action = btn.getAttribute('data-action');
-            
+
             if (value) {
                 handleNumber(value);
             } else if (action) {
                 handleAction(action);
             }
-            
+
             updateDisplay();
         });
     });
-    
+
     function handleNumber(num) {
         if (currentValue === '0' || currentValue === 'Error') {
             currentValue = num;
@@ -1234,7 +1236,7 @@ function initCalculator() {
             currentValue += num;
         }
     }
-    
+
     function handleAction(action) {
         if (action === 'clear') {
             currentValue = '0';
@@ -1253,13 +1255,13 @@ function initCalculator() {
             operation = action;
         }
     }
-    
+
     function calculate() {
         try {
             const prev = parseFloat(previousValue);
             const curr = parseFloat(currentValue);
             let result;
-            
+
             switch (operation) {
                 case '+': result = prev + curr; break;
                 case '-': result = prev - curr; break;
@@ -1268,7 +1270,7 @@ function initCalculator() {
                 case '**': result = Math.pow(prev, curr); break;
                 default: return;
             }
-            
+
             currentValue = result.toString();
             previousValue = '';
             operation = '';
@@ -1276,7 +1278,7 @@ function initCalculator() {
             currentValue = 'Error';
         }
     }
-    
+
     function updateDisplay() {
         display.textContent = currentValue;
     }
@@ -1345,16 +1347,16 @@ function initFibonacci() {
     const display = document.getElementById('fibDisplay');
     const canvas = document.getElementById('fibSpiral');
     const ctx = canvas.getContext('2d');
-    
+
     function generateFibonacci() {
         const n = parseInt(termsInput.value) || 10;
         display.innerHTML = '';
-        
+
         let fib = [0, 1];
         for (let i = 2; i < n; i++) {
-            fib[i] = fib[i-1] + fib[i-2];
+            fib[i] = fib[i - 1] + fib[i - 2];
         }
-        
+
         fib.slice(0, n).forEach((num, index) => {
             const numEl = document.createElement('div');
             numEl.className = 'fib-number';
@@ -1362,51 +1364,51 @@ function initFibonacci() {
             numEl.style.animationDelay = `${index * 0.1}s`;
             display.appendChild(numEl);
         });
-        
+
         drawSpiral(fib.slice(0, Math.min(n, 12)));
     }
-    
+
     function drawSpiral(fib) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 3;
-        
+
         const scale = 5;
         let x = 300, y = 300;
         let direction = 0; // 0: right, 1: up, 2: left, 3: down
-        
+
         const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
-        
+
         fib.forEach((num, i) => {
             const size = num * scale;
             ctx.strokeStyle = colors[i % colors.length];
             ctx.fillStyle = colors[i % colors.length] + '20';
-            
+
             // Draw square
             ctx.fillRect(x, y, size, size);
             ctx.strokeRect(x, y, size, size);
-            
+
             // Draw arc
             ctx.beginPath();
             const arcX = direction === 0 ? x + size : direction === 2 ? x : x;
             const arcY = direction === 1 ? y : direction === 3 ? y + size : y;
-            
-            ctx.arc(arcX, arcY, size, 
-                Math.PI * direction / 2, 
+
+            ctx.arc(arcX, arcY, size,
+                Math.PI * direction / 2,
                 Math.PI * (direction + 1) / 2);
             ctx.stroke();
-            
+
             // Update position for next square
-            switch(direction) {
-                case 0: y -= fib[i+1] * scale; break;
+            switch (direction) {
+                case 0: y -= fib[i + 1] * scale; break;
                 case 1: x -= size; break;
-                case 2: y -= size; x -= fib[i+1] * scale; break;
+                case 2: y -= size; x -= fib[i + 1] * scale; break;
                 case 3: x += size; break;
             }
-            
+
             direction = (direction + 1) % 4;
         });
     }
-    
+
     generateBtn.addEventListener('click', generateFibonacci);
     generateFibonacci();
 }
@@ -1571,7 +1573,7 @@ function initFlames() {
     const name2Input = document.getElementById('name2');
     const calculateBtn = document.getElementById('calculateFlames');
     const resultDiv = document.getElementById('flamesResult');
-    
+
     const relationshipData = {
         'F': { name: 'Friends', emoji: '👫', message: 'You two are best friends forever!' },
         'L': { name: 'Love', emoji: '❤️', message: 'True love is in the air!' },
@@ -1580,23 +1582,23 @@ function initFlames() {
         'E': { name: 'Enemies', emoji: '😠', message: 'Maybe not the best match...' },
         'S': { name: 'Siblings', emoji: '👨‍👩‍👧', message: 'Like brother and sister!' }
     };
-    
+
     function calculateFlames() {
         const name1 = name1Input.value.toLowerCase().replace(/\s/g, '');
         const name2 = name2Input.value.toLowerCase().replace(/\s/g, '');
-        
+
         if (!name1 || !name2) {
             resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter both names!</p>';
             return;
         }
-        
+
         const originalName1 = name1Input.value.trim();
         const originalName2 = name2Input.value.trim();
-        
+
         // Convert to arrays
         let name1List = name1.split('');
         let name2List = name2.split('');
-        
+
         // Remove common characters
         const name1Copy = [...name1List];
         for (let char of name1Copy) {
@@ -1606,13 +1608,13 @@ function initFlames() {
                 name2List.splice(index2, 1);
             }
         }
-        
+
         const count = name1List.length + name2List.length;
-        
+
         // Calculate FLAMES
         const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
         let index = 0;
-        
+
         while (flames.length > 1) {
             index = (index + count - 1) % flames.length;
             flames.splice(index, 1);
@@ -1620,10 +1622,10 @@ function initFlames() {
                 index = 0;
             }
         }
-        
+
         const result = flames[0];
         const relationship = relationshipData[result];
-        
+
         // Display result with animation
         resultDiv.innerHTML = `
             <div class="result-card">
@@ -1639,7 +1641,7 @@ function initFlames() {
             </div>
         `;
     }
-    
+
     calculateBtn.addEventListener('click', calculateFlames);
     name1Input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') calculateFlames();
@@ -1800,22 +1802,22 @@ function initCollatz() {
     const sequenceDiv = document.getElementById('sequenceDisplay');
     const canvas = document.getElementById('collatzGraph');
     const ctx = canvas.getContext('2d');
-    
+
     function generateSequence() {
         let number = parseInt(numberInput.value);
-        
+
         if (!number || number < 1) {
             sequenceDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter a positive integer!</p>';
             statsDiv.innerHTML = '';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             return;
         }
-        
+
         const originalNumber = number;
         const sequence = [number];
         const maxSteps = 20000;
         let steps = 0;
-        
+
         // Generate sequence with a safety limit
         while (number !== 1 && steps < maxSteps) {
             if (number % 2 === 0) {
@@ -1828,11 +1830,11 @@ function initCollatz() {
         }
 
         const reachedOne = number === 1;
-        
+
         // Display stats
         const maxNum = Math.max(...sequence);
         const statusText = reachedOne ? 'Reached 1 ✅' : `Not reached in ${maxSteps} steps ❌`;
-        
+
         statsDiv.innerHTML = `
             <div class="stat-box">
                 <div class="stat-label">Starting Number</div>
@@ -1851,7 +1853,7 @@ function initCollatz() {
                 <div class="stat-value">${maxNum}</div>
             </div>
         `;
-        
+
         // Display sequence
         sequenceDiv.innerHTML = reachedOne
             ? '<p style="margin-bottom: 1rem; color: var(--success-color); font-weight: 600;">✅ This number reaches 1.</p>'
@@ -1862,7 +1864,7 @@ function initCollatz() {
             numEl.textContent = num;
             numEl.style.animationDelay = `${index * 0.02}s`;
             sequenceDiv.appendChild(numEl);
-            
+
             if (index < sequence.length - 1) {
                 const arrow = document.createElement('span');
                 arrow.className = 'sequence-arrow';
@@ -1870,24 +1872,24 @@ function initCollatz() {
                 sequenceDiv.appendChild(arrow);
             }
         });
-        
+
         // Draw graph for the generated sequence
         drawGraph(sequence);
     }
-    
+
     function drawGraph(sequence) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         if (sequence.length === 0) return;
-        
+
         const padding = 40;
         const graphWidth = canvas.width - 2 * padding;
         const graphHeight = canvas.height - 2 * padding;
-        
+
         const maxValue = Math.max(...sequence);
         const xStep = graphWidth / (sequence.length - 1);
         const yScale = graphHeight / maxValue;
-        
+
         // Draw axes
         ctx.strokeStyle = 'var(--text-secondary)';
         ctx.lineWidth = 2;
@@ -1896,7 +1898,7 @@ function initCollatz() {
         ctx.lineTo(padding, canvas.height - padding);
         ctx.lineTo(canvas.width - padding, canvas.height - padding);
         ctx.stroke();
-        
+
         // Draw grid lines
         ctx.strokeStyle = 'rgba(100, 116, 139, 0.2)';
         ctx.lineWidth = 1;
@@ -1907,18 +1909,18 @@ function initCollatz() {
             ctx.lineTo(canvas.width - padding, y);
             ctx.stroke();
         }
-        
+
         // Draw line
         ctx.strokeStyle = '#6366f1';
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        
+
         ctx.beginPath();
         sequence.forEach((value, index) => {
             const x = padding + index * xStep;
             const y = canvas.height - padding - value * yScale;
-            
+
             if (index === 0) {
                 ctx.moveTo(x, y);
             } else {
@@ -1926,41 +1928,41 @@ function initCollatz() {
             }
         });
         ctx.stroke();
-        
+
         // Draw points
         ctx.fillStyle = '#8b5cf6';
         sequence.forEach((value, index) => {
             const x = padding + index * xStep;
             const y = canvas.height - padding - value * yScale;
-            
+
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
         });
-        
+
         // Draw labels
         ctx.fillStyle = '#94a3b8';
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Steps →', canvas.width / 2, canvas.height - 10);
-        
+
         ctx.save();
         ctx.translate(15, canvas.height / 2);
         ctx.rotate(-Math.PI / 2);
         ctx.fillText('Value', 0, 0);
         ctx.restore();
     }
-    
+
     generateBtn.addEventListener('click', generateSequence);
     numberInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') generateSequence();
     });
-    
+
     // Generate initial sequence
     generateSequence();
 }
 
-function getArmstrongHTML() { 
+function getArmstrongHTML() {
     return `
         <div class="project-content">
             <h2>💎 Armstrong Number Checker</h2>
@@ -2107,29 +2109,29 @@ function initArmstrong() {
     const checkBtn = document.getElementById('checkArmstrong');
     const resultDiv = document.getElementById('armstrongResult');
     const exampleBtns = document.querySelectorAll('.example-btn');
-    
+
     function checkArmstrong(num) {
         if (num === null || num === undefined || num < 0) {
             resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter a valid positive number!</p>';
             return;
         }
-        
+
         const numStr = num.toString();
         const numDigits = numStr.length;
         const digits = numStr.split('').map(Number);
-        
+
         // Calculate sum
         let sum = 0;
         const calculations = [];
-        
+
         digits.forEach(digit => {
             const power = Math.pow(digit, numDigits);
             sum += power;
             calculations.push({ digit, power });
         });
-        
+
         const isArmstrong = sum === num;
-        
+
         // Display result
         let html = `
             <div class="armstrong-result">
@@ -2145,7 +2147,7 @@ function initArmstrong() {
                 
                 <div class="digit-breakdown">
         `;
-        
+
         calculations.forEach(calc => {
             html += `
                 <div class="digit-card">
@@ -2154,7 +2156,7 @@ function initArmstrong() {
                 </div>
             `;
         });
-        
+
         html += `
                 </div>
                 
@@ -2163,30 +2165,30 @@ function initArmstrong() {
                         <strong>Sum:</strong> ${calculations.map(c => c.power).join(' + ')} = ${sum}
                     </div>
                     <div class="step">
-                        ${isArmstrong 
-                            ? `<span style="color: var(--success-color);">✓ ${sum} = ${num} (Armstrong Number!)</span>`
-                            : `<span style="color: var(--danger-color);">✗ ${sum} ≠ ${num} (Not Armstrong)</span>`
-                        }
+                        ${isArmstrong
+                ? `<span style="color: var(--success-color);">✓ ${sum} = ${num} (Armstrong Number!)</span>`
+                : `<span style="color: var(--danger-color);">✗ ${sum} ≠ ${num} (Not Armstrong)</span>`
+            }
                     </div>
                 </div>
             </div>
         `;
-        
+
         resultDiv.innerHTML = html;
     }
-    
+
     checkBtn.addEventListener('click', () => {
         const num = parseInt(numberInput.value);
         checkArmstrong(num);
     });
-    
+
     numberInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             const num = parseInt(numberInput.value);
             checkArmstrong(num);
         }
     });
-    
+
     exampleBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const num = parseInt(btn.getAttribute('data-num'));
@@ -2402,23 +2404,23 @@ function initHangman() {
     const keyboard = document.getElementById('keyboard');
     const gameMessage = document.getElementById('gameMessage');
     const newGameBtn = document.getElementById('newGameBtn');
-    
-    const words = ['python', 'programming', 'computer', 'algorithm', 'keyboard', 
-                   'monitor', 'software', 'hardware', 'database', 'network',
-                   'internet', 'developer', 'variable', 'function', 'application'];
-    
+
+    const words = ['python', 'programming', 'computer', 'algorithm', 'keyboard',
+        'monitor', 'software', 'hardware', 'database', 'network',
+        'internet', 'developer', 'variable', 'function', 'application'];
+
     let currentWord = '';
     let guessedLetters = [];
     let correctLetters = [];
     let wrongAttempts = 0;
     const maxAttempts = 6;
     let gameOver = false;
-    
+
     // Create keyboard
     function createKeyboard() {
         keyboard.innerHTML = '';
         const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-        
+
         letters.forEach(letter => {
             const btn = document.createElement('button');
             btn.className = 'key-btn';
@@ -2428,14 +2430,14 @@ function initHangman() {
             keyboard.appendChild(btn);
         });
     }
-    
+
     // Draw hangman parts
     function drawHangman(stage) {
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
-        
-        switch(stage) {
+
+        switch (stage) {
             case 1: // Base
                 ctx.beginPath();
                 ctx.moveTo(50, 320);
@@ -2509,7 +2511,7 @@ function initHangman() {
                 break;
         }
     }
-    
+
     // Initialize game
     function initGame() {
         currentWord = words[Math.floor(Math.random() * words.length)];
@@ -2517,21 +2519,21 @@ function initHangman() {
         correctLetters = [];
         wrongAttempts = 0;
         gameOver = false;
-        
+
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Update UI
         wordLengthEl.textContent = currentWord.length;
         attemptsLeftEl.textContent = maxAttempts;
         guessedList.textContent = 'None';
         gameMessage.textContent = '';
         gameMessage.className = 'game-message';
-        
+
         createKeyboard();
         updateWordDisplay();
     }
-    
+
     // Update word display
     function updateWordDisplay() {
         wordDisplay.innerHTML = '';
@@ -2542,24 +2544,24 @@ function initHangman() {
             wordDisplay.appendChild(letterBox);
         }
     }
-    
+
     // Guess letter
     function guessLetter(letter) {
         if (gameOver || guessedLetters.includes(letter)) return;
-        
+
         guessedLetters.push(letter);
-        
+
         // Update button
         const btn = keyboard.querySelector(`[data-letter="${letter}"]`);
         btn.disabled = true;
-        
+
         if (currentWord.includes(letter)) {
             // Correct guess
             correctLetters.push(letter);
             btn.classList.add('correct');
-            
+
             updateWordDisplay();
-            
+
             // Check win
             if (currentWord.split('').every(l => correctLetters.includes(l))) {
                 gameOver = true;
@@ -2571,13 +2573,13 @@ function initHangman() {
             // Wrong guess
             wrongAttempts++;
             btn.classList.add('wrong');
-            
+
             // Draw hangman part (stages 1-4 are gallows, 5-10 are body parts)
             const drawStage = wrongAttempts + 4;
             drawHangman(drawStage);
-            
+
             attemptsLeftEl.textContent = maxAttempts - wrongAttempts;
-            
+
             // Check lose
             if (wrongAttempts >= maxAttempts) {
                 gameOver = true;
@@ -2596,17 +2598,17 @@ function initHangman() {
                 }
             }
         }
-        
+
         // Update guessed letters list
         guessedList.textContent = guessedLetters.join(', ').toUpperCase();
     }
-    
+
     function disableAllKeys() {
         keyboard.querySelectorAll('.key-btn').forEach(btn => {
             btn.disabled = true;
         });
     }
-    
+
     // Draw initial gallows
     function drawGallows() {
         drawHangman(1); // Base
@@ -2614,12 +2616,12 @@ function initHangman() {
         drawHangman(3); // Top beam
         drawHangman(4); // Rope
     }
-    
+
     newGameBtn.addEventListener('click', () => {
         initGame();
         drawGallows();
     });
-    
+
     // Keyboard support
     document.addEventListener('keypress', (e) => {
         if (gameOver) return;
@@ -2628,7 +2630,7 @@ function initHangman() {
             guessLetter(letter);
         }
     });
-    
+
     // Initialize
     initGame();
     drawGallows();
@@ -2794,12 +2796,12 @@ function initMorseCode() {
         '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
         '8': '---..', '9': '----.', ' ': '/'
     };
-    
+
     const textInput = document.getElementById('textInput');
     const translateBtn = document.getElementById('translateBtn');
     const morseOutput = document.getElementById('morseOutput');
     const morseChart = document.getElementById('morseChart');
-    
+
     // Populate morse chart
     Object.keys(morseCode).forEach(char => {
         if (char !== ' ') {
@@ -2812,7 +2814,7 @@ function initMorseCode() {
             morseChart.appendChild(item);
         }
     });
-    
+
     // Translate function
     function translate() {
         const text = textInput.value.toUpperCase();
@@ -2820,10 +2822,10 @@ function initMorseCode() {
             morseOutput.innerHTML = '<p class="placeholder">Please enter some text to translate!</p>';
             return;
         }
-        
+
         morseOutput.innerHTML = '';
         const words = text.split(' ');
-        
+
         words.forEach((word, wordIndex) => {
             let morseWord = '';
             for (let char of word) {
@@ -2831,7 +2833,7 @@ function initMorseCode() {
                     morseWord += morseCode[char] + ' ';
                 }
             }
-            
+
             if (morseWord.trim()) {
                 const wordEl = document.createElement('div');
                 wordEl.className = 'morse-word';
@@ -2841,7 +2843,7 @@ function initMorseCode() {
             }
         });
     }
-    
+
     translateBtn.addEventListener('click', translate);
     textInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && e.ctrlKey) {
@@ -3082,29 +3084,29 @@ function initPrimeAnalyzer() {
     const factorizeBtn = document.getElementById('factorizeBtn');
     const factorizationDisplay = document.getElementById('factorizationDisplay');
     const factorizationDetails = document.getElementById('factorizationDetails');
-    
+
     // Check if number is prime
     function isPrime(num) {
         if (num < 2) return false;
         if (num === 2) return true;
         if (num % 2 === 0) return false;
-        
+
         for (let i = 3; i <= Math.sqrt(num); i += 2) {
             if (num % i === 0) return false;
         }
         return true;
     }
-    
+
     // Check prime
     function checkPrime() {
         const num = parseInt(primeInput.value);
-        
+
         if (isNaN(num)) {
             primeResult.textContent = '⚠️ Please enter a valid number!';
             primeResult.className = 'result-display';
             return;
         }
-        
+
         if (isPrime(num)) {
             primeResult.textContent = `✅ ${num} is a Prime Number!`;
             primeResult.className = 'result-display prime';
@@ -3113,17 +3115,17 @@ function initPrimeAnalyzer() {
             primeResult.className = 'result-display not-prime';
         }
     }
-    
+
     // Generate primes up to limit
     function generatePrimes() {
         const limit = parseInt(generateLimit.value) || 100;
         primesDisplay.innerHTML = '';
-        
+
         const primes = [];
         for (let i = 2; i <= limit; i++) {
             if (isPrime(i)) primes.push(i);
         }
-        
+
         primes.forEach((prime, index) => {
             const el = document.createElement('div');
             el.className = 'prime-number';
@@ -3131,23 +3133,23 @@ function initPrimeAnalyzer() {
             el.style.animationDelay = `${index * 0.02}s`;
             primesDisplay.appendChild(el);
         });
-        
+
         if (primes.length === 0) {
             primesDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
-    
+
     // Find primes in range
     function findPrimesInRange() {
         const start = parseInt(rangeStart.value) || 1;
         const end = parseInt(rangeEnd.value) || 50;
         rangeDisplay.innerHTML = '';
-        
+
         const primes = [];
         for (let i = Math.max(2, start); i <= end; i++) {
             if (isPrime(i)) primes.push(i);
         }
-        
+
         primes.forEach((prime, index) => {
             const el = document.createElement('div');
             el.className = 'prime-number';
@@ -3155,23 +3157,23 @@ function initPrimeAnalyzer() {
             el.style.animationDelay = `${index * 0.02}s`;
             rangeDisplay.appendChild(el);
         });
-        
+
         if (primes.length === 0) {
             rangeDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
-    
+
     // Prime factorization
     function factorize() {
         let num = parseInt(factorizeInput.value);
         const originalNum = num;
-        
+
         if (isNaN(num)) {
             factorizationDisplay.textContent = '⚠️ Please enter a valid number!';
             factorizationDetails.innerHTML = '';
             return;
         }
-        
+
         if (num < 2) {
             factorizationDisplay.textContent = `❌ ${num} cannot be factorized into primes.`;
             factorizationDetails.innerHTML = `
@@ -3182,7 +3184,7 @@ function initPrimeAnalyzer() {
             `;
             return;
         }
-        
+
         const factors = [];
         let d = 2;
         let tempNum = num;
@@ -3194,11 +3196,11 @@ function initPrimeAnalyzer() {
             d++;
         }
         if (tempNum > 1) factors.push(tempNum);
-        
+
         const uniqueFactors = [...new Set(factors)];
-        
+
         factorizationDisplay.textContent = `${originalNum} = ${factors.join(' × ')}`;
-        
+
         factorizationDetails.innerHTML = `
             <div class="detail-item">
                 <span class="detail-label">Unique Prime Factors:</span>
@@ -3210,16 +3212,16 @@ function initPrimeAnalyzer() {
             </div>
         `;
     }
-    
+
     // Event listeners
     checkPrimeBtn.addEventListener('click', checkPrime);
     primeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPrime();
     });
-    
+
     generatePrimesBtn.addEventListener('click', generatePrimes);
     rangeBtn.addEventListener('click', findPrimesInRange);
-    
+
     // Initial generation
     generatePrimes();
 }
@@ -3338,19 +3340,19 @@ function initTowerOfHanoi() {
     const resetBtn = document.getElementById('resetHanoi');
     const moveCountEl = document.getElementById('moveCount');
     const optimalMovesEl = document.getElementById('optimalMoves');
-    
+
     let towers = [[], [], []];
     let diskCount = 3;
     let moveCount = 0;
     let isAnimating = false;
     let shouldStop = false;
-    
+
     const towerX = [200, 400, 600];
     const baseY = 350;
     const diskHeight = 20;
     const maxDiskWidth = 120;
     const colors = ['#ff6b6b', '#f59e0b', '#10b981', '#06b6d4', '#6366f1', '#8b5cf6', '#ec4899'];
-    
+
     function initTowers() {
         towers = [[], [], []];
         moveCount = 0;
@@ -3359,19 +3361,19 @@ function initTowerOfHanoi() {
         //Reset animation state
         isAnimating = false;
         solveBtn.disabled = false;
-        
+
         for (let i = diskCount; i >= 1; i--) {
             towers[0].push(i);
         }
-        
+
         optimalMovesEl.textContent = Math.pow(2, diskCount) - 1;
         moveCountEl.textContent = '0';
         drawTowers();
     }
-    
+
     function drawTowers() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Draw bases and poles
         ctx.fillStyle = '#64748b';
         for (let i = 0; i < 3; i++) {
@@ -3380,7 +3382,7 @@ function initTowerOfHanoi() {
             // Base
             ctx.fillRect(towerX[i] - 80, baseY, 160, 10);
         }
-        
+
         // Draw disks
         for (let tower = 0; tower < 3; tower++) {
             for (let disk = 0; disk < towers[tower].length; disk++) {
@@ -3388,20 +3390,20 @@ function initTowerOfHanoi() {
                 const diskWidth = (maxDiskWidth * diskSize) / diskCount;
                 const x = towerX[tower] - diskWidth / 2;
                 const y = baseY - (disk + 1) * diskHeight;
-                
+
                 // Disk with gradient
                 const gradient = ctx.createLinearGradient(x, y, x + diskWidth, y + diskHeight);
                 gradient.addColorStop(0, colors[diskSize - 1]);
                 gradient.addColorStop(1, colors[diskSize - 1] + 'aa');
-                
+
                 ctx.fillStyle = gradient;
                 ctx.fillRect(x, y, diskWidth, diskHeight - 2);
-                
+
                 // Border
                 ctx.strokeStyle = '#1e293b';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(x, y, diskWidth, diskHeight - 2);
-                
+
                 // Number
                 ctx.fillStyle = 'white';
                 ctx.font = 'bold 12px Arial';
@@ -3410,30 +3412,30 @@ function initTowerOfHanoi() {
             }
         }
     }
-    
+
     async function moveDisk(from, to) {
-        if(shouldStop) return;
+        if (shouldStop) return;
 
         const disk = towers[from].pop();
         towers[to].push(disk);
         moveCount++;
         moveCountEl.textContent = moveCount;
-        
+
         drawTowers();
         await new Promise(resolve => setTimeout(resolve, 500));
     }
-    
+
     async function solveHanoi(n, from, to, aux) {
         if (n === 1) {
             await moveDisk(from, to);
             return;
         }
-        
+
         await solveHanoi(n - 1, from, aux, to);
         await moveDisk(from, to);
         await solveHanoi(n - 1, aux, to, from);
     }
-    
+
     async function solve() {
         if (isAnimating) return;
 
@@ -3441,25 +3443,25 @@ function initTowerOfHanoi() {
             alert("Visualization supports only 3 to 7 disks");
             return;
         }
-        
+
         isAnimating = true;
         solveBtn.disabled = true;
-        
+
         await solveHanoi(diskCount, 0, 2, 1);
 
         shouldStop = false;
-        
+
         isAnimating = false;
         solveBtn.disabled = false;
     }
-    
+
     solveBtn.addEventListener('click', solve);
     resetBtn.addEventListener('click', () => {
         shouldStop = true;
         initTowers();
     });
     diskCountInput.addEventListener('change', initTowers);
-    
+
     initTowers();
 }
 
@@ -4738,16 +4740,16 @@ function getsnakeGameHTML() {
 }
 
 // --- GAME LOGIC ---
-let direction = {x: 0, y: 0}; 
-let speed = 7; 
+let direction = { x: 0, y: 0 };
+let speed = 7;
 let score = 0;
 let lastPaintTime = 0;
-let snakeArr = [{x: 13, y: 10}]; 
-let food = {x: 6, y: 7};
+let snakeArr = [{ x: 13, y: 10 }];
+let food = { x: 6, y: 7 };
 
 function main(ctime) {
     window.requestAnimationFrame(main);
-    if((ctime - lastPaintTime)/1000 < 1/speed){
+    if ((ctime - lastPaintTime) / 1000 < 1 / speed) {
         return;
     }
     lastPaintTime = ctime;
@@ -4757,50 +4759,50 @@ function main(ctime) {
 function isCollide(snake) {
     // Hits itself
     for (let i = 1; i < snakeArr.length; i++) {
-        if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
     }
     // Hits walls
-    if(snake[0].x >= 30 || snake[0].x < 0 || snake[0].y >= 20 || snake[0].y < 0) return true;
-    
+    if (snake[0].x >= 30 || snake[0].x < 0 || snake[0].y >= 20 || snake[0].y < 0) return true;
+
     return false;
 }
 
 function gameEngine() {
-    if(isCollide(snakeArr)){
-        direction = {x: 0, y: 0};
+    if (isCollide(snakeArr)) {
+        direction = { x: 0, y: 0 };
         document.getElementById('final-score').innerHTML = score;
         document.getElementById('game-over-overlay').classList.remove('hidden');
-        snakeArr = [{x: 13, y: 10}];
+        snakeArr = [{ x: 13, y: 10 }];
         score = 0;
         document.getElementById('score').innerHTML = score;
         return;
     }
 
     // Eating food
-    if(snakeArr[0].y === food.y && snakeArr[0].x === food.x){
+    if (snakeArr[0].y === food.y && snakeArr[0].x === food.x) {
         score += 1;
         document.getElementById('score').innerHTML = score;
-        snakeArr.unshift({x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y});
+        snakeArr.unshift({ x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y });
         let a = 2, b = 16;
-        food = {x: Math.round(a + (b-a)* Math.random()), y: Math.round(a + (b-a)* Math.random())};
+        food = { x: Math.round(a + (b - a) * Math.random()), y: Math.round(a + (b - a) * Math.random()) };
     }
 
     // Moving snake (only if direction is set)
     if (direction.x !== 0 || direction.y !== 0) {
-        for (let i = snakeArr.length - 2; i>=0; i--) { 
-            snakeArr[i+1] = {...snakeArr[i]};
+        for (let i = snakeArr.length - 2; i >= 0; i--) {
+            snakeArr[i + 1] = { ...snakeArr[i] };
         }
         snakeArr[0].x += direction.x;
         snakeArr[0].y += direction.y;
     }
 
     const canvas = document.getElementById('snakeCanvas');
-    if(!canvas) return;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Snake
-    snakeArr.forEach((e, index)=>{
+    snakeArr.forEach((e, index) => {
         ctx.fillStyle = index === 0 ? "orange" : "#2ecc71";
         ctx.fillRect(e.x * 20, e.y * 20, 18, 18);
     });
@@ -4815,7 +4817,7 @@ function initSnakeGame() {
     window.requestAnimationFrame(main);
 
     document.getElementById('startGameBtn').addEventListener('click', () => {
-        direction = {x: 1, y: 0}; // Start moving right
+        direction = { x: 1, y: 0 }; // Start moving right
     });
 
     document.getElementById('restartSnakeBtn').addEventListener('click', () => {
@@ -4824,18 +4826,18 @@ function initSnakeGame() {
 
     document.getElementById('overlayRestartBtn').addEventListener('click', () => {
         document.getElementById('game-over-overlay').classList.add('hidden');
-        direction = {x: 0, y: 0};
-        snakeArr = [{x: 13, y: 10}];
+        direction = { x: 0, y: 0 };
+        snakeArr = [{ x: 13, y: 10 }];
         score = 0;
         document.getElementById('score').innerHTML = score;
     });
 
-    window.addEventListener('keydown', e =>{
+    window.addEventListener('keydown', e => {
         switch (e.key) {
-            case "ArrowUp":    if(direction.y !== 1) {direction.x = 0; direction.y = -1;} break;
-            case "ArrowDown":  if(direction.y !== -1) {direction.x = 0; direction.y = 1;} break;
-            case "ArrowLeft":  if(direction.x !== 1) {direction.x = -1; direction.y = 0;} break;
-            case "ArrowRight": if(direction.x !== -1) {direction.x = 1; direction.y = 0;} break;
+            case "ArrowUp": if (direction.y !== 1) { direction.x = 0; direction.y = -1; } break;
+            case "ArrowDown": if (direction.y !== -1) { direction.x = 0; direction.y = 1; } break;
+            case "ArrowLeft": if (direction.x !== 1) { direction.x = -1; direction.y = 0; } break;
+            case "ArrowRight": if (direction.x !== -1) { direction.x = 1; direction.y = 0; } break;
         }
     });
 }
@@ -4939,5 +4941,236 @@ function initPasswordForge() {
         } else {
             result.textContent = "❌ Password does not meet all rules!";
         }
+    });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+// WHACK-A-MOLE — paste both functions into projects.js
+// Then wire them in getProjectHTML() and initializeProject() like other games:
+//
+//   getProjectHTML()     → case 'whack-a-mole': return getWhackaMoleHTML();
+//   initializeProject()  → case 'whack-a-mole': initWhackaMole(); break;
+// ─────────────────────────────────────────────────────────────────────────────
+
+function getWhackaMoleHTML() {
+    return `
+        <div class="project-content">
+            <h2>🔨 Whack-a-Mole</h2>
+            <p class="project-desc">Smash every mole before it disappears!</p>
+
+            <div class="wam-stats">
+                <div class="wam-stat">🎯 Score<br><span id="wam-score">0</span></div>
+                <div class="wam-stat">⏱️ Time<br><span id="wam-timer">30s</span></div>
+                <div class="wam-stat">🔥 Streak<br><span id="wam-streak">0</span></div>
+                <div class="wam-stat">❌ Misses<br><span id="wam-misses">0</span></div>
+            </div>
+
+            <div class="wam-difficulty" id="wam-difficulty">
+                <button class="wam-btn-diff active" data-speed="1200" data-window="1000">😊 Easy</button>
+                <button class="wam-btn-diff"        data-speed="800"  data-window="700" >😤 Medium</button>
+                <button class="wam-btn-diff"        data-speed="500"  data-window="450" >🔥 Hard</button>
+            </div>
+
+            <div class="wam-grid" id="wam-grid">
+                ${Array.from({ length: 9 }, (_, i) => `
+                <div class="wam-hole" id="wam-hole-${i}">
+                    <div class="wam-mole" id="wam-mole-${i}">🐭</div>
+                </div>`).join('')}
+            </div>
+
+            <div class="wam-actions">
+                <button id="wam-start" class="btn-calculate">▶ Start Game</button>
+            </div>
+
+            <div id="wam-result" class="wam-result" style="display:none">
+                <h3 id="wam-result-title">🏁 Game Over!</h3>
+                <p  id="wam-result-stats"></p>
+                <button id="wam-play-again" class="btn-calculate">Play Again</button>
+            </div>
+        </div>
+
+        <style>
+            .wam-stats { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; margin:1rem 0; }
+            .wam-stat  { background:var(--card-bg,#1e293b); border-radius:10px;
+                         padding:0.5rem 1rem; font-size:0.8rem;
+                         color:var(--text-secondary); min-width:70px; text-align:center; }
+            .wam-stat span { display:block; font-size:1.3rem; font-weight:700;
+                             color:var(--primary-color,#6366f1); margin-top:2px; }
+
+            .wam-difficulty { text-align:center; margin-bottom:1rem; }
+            .wam-btn-diff   { background:var(--card-bg,#1e293b); border:2px solid transparent;
+                              border-radius:8px; padding:0.4rem 1rem; cursor:pointer;
+                              color:inherit; margin:0.2rem; font-size:0.9rem; transition:all 0.2s; }
+            .wam-btn-diff.active { border-color:var(--primary-color,#6366f1);
+                                   background:rgba(99,102,241,0.15); }
+
+            .wam-grid { display:grid; grid-template-columns:repeat(3,1fr);
+                        gap:12px; max-width:360px; margin:0 auto 1.2rem; }
+
+            .wam-hole { background:var(--card-bg,#1e293b); border-radius:50%;
+                        aspect-ratio:1; display:flex; align-items:flex-end;
+                        justify-content:center; overflow:hidden; cursor:pointer;
+                        border:3px solid transparent; transition:border-color 0.15s; }
+            .wam-hole:hover  { border-color:rgba(99,102,241,0.4); }
+            .wam-hole.active { border-color:var(--primary-color,#6366f1); }
+            .wam-hole.hit    { border-color:#22c55e; animation:wam-pop 0.25s ease; }
+            .wam-hole.miss   { border-color:#ef4444; animation:wam-shake 0.3s ease; }
+
+            .wam-mole { font-size:2.4rem; line-height:1;
+                        transform:translateY(100%);
+                        transition:transform 0.18s cubic-bezier(.34,1.56,.64,1);
+                        pointer-events:none; user-select:none; }
+            .wam-hole.active .wam-mole { transform:translateY(10%); }
+            .wam-hole.hit    .wam-mole,
+            .wam-hole.miss   .wam-mole { transform:translateY(100%); }
+
+            @keyframes wam-pop   { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+            @keyframes wam-shake { 0%,100%{transform:translateX(0)} 33%{transform:translateX(-5px)} 66%{transform:translateX(5px)} }
+
+            .wam-actions { text-align:center; margin-bottom:1rem; }
+            .wam-result  { padding:1.5rem; background:rgba(99,102,241,0.1);
+                           border:1px solid var(--primary-color,#6366f1);
+                           border-radius:14px; margin-top:0.5rem; text-align:center; }
+            .wam-result h3 { margin:0 0 0.5rem; font-size:1.4rem; }
+            .wam-result p  { margin:0 0 1rem; color:var(--text-secondary); line-height:1.8; }
+        </style>
+    `;
+}
+
+
+function initWhackaMole() {
+    const GAME_DURATION = 30;
+
+    let speed = 1200;
+    let window_ = 1000;
+    let score = 0, misses = 0, streak = 0, bestStreak = 0;
+    let timeLeft = GAME_DURATION;
+    let activeMoles = new Set();
+    let spawnTimer = null;
+    let gameTimer = null;
+    let moleTimers = {};
+    let running = false;
+
+    const $ = id => document.getElementById(id);
+    const scoreEl = $('wam-score');
+    const timerEl = $('wam-timer');
+    const streakEl = $('wam-streak');
+    const missEl = $('wam-misses');
+    const resultEl = $('wam-result');
+    const resultTitle = $('wam-result-title');
+    const resultStats = $('wam-result-stats');
+    const startBtn = $('wam-start');
+    const againBtn = $('wam-play-again');
+    const diffEl = $('wam-difficulty');
+
+    document.querySelectorAll('.wam-btn-diff').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (running) return;
+            document.querySelectorAll('.wam-btn-diff').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            speed = parseInt(btn.dataset.speed);
+            window_ = parseInt(btn.dataset.window);
+        });
+    });
+
+    const getHole = i => $(`wam-hole-${i}`);
+
+    function showMole(i) {
+        getHole(i).classList.add('active');
+        activeMoles.add(i);
+        moleTimers[i] = setTimeout(() => {
+            if (!activeMoles.has(i)) return;
+            hideMole(i, false);
+            misses++;
+            streak = 0;
+            missEl.textContent = misses;
+            streakEl.textContent = streak;
+        }, window_);
+    }
+
+    function hideMole(i, wasHit) {
+        clearTimeout(moleTimers[i]);
+        activeMoles.delete(i);
+        const hole = getHole(i);
+        hole.classList.remove('active');
+        hole.classList.add(wasHit ? 'hit' : 'miss');
+        setTimeout(() => hole.classList.remove('hit', 'miss'), 350);
+    }
+
+    function spawnMole() {
+        const free = Array.from({ length: 9 }, (_, i) => i).filter(i => !activeMoles.has(i));
+        if (free.length) showMole(free[Math.floor(Math.random() * free.length)]);
+    }
+
+    function onWhack(i) {
+        if (!running || !activeMoles.has(i)) return;
+        hideMole(i, true);
+        streak++;
+        if (streak > bestStreak) bestStreak = streak;
+        score += streak >= 5 ? 20 : streak >= 3 ? 15 : 10;
+        scoreEl.textContent = score;
+        streakEl.textContent = streak;
+    }
+
+    for (let i = 0; i < 9; i++) {
+        (idx => getHole(idx).addEventListener('click', () => onWhack(idx)))(i);
+    }
+
+    function startGame() {
+        score = misses = streak = bestStreak = 0;
+        timeLeft = GAME_DURATION;
+        activeMoles.clear();
+        Object.values(moleTimers).forEach(clearTimeout);
+        moleTimers = {};
+        running = true;
+
+        for (let i = 0; i < 9; i++) getHole(i).classList.remove('active', 'hit', 'miss');
+        scoreEl.textContent = '0';
+        streakEl.textContent = '0';
+        missEl.textContent = '0';
+        timerEl.textContent = `${GAME_DURATION}s`;
+        resultEl.style.display = 'none';
+        startBtn.style.display = 'none';
+        diffEl.style.display = 'none';
+
+        gameTimer = setInterval(() => {
+            timeLeft--;
+            timerEl.textContent = `${timeLeft}s`;
+            if (timeLeft <= 0) endGame();
+        }, 1000);
+
+        spawnMole();
+        spawnTimer = setInterval(spawnMole, speed);
+    }
+
+    function endGame() {
+        running = false;
+        clearInterval(gameTimer);
+        clearInterval(spawnTimer);
+        Object.values(moleTimers).forEach(clearTimeout);
+        [...activeMoles].forEach(i => getHole(i).classList.remove('active'));
+        activeMoles.clear();
+
+        const acc = (score + misses * 10) > 0
+            ? Math.round((score / (score + misses * 10)) * 100)
+            : 0;
+        const grade = acc >= 85 ? '🌟 Legendary!'
+            : acc >= 65 ? '👏 Sharp reflexes!'
+                : acc >= 45 ? '😅 Keep practising!'
+                    : '🐭 Moles win!';
+
+        resultTitle.textContent = '🏁 Game Over!';
+        resultStats.innerHTML =
+            `🎯 Score: <b>${score}</b><br>` +
+            `❌ Misses: <b>${misses}</b><br>` +
+            `🔥 Best Streak: <b>${bestStreak}</b><br>` +
+            `📊 Accuracy: <b>${acc}%</b><br><br>${grade}`;
+        resultEl.style.display = 'block';
+    }
+
+    startBtn.addEventListener('click', startGame);
+    againBtn.addEventListener('click', () => {
+        resultEl.style.display = 'none';
+        startBtn.style.display = 'inline-block';
+        diffEl.style.display = 'block';
     });
 }
