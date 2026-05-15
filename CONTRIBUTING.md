@@ -332,12 +332,12 @@ New to contributing? Check these out:
 ---
 ## Issue Difficulty Levels
 
-To make contributing easier for everyone, we use difficulty levels for issues.  
-These levels help contributors understand how much experience or effort an issue may require before getting started.
+To make contributing easier for everyone, we use difficulty labels for issues.  
+These labels help contributors understand how much experience or effort an issue may require before getting started.
 
 ---
 
-### Level 1 (Beginner)
+### level: Beginner
 
 Good for first-time contributors or people who are still learning the project structure.
 
@@ -361,7 +361,7 @@ Good for first-time contributors or people who are still learning the project st
 
 ---
 
-### Level 2 (Intermediate)
+### level: Intermediate
 
 Best for contributors who are comfortable reading and understanding the codebase.
 
@@ -385,7 +385,7 @@ Best for contributors who are comfortable reading and understanding the codebase
 
 ---
 
-### Level 3 (Advanced)
+### level: Advanced
 
 Recommended for experienced contributors who understand the architecture of the project.
 
@@ -399,7 +399,7 @@ Recommended for experienced contributors who understand the architecture of the 
 - System design changes
 - Complex bug fixes
 - Multi-module updates
-
+    
 #### Example Issues
 - Design and implement a new module
 - Optimize database or backend architecture
@@ -409,12 +409,36 @@ Recommended for experienced contributors who understand the architecture of the 
 
 ---
 
+### level:  Critical
+
+For high-priority or highly sensitive tasks that may impact important parts of the project.
+
+#### What to Expect
+- Requires strong technical understanding
+- May affect security, stability, or core functionality
+- Needs careful testing and review
+
+#### Criteria
+- Security-related fixes
+- Critical production bugs
+- Core architecture updates
+- High-impact system improvements
+
+#### Example Issues
+- Fix authentication vulnerabilities
+- Resolve major backend crashes
+- Improve core system reliability
+- Handle critical deployment issues
+- Refactor sensitive infrastructure code
+
+---
+
 ## Recommendation for New Contributors
 
-If you are contributing for the first time, we strongly recommend starting with **Level 1** issues.  
+If you are contributing for the first time, we strongly recommend starting with **level: Beginner** issues.  
 These tasks are beginner-friendly and help you understand the project structure, contribution workflow, and coding style before moving to more advanced issues.
 
-Once you feel comfortable, you can gradually try Level 2 and Level 3 tasks.
+Once you feel comfortable, you can gradually try `level:intermediate`, `level:advanced`, and `level:critical` tasks.
 
 ## 🤔 Questions?
 
