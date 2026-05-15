@@ -114,8 +114,18 @@ while True:
         )
 
     if head.distance(food) < 15:
-        x = random.randint(-14, 14) * 20
-        y = random.randint(-14, 14) * 20
+        while True:
+            x = random.randint(-14, 14) * 20
+            y = random.randint(-14, 14) * 20
+            overlaps = False
+            if head.distance(x, y) < 15:
+                overlaps = True
+            for p in parts:
+                if p.distance(x, y) < 15:
+                    overlaps = True
+                    break
+            if not overlaps:
+                break
 
         food.goto(x, y)
 
