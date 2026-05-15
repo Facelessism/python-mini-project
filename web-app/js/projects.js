@@ -1426,7 +1426,8 @@ function getFlamesHTML() {
     return `
         <div class="project-content">
             <h2>💖 FLAMES Game</h2>
-            <p class="project-desc">Discover your relationship status!</p>
+            <p class="project-desc">Discover your <strong>relationship status</strong> and calculate your 
+    <strong>Compatibility, Rivalry, </strong> or <strong>Nuisance</strong> factor!</p>
             <div class="flames-container">
                 <div class="flames-legend">
                     <div class="legend-item">F - Friends</div>
@@ -1574,85 +1575,105 @@ function getFlamesHTML() {
 }
 
 function initFlames() {
+    const calculateBtn = document.getElementById('calculateFlames');
     const name1Input = document.getElementById('name1');
     const name2Input = document.getElementById('name2');
-    const calculateBtn = document.getElementById('calculateFlames');
     const resultDiv = document.getElementById('flamesResult');
-    
-    const relationshipData = {
-        'F': { name: 'Friends', emoji: '👫', message: 'You two are best friends forever!' },
-        'L': { name: 'Love', emoji: '❤️', message: 'True love is in the air!' },
-        'A': { name: 'Affection', emoji: '🥰', message: 'Sweet affection between you!' },
-        'M': { name: 'Marriage', emoji: '💍', message: 'Wedding bells are ringing!' },
-        'E': { name: 'Enemies', emoji: '😠', message: 'Maybe not the best match...' },
-        'S': { name: 'Siblings', emoji: '👨‍👩‍👧', message: 'Like brother and sister!' }
+
+    if (!calculateBtn || !name1Input || !name2Input) return;
+
+    window.copyFlamesResult = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            btn.style.background = '#2ecc71';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = 'var(--accent-color, #6c5ce7)';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     };
-    
-    function calculateFlames() {
-        const name1 = name1Input.value.toLowerCase().replace(/\s/g, '');
-        const name2 = name2Input.value.toLowerCase().replace(/\s/g, '');
-        
+
+    const calculateFlames = () => {
+        const name1Raw = name1Input.value.trim();
+        const name2Raw = name2Input.value.trim();
+        const name1 = name1Raw.toLowerCase().replace(/\s+/g, '');
+        const name2 = name2Raw.toLowerCase().replace(/\s+/g, '');
+
         if (!name1 || !name2) {
-            resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter both names!</p>';
+            resultDiv.innerHTML = '<p style="color: var(--error-color, #ff4d4d);">⚠️ Please enter both names!</p>';
             return;
         }
-        
-        const originalName1 = name1Input.value.trim();
-        const originalName2 = name2Input.value.trim();
-        
-        // Convert to arrays
-        let name1List = name1.split('');
-        let name2List = name2.split('');
-        
-        // Remove common characters
-        const name1Copy = [...name1List];
-        for (let char of name1Copy) {
-            const index2 = name2List.indexOf(char);
-            if (index2 !== -1) {
-                name1List.splice(name1List.indexOf(char), 1);
-                name2List.splice(index2, 1);
+
+        let name1_list = name1.split('');
+        let name2_list = name2.split('');
+
+        for (let i = name1_list.length - 1; i >= 0; i--) {
+            const char = name1_list[i];
+            const indexIn2 = name2_list.indexOf(char);
+            if (indexIn2 !== -1) {
+                name1_list.splice(i, 1);
+                name2_list.splice(indexIn2, 1);
             }
         }
-        
-        const count = name1List.length + name2List.length;
-        
-        // Calculate FLAMES
-        const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
+
+        const count = name1_list.length + name2_list.length;
+        const total_len = name1.length + name2.length;
+        const matched_chars = total_len - count;
+        const score = total_len > 0 ? 30 + Math.round((matched_chars / total_len) * 70) : 0;
+
+        let flames = ['F', 'L', 'A', 'M', 'E', 'S'];
         let index = 0;
-        
         while (flames.length > 1) {
             index = (index + count - 1) % flames.length;
             flames.splice(index, 1);
-            if (index === flames.length && flames.length > 0) {
-                index = 0;
-            }
         }
+
+        const mapping = {
+            'F': { rel: 'Friends', emoji: '🤝', metric: 'Bond Strength', vibe: 'A bond that never breaks!' },
+            'L': { rel: 'Love', emoji: '❤️', metric: 'Compatibility Score', vibe: 'Pure romantic chemistry!' },
+            'A': { rel: 'Affection', emoji: '😊', metric: 'Crush Intensity', vibe: 'Someone\'s blushing!' },
+            'M': { rel: 'Marriage', emoji: '💍', metric: 'Marital Bliss', vibe: 'Start picking out the rings!' },
+            'E': { rel: 'Enemies', emoji: '😈', metric: 'Rivalry Quotient', vibe: 'Keep your distance!' },
+            'S': { rel: 'Siblings', emoji: '🏠', metric: 'Nuisance Factor', vibe: 'Stop touching my stuff!' }
+        };
+
+        const final = mapping[flames[0]];
+        const capName1 = name1Raw.charAt(0).toUpperCase() + name1Raw.slice(1);
+        const capName2 = name2Raw.charAt(0).toUpperCase() + name2Raw.slice(1);
         
-        const result = flames[0];
-        const relationship = relationshipData[result];
-        
-        // Display result with animation
+        const share_text = `🔥 FLAMES Report: ${capName1} + ${capName2} = ${final.rel} ${final.emoji}\n${final.metric}: ${score}%\nVibe: ${final.vibe}`;
+
         resultDiv.innerHTML = `
-            <div class="result-card">
-                <div class="result-emoji">${relationship.emoji}</div>
-                <div class="result-names">${originalName1} & ${originalName2}</div>
-                <div class="result-relationship">${relationship.name}</div>
-                <div class="result-details">
-                    <div>${relationship.message}</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                        Remaining letters: ${count}
-                    </div>
+            <div class="result-card" style="text-align: center; animation: fadeIn 0.5s ease-out;">
+                <div class="result-emoji" style="font-size: 3rem; margin-bottom: 10px;">${final.emoji}</div>
+                <div class="result-names" style="font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${name1.toUpperCase()} & ${name2.toUpperCase()}</div>
+                <div class="result-relationship" style="font-size: 1.5rem; color: var(--accent-color, #a29bfe); margin-bottom: 15px;">${final.rel}</div>
+                
+                <div class="result-details" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="font-weight: bold;">${final.metric}: ${score}%</div>
+                    <div style="font-size: 0.85rem; font-style: italic; opacity: 0.9; margin-top: 5px;">"${final.vibe}"</div>
                 </div>
+
+                <button class="copy-btn" 
+                        data-share="${share_text}" 
+                        onclick="copyFlamesResult(this.getAttribute('data-share'))" 
+                        style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">
+                    📋 Copy Result
+                </button>
             </div>
         `;
-    }
-    
+    };
+
     calculateBtn.addEventListener('click', calculateFlames);
-    name1Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
-    });
-    name2Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
+    
+    [name1Input, name2Input].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculateFlames();
+        });
     });
 }
 
