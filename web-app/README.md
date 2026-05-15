@@ -20,6 +20,7 @@ An interactive web application showcasing Python mini projects with beautiful vi
 - **Hangman** - Classic word game 
 - **FLAMES** - Relationship calculator 
 - **Simon Says** - Memory Game
+- **Spot the Difference** - Visual puzzle game with dynamic scenes
 
 ### 🔢 Math Tools
 - **Fibonacci Series** - Visual sequence with golden spiral
