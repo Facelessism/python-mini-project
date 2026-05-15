@@ -196,6 +196,7 @@ function getRockPaperScissorHTML() {
                 cursor: pointer;
                 transition: var(--transition);
                 min-width: 120px;
+                color: var(--text-color);
             }
             
             .choice-btn:hover {

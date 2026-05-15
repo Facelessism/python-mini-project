@@ -67,7 +67,6 @@ backToTopButton.addEventListener('click', () => {
 // Category Filtering (tabs)
 
 const projectCards = document.querySelectorAll('.project-card');
-const tabs = document.querySelectorAll('.tab');
 const searchInput = document.getElementById('projectSearch');
 const searchClear = document.getElementById('searchClear');
 const searchDropdown = document.getElementById('searchDropdown');
@@ -77,6 +76,16 @@ const emptyState = document.getElementById('emptyState');
 const resultsList = document.getElementById('resultsList');
 const resultsSection = document.getElementById('resultsSection');
 const recentSearchesList = document.getElementById('recentSearchesList');
+let recentSearches = [];
+try {
+    const parsed = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    recentSearches = Array.isArray(parsed) ? parsed : [];
+} catch (e) {
+    recentSearches = [];
+}
+let currentCategory = 'all';
+let currentSearchQuery = '';
+let selectedSuggestionIndex = -1;
 const recentSearchesSection = document.getElementById('recentSearchesSection');
 const tipsSection = document.getElementById('tipsSection');
 
@@ -290,7 +299,8 @@ tabs.forEach((tab, index) => {
 });
 
 // Initialize
-renderRecentSearches();
+// renderRecentSearches() disabled: recentSearchesSection element
+// does not exist in current HTML, causing null reference error.
 
 // Modal Management
 const modal = document.getElementById('projectModal');
