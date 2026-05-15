@@ -98,76 +98,16 @@ function debounce(func, delay) {
     };
 }
 
-// Get all matching projects for search query
-function getMatchingProjects(query) {
-    if (!query) return [];
-    
-    const matches = [];
-    projectCards.forEach(card => {
+function filterProjects() {
+    let visibleCount = 0;
+
+    projectCards.forEach((card) => {
         const category = card.getAttribute('data-category');
         const title = card.querySelector('h3').textContent.toLowerCase();
         const description = card.querySelector('p').textContent.toLowerCase();
-        const tags = (card.getAttribute('data-tags') || '').toLowerCase();
-        
-        const categoryMatch = currentCategory === 'all' || category === currentCategory;
-        const searchMatch = title.includes(query) || 
-                           description.includes(query) || 
-                           tags.includes(query);
-        
-        if (categoryMatch && searchMatch) {
-            const project = {
-                card: card,
-                title: card.querySelector('h3').textContent,
-                tags: card.getAttribute('data-tags') || '',
-                category: category
-            };
-            matches.push(project);
-        }
-    });
-    
-    return matches;
-}
 
-// Render autocomplete suggestions
-function renderSuggestions(query) {
-    if (!query) {
-        renderRecentSearches();
-        return;
-    }
-    
-    const matches = getMatchingProjects(query);
-    
-    if (matches.length === 0) {
-        resultsSection.style.display = 'none';
-        recentSearchesSection.style.display = 'none';
-        tipsSection.style.display = 'block';
-        return;
-    }
-    
-    resultsList.innerHTML = '';
-    matches.slice(0, 8).forEach((project, index) => {
-        const item = document.createElement('div');
-        item.className = 'dropdown-item' + (index === selectedSuggestionIndex ? ' selected' : '');
-        item.innerHTML = `
-            <div class="dropdown-item-icon">
-                ${project.card.querySelector('.card-icon').textContent}
-            </div>
-            <div class="dropdown-item-text">${highlightMatch(project.title, query)}</div>
-            <span class="dropdown-item-tag">${project.category}</span>
-        `;
-        item.addEventListener('click', () => selectSuggestion(project.title));
-        item.addEventListener('mouseenter', () => {
-            selectedSuggestionIndex = index;
-            updateSuggestionHighlight();
-        });
-        resultsList.appendChild(item);
-    });
-    
-    resultsSection.style.display = 'block';
-    recentSearchesSection.style.display = 'none';
-    tipsSection.style.display = 'none';
-    selectedSuggestionIndex = -1;
-}
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesSearch = title.includes(searchQuery) || description.includes(searchQuery);
 
 // Highlight matching text in suggestions
 function highlightMatch(text, query) {
@@ -247,10 +187,18 @@ function applyCategoryFilter(category) {
             } else {
                 card.style.animation = 'none';
             }
+            visibleCount++;
         } else {
             card.style.display = 'none';
         }
     });
+
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResults.style.display = 'block';
+    } else {
+        noResults.style.display = 'none';
+    }
 }
 
 function moveTabFocus(fromIndex, delta) {
@@ -263,7 +211,8 @@ function moveTabFocus(fromIndex, delta) {
         t.setAttribute('tabindex', selected ? '0' : '-1');
     });
     tabs[next].focus();
-    applyCategoryFilter(tabs[next].getAttribute('data-category'));
+    activeCategory = tabs[next].getAttribute('data-category');
+    filterProjects();
 }
 
 tabs.forEach((tab, index) => {
@@ -274,7 +223,8 @@ tabs.forEach((tab, index) => {
             t.setAttribute('aria-selected', selected ? 'true' : 'false');
             t.setAttribute('tabindex', selected ? '0' : '-1');
         });
-        applyCategoryFilter(tab.getAttribute('data-category'));
+        activeCategory = tab.getAttribute('data-category');
+        filterProjects();
     });
 
     tab.addEventListener('keydown', (e) => {
