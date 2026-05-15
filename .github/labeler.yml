@@ -11,29 +11,74 @@ python:
     - any-glob-to-any-file:
       - '**/*.py'
 
+
 github-actions:
   - changed-files:
     - any-glob-to-any-file:
       - '.github/**'
 
+
 enhancement:
   - changed-files:
     - any-glob-to-any-file:
+
       - 'src/**'
       - '*/**.py'
 
-level1:
+beginner:
   - changed-files:
+
     - any-glob-to-any-file:
       - '**/*.md'
 
-level2:
+intermediate:
+
   - changed-files:
     - any-glob-to-any-file:
       - '**/*.py'
 
-level3:
+
+advanced:
   - changed-files:
     - any-glob-to-any-file:
       - '.github/**'
       - 'tests/**'
+
+"type:design":
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'web-app/**'
+      - 'web-app/*.html'
+      - 'web-app/js/**'
+      - 'web-app/css/**'
+
+"type:feature":
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.py'
+
+"type:docs":
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'README.html'
+      - 'docs/**'
+
+"type:devops":
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+      - '.github/workflows/**'
+
+"type:refactor":
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.py'
+      - 'web-app/**'
+
+"type:bug":
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.py'
+      - 'tests/**'
+
