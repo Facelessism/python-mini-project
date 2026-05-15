@@ -1,13 +1,16 @@
-// Project HTML Templates and Logic
+// Project Registry
+// Each project's HTML and logic lives in its own file under js/projects/
 
 function getProjectHTML(projectName) {
     const projects = {
+        'tic-tac-toe': getTicTacToeHTML(),
         'rock-paper-scissor': getRockPaperScissorHTML(),
         'dice-rolling': getDiceRollingHTML(),
         'coin-flip': getCoinFlipHTML(),
         'number-guessing': getNumberGuessingHTML(),
         'hangman': getHangmanHTML(),
         'flames': getFlamesHTML(),
+        'emoji-memory': getEmojiMemoryGameHTML(),
         'fibonacci': getFibonacciHTML(),
         'progression-recognizer': getProgressionRecognizerHTML(),
         'pascal-triangle': getPascalTriangleHTML(),
@@ -20,22 +23,27 @@ function getProjectHTML(projectName) {
         'derivative-calculator': getDerivativeCalculatorHTML(),
         'morse-code': getMorseCodeHTML(),
         'tower-of-hanoi': getTowerOfHanoiHTML(),
+        'number-converter': getNumberConverterHTML(),
+        'typing-speed-tester': getTypingSpeedTesterHTML(),
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
         'spot-the-difference': getSpotTheDifferenceHTML(),
+        'whack-a-mole': getWhackaMoleHTML(),
     };
-    
+
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
 }
 
 function initializeProject(projectName) {
     const initializers = {
+        'tic-tac-toe': initTicTacToe,
         'rock-paper-scissor': initRockPaperScissor,
         'dice-rolling': initDiceRolling,
         'coin-flip': initCoinFlip,
         'number-guessing': initNumberGuessing,
         'hangman': initHangman,
         'flames': initFlames,
+        'emoji-memory': initEmojiMemoryGame,
         'fibonacci': initFibonacci,
         'progression-recognizer': initProgressionRecognizer,
         'pascal-triangle': initPascalTriangle,
@@ -48,10 +56,13 @@ function initializeProject(projectName) {
         'derivative-calculator': initDerivativeCalculator,
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
+        'number-converter': initNumberConverter,
+        'typing-speed-tester': initTypingSpeedTester,
         'snake-game': initSnakeGame,
         'spot-the-difference': initSpotTheDifference,
+        'whack-a-mole': initWhackaMole,
     };
-    
+
     if (initializers[projectName]) {
         initializers[projectName]();
     }
@@ -191,6 +202,7 @@ function getRockPaperScissorHTML() {
                 cursor: pointer;
                 transition: var(--transition);
                 min-width: 120px;
+                color: var(--text-color);
             }
             
             .choice-btn:hover {
@@ -231,20 +243,20 @@ function getRockPaperScissorHTML() {
 function initRockPaperScissor() {
     let playerScore = 0;
     let computerScore = 0;
-    
+
     const choices = ['rock', 'paper', 'scissors'];
     const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
-    
+
     const choiceBtns = document.querySelectorAll('.choice-btn');
     const resetBtn = document.getElementById('resetRPS');
-    
+
     choiceBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const playerChoice = btn.getAttribute('data-choice');
             playRound(playerChoice);
         });
     });
-    
+
     resetBtn.addEventListener('click', () => {
         playerScore = 0;
         computerScore = 0;
@@ -253,17 +265,18 @@ function initRockPaperScissor() {
         document.getElementById('playerChoice').textContent = '❓';
         document.getElementById('computerChoice').textContent = '❓';
     });
-    
+
     function playRound(playerChoice) {
         const computerChoice = choices[Math.floor(Math.random() * 3)];
-        
+
         document.getElementById('playerChoice').textContent = emojis[playerChoice];
         document.getElementById('computerChoice').textContent = emojis[computerChoice];
-        
+
         let result = '';
-        
+
         if (playerChoice === computerChoice) {
             result = "It's a tie! 🤝";
+            audioController.play('click');
         } else if (
             (playerChoice === 'rock' && computerChoice === 'scissors') ||
             (playerChoice === 'paper' && computerChoice === 'rock') ||
@@ -271,20 +284,202 @@ function initRockPaperScissor() {
         ) {
             result = 'You win! 🎉';
             playerScore++;
+            audioController.play('win');
         } else {
             result = 'Computer wins! 🤖';
             computerScore++;
+            audioController.play('loss');
         }
-        
+
         document.getElementById('resultMessage').textContent = result;
         updateScore();
     }
-    
+
     function updateScore() {
         document.getElementById('playerScore').textContent = playerScore;
         document.getElementById('computerScore').textContent = computerScore;
     }
 }
+
+// ============================================
+// Tic Tac Toe
+// ============================================
+
+function getTicTacToeHTML() {
+    return `
+        <div class="project-content">
+            <h2>🧩 Tic-Tac-Toe</h2>
+        <div class="ttt-mode-buttons">
+            <button id="pvpMode" class="mode-btn active-mode">
+                👥 2 Players
+            </button>
+
+            <button id="aiMode" class="mode-btn">
+                you vs Computer
+            </button>
+        </div>
+            <div class="game-container">
+                <div class="tic-tac-toe-board" id="ticTacToeBoard">
+                    <button class="cell" data-cell="0"></button>
+                    <button class="cell" data-cell="1"></button>
+                    <button class="cell" data-cell="2"></button>
+                    <button class="cell" data-cell="3"></button>
+                    <button class="cell" data-cell="4"></button>
+                    <button class="cell" data-cell="5"></button>
+                    <button class="cell" data-cell="6"></button>
+                    <button class="cell" data-cell="7"></button>
+                    <button class="cell" data-cell="8"></button>
+                </div>
+
+                <p id="ticTacToeStatus">Player X's turn</p>
+
+                <button id="restartTicTacToe" class="game-btn">
+                    🔄 Restart Game
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function initTicTacToe() {
+    const cells = document.querySelectorAll('.cell');
+    const statusText = document.getElementById('ticTacToeStatus');
+    const restartBtn = document.getElementById('restartTicTacToe');
+    const twoPlayerBtn = document.getElementById('twoPlayerMode');
+    const computerBtn = document.getElementById('computerMode');
+
+    let vsComputer = false;
+    let currentPlayer = 'X';
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    
+
+    const pvpBtn = document.getElementById('pvpMode');
+    const aiBtn = document.getElementById('aiMode');
+
+    pvpBtn.addEventListener('click', () => {
+        vsComputer = false;
+
+        pvpBtn.classList.add('active-mode');
+        aiBtn.classList.remove('active-mode');
+
+        resetGame();
+        statusText.textContent = "2 Player Mode";
+    });
+
+    aiBtn.addEventListener('click', () => {
+        vsComputer = true;
+
+        aiBtn.classList.add('active-mode');
+        pvpBtn.classList.remove('active-mode');
+
+        resetGame();
+        statusText.textContent = "Playing vs Computer";
+    });
+
+    const winningCombinations = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ];
+
+    function checkWinner() {
+        for (let combo of winningCombinations) {
+            const [a, b, c] = combo;
+
+            if (
+                board[a] &&
+                board[a] === board[b] &&
+                board[a] === board[c]
+            ) {
+                statusText.textContent = `🎉 Player ${board[a]} wins!`;
+                gameActive = false;
+                return;
+            }
+        }
+
+        if (!board.includes('')) {
+            statusText.textContent = "🤝 It's a draw!";
+            gameActive = false;
+        }
+    }
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => {
+            const index = cell.dataset.cell;
+
+            if (board[index] || !gameActive) return;
+
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+
+            checkWinner();
+
+            if (vsComputer && gameActive && currentPlayer === 'X') {
+                currentPlayer = 'O';
+                statusText.textContent = "Computer's turn";
+
+                setTimeout(() => {
+                    computerMove();
+                }, 500);
+
+                return;
+            }
+
+            if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusText.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        });
+    });
+
+    function resetGame() {
+    board = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    currentPlayer = 'X';
+
+    cells.forEach(cell => {
+        cell.textContent = '';
+    });
+
+    statusText.textContent = "Player X's turn";
+}
+
+function computerMove() {
+    let emptyCells = [];
+
+    board.forEach((cell, index) => {
+        if (cell === '') {
+            emptyCells.push(index);
+        }
+    });
+
+    if (emptyCells.length === 0) return;
+
+    const randomIndex =
+        emptyCells[Math.floor(Math.random() * emptyCells.length)];
+
+    board[randomIndex] = 'O';
+    cells[randomIndex].textContent = 'O';
+
+    checkWinner();
+
+    if (gameActive) {
+        currentPlayer = 'X';
+        statusText.textContent = "Player X's turn";
+    }
+}
+
+restartBtn.addEventListener('click', resetGame);
+}
+
+
 
 // ============================================
 // DICE ROLLING
@@ -540,9 +735,10 @@ function initDiceRolling() {
     setCubeFace(dice1, 1, 0);
     setCubeFace(dice2, 1, 1);
     totalDisplay.textContent = '2';
-    
+
     rollBtn.addEventListener('click', () => {
         rollBtn.disabled = true;
+        audioController.play('dice');
         diceScene1.classList.add('rolling');
         diceScene2.classList.add('rolling');
 
@@ -765,16 +961,17 @@ function initCoinFlip() {
             coinScene.classList.remove('impact');
         }, 460);
     }
-    
+
     flipBtn.addEventListener('click', () => {
         flipBtn.disabled = true;
+        audioController.play('coin');
         result.textContent = 'Flipping...';
         coinScene.classList.add('rolling');
-        
+
         const isHeads = Math.random() < 0.5;
         spinCount += 1;
         setCoinFace(isHeads, spinCount);
-        
+
         setTimeout(() => {
             coinScene.classList.remove('rolling');
             triggerCoinLanding();
@@ -889,19 +1086,19 @@ function initNumberGuessing() {
     let attempts = 0;
     let minRange = 1;
     let maxRange = 100;
-    
+
     const guessInput = document.getElementById('guessInput');
     const submitBtn = document.getElementById('submitGuess');
     const feedback = document.getElementById('feedback');
     const attemptsDisplay = document.getElementById('attempts');
     const rangeDisplay = document.getElementById('range');
     const resetBtn = document.getElementById('resetGuessing');
-    
+
     submitBtn.addEventListener('click', makeGuess);
     guessInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') makeGuess();
     });
-    
+
     resetBtn.addEventListener('click', () => {
         secretNumber = Math.floor(Math.random() * 100) + 1;
         attempts = 0;
@@ -914,7 +1111,7 @@ function initNumberGuessing() {
         guessInput.disabled = false;
         submitBtn.disabled = false;
     });
-    
+
     function makeGuess() {
         const guess = parseInt(guessInput.value);
         if (guess < minRange || guess > maxRange) {
@@ -922,17 +1119,17 @@ function initNumberGuessing() {
             feedback.style.color = 'var(--warning-color)';
             return;
         }
-        
+
         if (isNaN(guess) || guess < 1 || guess > 100) {
             feedback.textContent = '⚠️ Please enter a number between 1 and 100!';
             feedback.style.color = 'var(--warning-color)';
             return;
         }
-        
+
         attempts++;
         attemptsDisplay.textContent = attempts;
         const difference = Math.abs(guess - secretNumber);
-        
+
         if (guess === secretNumber) {
             feedback.textContent = `🎉 Congratulations! You found it in ${attempts} attempts!`;
             feedback.style.color = 'var(--success-color)';
@@ -941,7 +1138,7 @@ function initNumberGuessing() {
         } else if (guess < secretNumber) {
             if (difference <= 5) {
                 feedback.textContent = '📈 Slightly low! Try a bit higher!';
-            }else {
+            } else {
                 feedback.textContent = '📈 Too low! Try higher!';
             }
             feedback.style.color = 'var(--primary-color)';
@@ -955,7 +1152,7 @@ function initNumberGuessing() {
             feedback.style.color = 'var(--danger-color)';
             maxRange = Math.min(maxRange, guess - 1);
         }
-        
+
         rangeDisplay.textContent = `${minRange}-${maxRange}`;
         guessInput.value = '';
     }
@@ -1065,36 +1262,36 @@ function initPascalTriangle() {
     const rowsInput = document.getElementById('pascalRows');
     const generateBtn = document.getElementById('generatePascal');
     const display = document.getElementById('pascalDisplay');
-    
+
     function generatePascal() {
         const rows = parseInt(rowsInput.value) || 7;
         display.innerHTML = '';
-        
+
         const triangle = [];
-        
+
         for (let i = 0; i < rows; i++) {
             triangle[i] = [];
             const row = document.createElement('div');
             row.className = 'pascal-row';
-            
+
             for (let j = 0; j <= i; j++) {
                 if (j === 0 || j === i) {
                     triangle[i][j] = 1;
                 } else {
-                    triangle[i][j] = triangle[i-1][j-1] + triangle[i-1][j];
+                    triangle[i][j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
                 }
-                
+
                 const hexagon = document.createElement('div');
                 hexagon.className = 'hexagon';
                 hexagon.innerHTML = `<div class="hexagon-inner">${triangle[i][j]}</div>`;
                 hexagon.style.animationDelay = `${(i + j) * 0.05}s`;
                 row.appendChild(hexagon);
             }
-            
+
             display.appendChild(row);
         }
     }
-    
+
     generateBtn.addEventListener('click', generatePascal);
     generatePascal(); // Initial generation
 }
@@ -1213,22 +1410,22 @@ function initCalculator() {
     let currentValue = '0';
     let previousValue = '';
     let operation = '';
-    
+
     document.querySelectorAll('.calc-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const value = btn.getAttribute('data-value');
             const action = btn.getAttribute('data-action');
-            
+
             if (value) {
                 handleNumber(value);
             } else if (action) {
                 handleAction(action);
             }
-            
+
             updateDisplay();
         });
     });
-    
+
     function handleNumber(num) {
         if (currentValue === '0' || currentValue === 'Error') {
             currentValue = num;
@@ -1236,7 +1433,7 @@ function initCalculator() {
             currentValue += num;
         }
     }
-    
+
     function handleAction(action) {
         if (action === 'clear') {
             currentValue = '0';
@@ -1255,13 +1452,13 @@ function initCalculator() {
             operation = action;
         }
     }
-    
+
     function calculate() {
         try {
             const prev = parseFloat(previousValue);
             const curr = parseFloat(currentValue);
             let result;
-            
+
             switch (operation) {
                 case '+': result = prev + curr; break;
                 case '-': result = prev - curr; break;
@@ -1270,7 +1467,7 @@ function initCalculator() {
                 case '**': result = Math.pow(prev, curr); break;
                 default: return;
             }
-            
+
             currentValue = result.toString();
             previousValue = '';
             operation = '';
@@ -1278,7 +1475,7 @@ function initCalculator() {
             currentValue = 'Error';
         }
     }
-    
+
     function updateDisplay() {
         display.textContent = currentValue;
     }
@@ -1347,16 +1544,16 @@ function initFibonacci() {
     const display = document.getElementById('fibDisplay');
     const canvas = document.getElementById('fibSpiral');
     const ctx = canvas.getContext('2d');
-    
+
     function generateFibonacci() {
         const n = parseInt(termsInput.value) || 10;
         display.innerHTML = '';
-        
+
         let fib = [0, 1];
         for (let i = 2; i < n; i++) {
-            fib[i] = fib[i-1] + fib[i-2];
+            fib[i] = fib[i - 1] + fib[i - 2];
         }
-        
+
         fib.slice(0, n).forEach((num, index) => {
             const numEl = document.createElement('div');
             numEl.className = 'fib-number';
@@ -1364,51 +1561,51 @@ function initFibonacci() {
             numEl.style.animationDelay = `${index * 0.1}s`;
             display.appendChild(numEl);
         });
-        
+
         drawSpiral(fib.slice(0, Math.min(n, 12)));
     }
-    
+
     function drawSpiral(fib) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 3;
-        
+
         const scale = 5;
         let x = 300, y = 300;
         let direction = 0; // 0: right, 1: up, 2: left, 3: down
-        
+
         const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
-        
+
         fib.forEach((num, i) => {
             const size = num * scale;
             ctx.strokeStyle = colors[i % colors.length];
             ctx.fillStyle = colors[i % colors.length] + '20';
-            
+
             // Draw square
             ctx.fillRect(x, y, size, size);
             ctx.strokeRect(x, y, size, size);
-            
+
             // Draw arc
             ctx.beginPath();
             const arcX = direction === 0 ? x + size : direction === 2 ? x : x;
             const arcY = direction === 1 ? y : direction === 3 ? y + size : y;
-            
-            ctx.arc(arcX, arcY, size, 
-                Math.PI * direction / 2, 
+
+            ctx.arc(arcX, arcY, size,
+                Math.PI * direction / 2,
                 Math.PI * (direction + 1) / 2);
             ctx.stroke();
-            
+
             // Update position for next square
-            switch(direction) {
-                case 0: y -= fib[i+1] * scale; break;
+            switch (direction) {
+                case 0: y -= fib[i + 1] * scale; break;
                 case 1: x -= size; break;
-                case 2: y -= size; x -= fib[i+1] * scale; break;
+                case 2: y -= size; x -= fib[i + 1] * scale; break;
                 case 3: x += size; break;
             }
-            
+
             direction = (direction + 1) % 4;
         });
     }
-    
+
     generateBtn.addEventListener('click', generateFibonacci);
     generateFibonacci();
 }
@@ -1421,7 +1618,8 @@ function getFlamesHTML() {
     return `
         <div class="project-content">
             <h2>💖 FLAMES Game</h2>
-            <p class="project-desc">Discover your relationship status!</p>
+            <p class="project-desc">Discover your <strong>relationship status</strong> and calculate your 
+    <strong>Compatibility, Rivalry, </strong> or <strong>Nuisance</strong> factor!</p>
             <div class="flames-container">
                 <div class="flames-legend">
                     <div class="legend-item">F - Friends</div>
@@ -1569,86 +1767,449 @@ function getFlamesHTML() {
 }
 
 function initFlames() {
+    const calculateBtn = document.getElementById('calculateFlames');
     const name1Input = document.getElementById('name1');
     const name2Input = document.getElementById('name2');
-    const calculateBtn = document.getElementById('calculateFlames');
     const resultDiv = document.getElementById('flamesResult');
-    
+
+    if (!calculateBtn || !name1Input || !name2Input || !resultDiv) return;
+
     const relationshipData = {
-        'F': { name: 'Friends', emoji: '👫', message: 'You two are best friends forever!' },
-        'L': { name: 'Love', emoji: '❤️', message: 'True love is in the air!' },
-        'A': { name: 'Affection', emoji: '🥰', message: 'Sweet affection between you!' },
-        'M': { name: 'Marriage', emoji: '💍', message: 'Wedding bells are ringing!' },
-        'E': { name: 'Enemies', emoji: '😠', message: 'Maybe not the best match...' },
-        'S': { name: 'Siblings', emoji: '👨‍👩‍👧', message: 'Like brother and sister!' }
+        F: { rel: 'Friends', emoji: '🤝', metric: 'Bond Strength', vibe: 'A bond that never breaks!' },
+        L: { rel: 'Love', emoji: '❤️', metric: 'Compatibility Score', vibe: 'Pure romantic chemistry!' },
+        A: { rel: 'Affection', emoji: '😊', metric: 'Crush Intensity', vibe: 'Someone\'s blushing!' },
+        M: { rel: 'Marriage', emoji: '💍', metric: 'Marital Bliss', vibe: 'Start picking out the rings!' },
+        E: { rel: 'Enemies', emoji: '😈', metric: 'Rivalry Quotient', vibe: 'Keep your distance!' },
+        S: { rel: 'Siblings', emoji: '🏠', metric: 'Nuisance Factor', vibe: 'Stop touching my stuff!' }
     };
-    
+
     function calculateFlames() {
-        const name1 = name1Input.value.toLowerCase().replace(/\s/g, '');
-        const name2 = name2Input.value.toLowerCase().replace(/\s/g, '');
-        
-        if (!name1 || !name2) {
-            resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter both names!</p>';
+        const name1Raw = name1Input.value.trim();
+        const name2Raw = name2Input.value.trim();
+
+        if (!name1Raw || !name2Raw) {
+            resultDiv.innerHTML = '<p style="color: var(--error-color, #ff4d4d);">⚠️ Please enter both names!</p>';
             return;
         }
-        
-        const originalName1 = name1Input.value.trim();
-        const originalName2 = name2Input.value.trim();
-        
-        // Convert to arrays
-        let name1List = name1.split('');
-        let name2List = name2.split('');
-        
-        // Remove common characters
-        const name1Copy = [...name1List];
-        for (let char of name1Copy) {
-            const index2 = name2List.indexOf(char);
-            if (index2 !== -1) {
-                name1List.splice(name1List.indexOf(char), 1);
-                name2List.splice(index2, 1);
+
+        const a = name1Raw.toLowerCase().replace(/\s+/g, '');
+        const b = name2Raw.toLowerCase().replace(/\s+/g, '');
+        const listA = a.split('');
+        const listB = b.split('');
+
+        for (let i = listA.length - 1; i >= 0; i--) {
+            const ch = listA[i];
+            const matchIndex = listB.indexOf(ch);
+            if (matchIndex !== -1) {
+                listA.splice(i, 1);
+                listB.splice(matchIndex, 1);
             }
         }
-        
-        const count = name1List.length + name2List.length;
-        
-        // Calculate FLAMES
+
+        const count = listA.length + listB.length;
+        const totalLen = a.length + b.length;
+        const score = totalLen > 0 ? 30 + Math.round(((totalLen - count) / totalLen) * 70) : 0;
+
         const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
         let index = 0;
-        
         while (flames.length > 1) {
             index = (index + count - 1) % flames.length;
             flames.splice(index, 1);
-            if (index === flames.length && flames.length > 0) {
-                index = 0;
-            }
         }
-        
-        const result = flames[0];
-        const relationship = relationshipData[result];
-        
-        // Display result with animation
+
+        const final = relationshipData[flames[0]];
+        const shareText = `🔥 FLAMES Report: ${name1Raw} + ${name2Raw} = ${final.rel} ${final.emoji}\n${final.metric}: ${score}%\nVibe: ${final.vibe}`;
+
         resultDiv.innerHTML = `
-            <div class="result-card">
-                <div class="result-emoji">${relationship.emoji}</div>
-                <div class="result-names">${originalName1} & ${originalName2}</div>
-                <div class="result-relationship">${relationship.name}</div>
-                <div class="result-details">
-                    <div>${relationship.message}</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                        Remaining letters: ${count}
-                    </div>
+            <div class="result-card" style="text-align: center; animation: fadeIn 0.5s ease-out;">
+                <div class="result-emoji" style="font-size: 3rem; margin-bottom: 10px;">${final.emoji}</div>
+                <div class="result-names" style="font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${name1Raw.toUpperCase()} & ${name2Raw.toUpperCase()}</div>
+                <div class="result-relationship" style="font-size: 1.5rem; color: var(--accent-color, #a29bfe); margin-bottom: 15px;">${final.rel}</div>
+                <div class="result-details" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="font-weight: bold;">${final.metric}: ${score}%</div>
+                    <div style="font-size: 0.85rem; font-style: italic; opacity: 0.9; margin-top: 5px;">"${final.vibe}"</div>
                 </div>
+                <button class="copy-btn" data-share="${shareText}" onclick="navigator.clipboard?.writeText(this.getAttribute('data-share'))" style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">📋 Copy Result</button>
             </div>
         `;
     }
-    
+
     calculateBtn.addEventListener('click', calculateFlames);
-    name1Input.addEventListener('keypress', (e) => {
+    [name1Input, name2Input].forEach(input => input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') calculateFlames();
+    }));
+}
+
+// ============================================
+// EMOJI MEMORY GAME
+// ============================================
+function getEmojiMemoryGameHTML() {
+    return `
+        <div class="project-content">
+            <h2>🧠 Emoji Memory Game</h2>
+            <div class="emoji-memory-container">
+                <div class="game-status" id="gameStatus">
+                    <div class="status-item">
+                        <span class="status-label">Score</span>
+                        <span class="status-value" id="memoryScore">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Level</span>
+                        <span class="status-value" id="memoryLevel">1</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Sequence</span>
+                        <span class="status-value" id="sequenceLength">1</span>
+                    </div>
+                </div>
+                
+                <div class="game-instructions" id="instructions">
+                    👇 Click START to begin the game!
+                </div>
+                
+                <div class="sequence-display" id="sequenceDisplay">
+                    <div class="display-content" id="displayContent">
+                        Ready to test your memory?
+                    </div>
+                </div>
+                
+                <div class="emoji-buttons">
+                    <button class="emoji-btn" data-emoji="🍎">🍎</button>
+                    <button class="emoji-btn" data-emoji="🚗">🚗</button>
+                    <button class="emoji-btn" data-emoji="⚽">⚽</button>
+                    <button class="emoji-btn" data-emoji="🐍">🐍</button>
+                    <button class="emoji-btn" data-emoji="🎧">🎧</button>
+                    <button class="emoji-btn" data-emoji="🔥">🔥</button>
+                    <button class="emoji-btn" data-emoji="🌈">🌈</button>
+                    <button class="emoji-btn" data-emoji="🚀">🚀</button>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="btn-start" id="startGame">▶️ START</button>
+                    <button class="btn-reset" id="resetGame">🔄 RESET</button>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .emoji-memory-container {
+                padding: 2rem;
+                max-width: 600px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            
+            .game-status {
+                display: flex;
+                justify-content: space-around;
+                margin-bottom: 2rem;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .status-item {
+                background: var(--surface-color);
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                border: 2px solid var(--border-color);
+                flex: 1;
+                min-width: 100px;
+            }
+            
+            .status-label {
+                display: block;
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.5rem;
+            }
+            
+            .status-value {
+                display: block;
+                font-size: 2rem;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+            
+            .game-instructions {
+                font-size: 1.3rem;
+                margin-bottom: 2rem;
+                padding: 1rem;
+                background: rgba(106, 88, 236, 0.1);
+                border-radius: 12px;
+                border: 2px solid var(--primary-color);
+            }
+            
+            .sequence-display {
+                background: var(--surface-color);
+                border: 3px dashed var(--primary-color);
+                border-radius: 15px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                min-height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .display-content {
+                font-size: 3rem;
+                font-weight: bold;
+                word-wrap: break-word;
+                letter-spacing: 0.5rem;
+            }
+            
+            .emoji-buttons {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .emoji-btn {
+                font-size: 3rem;
+                padding: 1.5rem;
+                border: 3px solid var(--border-color);
+                background: var(--surface-color);
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                aspect-ratio: 1 / 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .emoji-btn:hover {
+                transform: scale(1.1);
+                border-color: var(--primary-color);
+                box-shadow: 0 0 20px rgba(106, 88, 236, 0.3);
+            }
+            
+            .emoji-btn:active {
+                transform: scale(0.95);
+            }
+            
+            .emoji-btn.disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+                pointer-events: none;
+            }
+            
+            .emoji-btn.active {
+                background: var(--primary-color);
+                color: white;
+                box-shadow: 0 0 30px rgba(106, 88, 236, 0.6);
+                animation: pulse 0.3s ease;
+            }
+            
+            .game-controls {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .btn-start, .btn-reset {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: bold;
+            }
+            
+            .btn-start {
+                background: linear-gradient(135deg, #6a58ec, #8b5cf6);
+                color: white;
+            }
+            
+            .btn-start:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(106, 88, 236, 0.4);
+            }
+            
+            .btn-reset {
+                background: var(--surface-color);
+                color: var(--text-color);
+                border: 2px solid var(--border-color);
+            }
+            
+            .btn-reset:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            
+            @media (max-width: 600px) {
+                .emoji-buttons {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+                
+                .emoji-btn {
+                    font-size: 2rem;
+                    padding: 1rem;
+                }
+                
+                .display-content {
+                    font-size: 2rem;
+                }
+            }
+        </style>
+    `;
+}
+
+function initEmojiMemoryGame() {
+    const emojis = ["🍎", "🚗", "⚽", "🐍", "🎧", "🔥", "🌈", "🚀"];
+    let sequence = [];
+    let userSequence = [];
+    let score = 0;
+    let level = 1;
+    let gameActive = false;
+    let isPlayingSequence = false;
+    
+    const startBtn = document.getElementById('startGame');
+    const resetBtn = document.getElementById('resetGame');
+    const scoreDisplay = document.getElementById('memoryScore');
+    const levelDisplay = document.getElementById('memoryLevel');
+    const sequenceLengthDisplay = document.getElementById('sequenceLength');
+    const instructionsDiv = document.getElementById('instructions');
+    const displayContent = document.getElementById('displayContent');
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    
+    function disableButtons(disabled) {
+        emojiButtons.forEach(btn => {
+            if (disabled) {
+                btn.classList.add('disabled');
+            } else {
+                btn.classList.remove('disabled');
+            }
+        });
+    }
+    function showSequence() {
+        isPlayingSequence = true;
+        disableButtons(true);
+        displayContent.textContent = "Watch the sequence...";
+        
+        let i = 0;
+        const playNextEmoji = () => {
+            if (i < sequence.length) {
+                const emoji = sequence[i];
+                const button = Array.from(emojiButtons).find(btn => btn.dataset.emoji === emoji);
+                
+                if (button) {
+                    button.classList.add('active');
+                    setTimeout(() => {
+                        button.classList.remove('active');
+                        i++;
+                        setTimeout(playNextEmoji, 500);
+                    }, 600);
+                }
+            } else {
+                isPlayingSequence = false;
+                disableButtons(false);
+                userSequence = [];
+                gameActive = true;
+                displayContent.textContent = "Your turn! Click the emojis...";
+                instructionsDiv.textContent = `👆 Repeat the sequence (${sequence.length} steps)`;
+            }
+        };
+        
+        playNextEmoji();
+    }
+    
+    function startNewRound() {
+        const newEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        sequence.push(newEmoji);
+        userSequence = [];
+        
+        sequenceLengthDisplay.textContent = sequence.length;
+        setTimeout(showSequence, 500);
+    }
+    
+    function handleEmojiClick(emoji, button) {
+        if (isPlayingSequence || !gameActive) return;
+        
+        userSequence.push(emoji);
+        button.classList.add('active');
+        
+        setTimeout(() => {
+            button.classList.remove('active');
+        }, 300);
+        
+        // Check if the emoji matches
+        if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
+            gameOver();
+            return;
+        }
+        
+        // Check if the entire sequence is correct
+        if (userSequence.length === sequence.length) {
+            score += level * 10;
+            scoreDisplay.textContent = score;
+            level++;
+            levelDisplay.textContent = level;
+            
+            instructionsDiv.textContent = "✅ Correct! Get ready for the next round...";
+            gameActive = false;
+            setTimeout(startNewRound, 1500);
+        }
+    }
+    
+    function gameOver() {
+        gameActive = false;
+        disableButtons(true);
+        instructionsDiv.textContent = `❌ Game Over! You reached Level ${level} with Score: ${score}`;
+        displayContent.textContent = `Final Score: ${score}`;
+        startBtn.textContent = "▶️ PLAY AGAIN";
+    }
+    
+    function resetGame() {
+        sequence = [];
+        userSequence = [];
+        score = 0;
+        level = 1;
+        gameActive = false;
+        isPlayingSequence = false;
+        
+        scoreDisplay.textContent = '0';
+        levelDisplay.textContent = '1';
+        sequenceLengthDisplay.textContent = '0';
+        instructionsDiv.textContent = "👇 Click START to begin the game!";
+        displayContent.textContent = "Ready to test your memory?";
+        startBtn.textContent = "▶️ START";
+        
+        disableButtons(true);
+    }
+    
+    startBtn.addEventListener('click', () => {
+        resetGame();
+        gameActive = true;
+        instructionsDiv.textContent = "Watch the sequence...";
+        startNewRound();
     });
-    name2Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
+    
+    resetBtn.addEventListener('click', resetGame);
+    
+    emojiButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const emoji = btn.dataset.emoji;
+            handleEmojiClick(emoji, btn);
+        });
     });
+    
+    // Initial state
+    disableButtons(true);
 }
 
 // ============================================
@@ -1802,22 +2363,22 @@ function initCollatz() {
     const sequenceDiv = document.getElementById('sequenceDisplay');
     const canvas = document.getElementById('collatzGraph');
     const ctx = canvas.getContext('2d');
-    
+
     function generateSequence() {
         let number = parseInt(numberInput.value);
-        
+
         if (!number || number < 1) {
             sequenceDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter a positive integer!</p>';
             statsDiv.innerHTML = '';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             return;
         }
-        
+
         const originalNumber = number;
         const sequence = [number];
         const maxSteps = 20000;
         let steps = 0;
-        
+
         // Generate sequence with a safety limit
         while (number !== 1 && steps < maxSteps) {
             if (number % 2 === 0) {
@@ -1830,11 +2391,11 @@ function initCollatz() {
         }
 
         const reachedOne = number === 1;
-        
+
         // Display stats
         const maxNum = Math.max(...sequence);
         const statusText = reachedOne ? 'Reached 1 ✅' : `Not reached in ${maxSteps} steps ❌`;
-        
+
         statsDiv.innerHTML = `
             <div class="stat-box">
                 <div class="stat-label">Starting Number</div>
@@ -1853,7 +2414,7 @@ function initCollatz() {
                 <div class="stat-value">${maxNum}</div>
             </div>
         `;
-        
+
         // Display sequence
         sequenceDiv.innerHTML = reachedOne
             ? '<p style="margin-bottom: 1rem; color: var(--success-color); font-weight: 600;">✅ This number reaches 1.</p>'
@@ -1864,7 +2425,7 @@ function initCollatz() {
             numEl.textContent = num;
             numEl.style.animationDelay = `${index * 0.02}s`;
             sequenceDiv.appendChild(numEl);
-            
+
             if (index < sequence.length - 1) {
                 const arrow = document.createElement('span');
                 arrow.className = 'sequence-arrow';
@@ -1872,24 +2433,24 @@ function initCollatz() {
                 sequenceDiv.appendChild(arrow);
             }
         });
-        
+
         // Draw graph for the generated sequence
         drawGraph(sequence);
     }
-    
+
     function drawGraph(sequence) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         if (sequence.length === 0) return;
-        
+
         const padding = 40;
         const graphWidth = canvas.width - 2 * padding;
         const graphHeight = canvas.height - 2 * padding;
-        
+
         const maxValue = Math.max(...sequence);
         const xStep = graphWidth / (sequence.length - 1);
         const yScale = graphHeight / maxValue;
-        
+
         // Draw axes
         ctx.strokeStyle = 'var(--text-secondary)';
         ctx.lineWidth = 2;
@@ -1898,7 +2459,7 @@ function initCollatz() {
         ctx.lineTo(padding, canvas.height - padding);
         ctx.lineTo(canvas.width - padding, canvas.height - padding);
         ctx.stroke();
-        
+
         // Draw grid lines
         ctx.strokeStyle = 'rgba(100, 116, 139, 0.2)';
         ctx.lineWidth = 1;
@@ -1909,18 +2470,18 @@ function initCollatz() {
             ctx.lineTo(canvas.width - padding, y);
             ctx.stroke();
         }
-        
+
         // Draw line
         ctx.strokeStyle = '#6366f1';
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        
+
         ctx.beginPath();
         sequence.forEach((value, index) => {
             const x = padding + index * xStep;
             const y = canvas.height - padding - value * yScale;
-            
+
             if (index === 0) {
                 ctx.moveTo(x, y);
             } else {
@@ -1928,41 +2489,41 @@ function initCollatz() {
             }
         });
         ctx.stroke();
-        
+
         // Draw points
         ctx.fillStyle = '#8b5cf6';
         sequence.forEach((value, index) => {
             const x = padding + index * xStep;
             const y = canvas.height - padding - value * yScale;
-            
+
             ctx.beginPath();
             ctx.arc(x, y, 4, 0, Math.PI * 2);
             ctx.fill();
         });
-        
+
         // Draw labels
         ctx.fillStyle = '#94a3b8';
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Steps →', canvas.width / 2, canvas.height - 10);
-        
+
         ctx.save();
         ctx.translate(15, canvas.height / 2);
         ctx.rotate(-Math.PI / 2);
         ctx.fillText('Value', 0, 0);
         ctx.restore();
     }
-    
+
     generateBtn.addEventListener('click', generateSequence);
     numberInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') generateSequence();
     });
-    
+
     // Generate initial sequence
     generateSequence();
 }
 
-function getArmstrongHTML() { 
+function getArmstrongHTML() {
     return `
         <div class="project-content">
             <h2>💎 Armstrong Number Checker</h2>
@@ -2109,29 +2670,29 @@ function initArmstrong() {
     const checkBtn = document.getElementById('checkArmstrong');
     const resultDiv = document.getElementById('armstrongResult');
     const exampleBtns = document.querySelectorAll('.example-btn');
-    
+
     function checkArmstrong(num) {
         if (num === null || num === undefined || num < 0) {
             resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter a valid positive number!</p>';
             return;
         }
-        
+
         const numStr = num.toString();
         const numDigits = numStr.length;
         const digits = numStr.split('').map(Number);
-        
+
         // Calculate sum
         let sum = 0;
         const calculations = [];
-        
+
         digits.forEach(digit => {
             const power = Math.pow(digit, numDigits);
             sum += power;
             calculations.push({ digit, power });
         });
-        
+
         const isArmstrong = sum === num;
-        
+
         // Display result
         let html = `
             <div class="armstrong-result">
@@ -2147,7 +2708,7 @@ function initArmstrong() {
                 
                 <div class="digit-breakdown">
         `;
-        
+
         calculations.forEach(calc => {
             html += `
                 <div class="digit-card">
@@ -2156,7 +2717,7 @@ function initArmstrong() {
                 </div>
             `;
         });
-        
+
         html += `
                 </div>
                 
@@ -2165,30 +2726,30 @@ function initArmstrong() {
                         <strong>Sum:</strong> ${calculations.map(c => c.power).join(' + ')} = ${sum}
                     </div>
                     <div class="step">
-                        ${isArmstrong 
-                            ? `<span style="color: var(--success-color);">✓ ${sum} = ${num} (Armstrong Number!)</span>`
-                            : `<span style="color: var(--danger-color);">✗ ${sum} ≠ ${num} (Not Armstrong)</span>`
-                        }
+                        ${isArmstrong
+                ? `<span style="color: var(--success-color);">✓ ${sum} = ${num} (Armstrong Number!)</span>`
+                : `<span style="color: var(--danger-color);">✗ ${sum} ≠ ${num} (Not Armstrong)</span>`
+            }
                     </div>
                 </div>
             </div>
         `;
-        
+
         resultDiv.innerHTML = html;
     }
-    
+
     checkBtn.addEventListener('click', () => {
         const num = parseInt(numberInput.value);
         checkArmstrong(num);
     });
-    
+
     numberInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             const num = parseInt(numberInput.value);
             checkArmstrong(num);
         }
     });
-    
+
     exampleBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const num = parseInt(btn.getAttribute('data-num'));
@@ -2404,23 +2965,23 @@ function initHangman() {
     const keyboard = document.getElementById('keyboard');
     const gameMessage = document.getElementById('gameMessage');
     const newGameBtn = document.getElementById('newGameBtn');
-    
-    const words = ['python', 'programming', 'computer', 'algorithm', 'keyboard', 
-                   'monitor', 'software', 'hardware', 'database', 'network',
-                   'internet', 'developer', 'variable', 'function', 'application'];
-    
+
+    const words = ['python', 'programming', 'computer', 'algorithm', 'keyboard',
+        'monitor', 'software', 'hardware', 'database', 'network',
+        'internet', 'developer', 'variable', 'function', 'application'];
+
     let currentWord = '';
     let guessedLetters = [];
     let correctLetters = [];
     let wrongAttempts = 0;
     const maxAttempts = 6;
     let gameOver = false;
-    
+
     // Create keyboard
     function createKeyboard() {
         keyboard.innerHTML = '';
         const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-        
+
         letters.forEach(letter => {
             const btn = document.createElement('button');
             btn.className = 'key-btn';
@@ -2430,14 +2991,14 @@ function initHangman() {
             keyboard.appendChild(btn);
         });
     }
-    
+
     // Draw hangman parts
     function drawHangman(stage) {
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
-        
-        switch(stage) {
+
+        switch (stage) {
             case 1: // Base
                 ctx.beginPath();
                 ctx.moveTo(50, 320);
@@ -2511,7 +3072,7 @@ function initHangman() {
                 break;
         }
     }
-    
+
     // Initialize game
     function initGame() {
         currentWord = words[Math.floor(Math.random() * words.length)];
@@ -2519,21 +3080,21 @@ function initHangman() {
         correctLetters = [];
         wrongAttempts = 0;
         gameOver = false;
-        
+
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Update UI
         wordLengthEl.textContent = currentWord.length;
         attemptsLeftEl.textContent = maxAttempts;
         guessedList.textContent = 'None';
         gameMessage.textContent = '';
         gameMessage.className = 'game-message';
-        
+
         createKeyboard();
         updateWordDisplay();
     }
-    
+
     // Update word display
     function updateWordDisplay() {
         wordDisplay.innerHTML = '';
@@ -2544,24 +3105,24 @@ function initHangman() {
             wordDisplay.appendChild(letterBox);
         }
     }
-    
+
     // Guess letter
     function guessLetter(letter) {
         if (gameOver || guessedLetters.includes(letter)) return;
-        
+
         guessedLetters.push(letter);
-        
+
         // Update button
         const btn = keyboard.querySelector(`[data-letter="${letter}"]`);
         btn.disabled = true;
-        
+
         if (currentWord.includes(letter)) {
             // Correct guess
             correctLetters.push(letter);
             btn.classList.add('correct');
-            
+
             updateWordDisplay();
-            
+
             // Check win
             if (currentWord.split('').every(l => correctLetters.includes(l))) {
                 gameOver = true;
@@ -2573,13 +3134,13 @@ function initHangman() {
             // Wrong guess
             wrongAttempts++;
             btn.classList.add('wrong');
-            
+
             // Draw hangman part (stages 1-4 are gallows, 5-10 are body parts)
             const drawStage = wrongAttempts + 4;
             drawHangman(drawStage);
-            
+
             attemptsLeftEl.textContent = maxAttempts - wrongAttempts;
-            
+
             // Check lose
             if (wrongAttempts >= maxAttempts) {
                 gameOver = true;
@@ -2598,17 +3159,17 @@ function initHangman() {
                 }
             }
         }
-        
+
         // Update guessed letters list
         guessedList.textContent = guessedLetters.join(', ').toUpperCase();
     }
-    
+
     function disableAllKeys() {
         keyboard.querySelectorAll('.key-btn').forEach(btn => {
             btn.disabled = true;
         });
     }
-    
+
     // Draw initial gallows
     function drawGallows() {
         drawHangman(1); // Base
@@ -2616,12 +3177,12 @@ function initHangman() {
         drawHangman(3); // Top beam
         drawHangman(4); // Rope
     }
-    
+
     newGameBtn.addEventListener('click', () => {
         initGame();
         drawGallows();
     });
-    
+
     // Keyboard support
     document.addEventListener('keypress', (e) => {
         if (gameOver) return;
@@ -2630,7 +3191,7 @@ function initHangman() {
             guessLetter(letter);
         }
     });
-    
+
     // Initialize
     initGame();
     drawGallows();
@@ -2796,12 +3357,12 @@ function initMorseCode() {
         '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
         '8': '---..', '9': '----.', ' ': '/'
     };
-    
+
     const textInput = document.getElementById('textInput');
     const translateBtn = document.getElementById('translateBtn');
     const morseOutput = document.getElementById('morseOutput');
     const morseChart = document.getElementById('morseChart');
-    
+
     // Populate morse chart
     Object.keys(morseCode).forEach(char => {
         if (char !== ' ') {
@@ -2814,7 +3375,7 @@ function initMorseCode() {
             morseChart.appendChild(item);
         }
     });
-    
+
     // Translate function
     function translate() {
         const text = textInput.value.toUpperCase();
@@ -2822,10 +3383,10 @@ function initMorseCode() {
             morseOutput.innerHTML = '<p class="placeholder">Please enter some text to translate!</p>';
             return;
         }
-        
+
         morseOutput.innerHTML = '';
         const words = text.split(' ');
-        
+
         words.forEach((word, wordIndex) => {
             let morseWord = '';
             for (let char of word) {
@@ -2833,7 +3394,7 @@ function initMorseCode() {
                     morseWord += morseCode[char] + ' ';
                 }
             }
-            
+
             if (morseWord.trim()) {
                 const wordEl = document.createElement('div');
                 wordEl.className = 'morse-word';
@@ -2843,7 +3404,7 @@ function initMorseCode() {
             }
         });
     }
-    
+
     translateBtn.addEventListener('click', translate);
     textInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && e.ctrlKey) {
@@ -3084,29 +3645,29 @@ function initPrimeAnalyzer() {
     const factorizeBtn = document.getElementById('factorizeBtn');
     const factorizationDisplay = document.getElementById('factorizationDisplay');
     const factorizationDetails = document.getElementById('factorizationDetails');
-    
+
     // Check if number is prime
     function isPrime(num) {
         if (num < 2) return false;
         if (num === 2) return true;
         if (num % 2 === 0) return false;
-        
+
         for (let i = 3; i <= Math.sqrt(num); i += 2) {
             if (num % i === 0) return false;
         }
         return true;
     }
-    
+
     // Check prime
     function checkPrime() {
         const num = parseInt(primeInput.value);
-        
+
         if (isNaN(num)) {
             primeResult.textContent = '⚠️ Please enter a valid number!';
             primeResult.className = 'result-display';
             return;
         }
-        
+
         if (isPrime(num)) {
             primeResult.textContent = `✅ ${num} is a Prime Number!`;
             primeResult.className = 'result-display prime';
@@ -3115,17 +3676,17 @@ function initPrimeAnalyzer() {
             primeResult.className = 'result-display not-prime';
         }
     }
-    
+
     // Generate primes up to limit
     function generatePrimes() {
         const limit = parseInt(generateLimit.value) || 100;
         primesDisplay.innerHTML = '';
-        
+
         const primes = [];
         for (let i = 2; i <= limit; i++) {
             if (isPrime(i)) primes.push(i);
         }
-        
+
         primes.forEach((prime, index) => {
             const el = document.createElement('div');
             el.className = 'prime-number';
@@ -3133,23 +3694,23 @@ function initPrimeAnalyzer() {
             el.style.animationDelay = `${index * 0.02}s`;
             primesDisplay.appendChild(el);
         });
-        
+
         if (primes.length === 0) {
             primesDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
-    
+
     // Find primes in range
     function findPrimesInRange() {
         const start = parseInt(rangeStart.value) || 1;
         const end = parseInt(rangeEnd.value) || 50;
         rangeDisplay.innerHTML = '';
-        
+
         const primes = [];
         for (let i = Math.max(2, start); i <= end; i++) {
             if (isPrime(i)) primes.push(i);
         }
-        
+
         primes.forEach((prime, index) => {
             const el = document.createElement('div');
             el.className = 'prime-number';
@@ -3157,23 +3718,23 @@ function initPrimeAnalyzer() {
             el.style.animationDelay = `${index * 0.02}s`;
             rangeDisplay.appendChild(el);
         });
-        
+
         if (primes.length === 0) {
             rangeDisplay.innerHTML = '<p style="color: var(--text-secondary);">No primes found in range</p>';
         }
     }
-    
+
     // Prime factorization
     function factorize() {
         let num = parseInt(factorizeInput.value);
         const originalNum = num;
-        
+
         if (isNaN(num)) {
             factorizationDisplay.textContent = '⚠️ Please enter a valid number!';
             factorizationDetails.innerHTML = '';
             return;
         }
-        
+
         if (num < 2) {
             factorizationDisplay.textContent = `❌ ${num} cannot be factorized into primes.`;
             factorizationDetails.innerHTML = `
@@ -3184,7 +3745,7 @@ function initPrimeAnalyzer() {
             `;
             return;
         }
-        
+
         const factors = [];
         let d = 2;
         let tempNum = num;
@@ -3196,11 +3757,11 @@ function initPrimeAnalyzer() {
             d++;
         }
         if (tempNum > 1) factors.push(tempNum);
-        
+
         const uniqueFactors = [...new Set(factors)];
-        
+
         factorizationDisplay.textContent = `${originalNum} = ${factors.join(' × ')}`;
-        
+
         factorizationDetails.innerHTML = `
             <div class="detail-item">
                 <span class="detail-label">Unique Prime Factors:</span>
@@ -3212,16 +3773,16 @@ function initPrimeAnalyzer() {
             </div>
         `;
     }
-    
+
     // Event listeners
     checkPrimeBtn.addEventListener('click', checkPrime);
     primeInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPrime();
     });
-    
+
     generatePrimesBtn.addEventListener('click', generatePrimes);
     rangeBtn.addEventListener('click', findPrimesInRange);
-    
+
     // Initial generation
     generatePrimes();
 }
@@ -3340,19 +3901,19 @@ function initTowerOfHanoi() {
     const resetBtn = document.getElementById('resetHanoi');
     const moveCountEl = document.getElementById('moveCount');
     const optimalMovesEl = document.getElementById('optimalMoves');
-    
+
     let towers = [[], [], []];
     let diskCount = 3;
     let moveCount = 0;
     let isAnimating = false;
     let shouldStop = false;
-    
+
     const towerX = [200, 400, 600];
     const baseY = 350;
     const diskHeight = 20;
     const maxDiskWidth = 120;
     const colors = ['#ff6b6b', '#f59e0b', '#10b981', '#06b6d4', '#6366f1', '#8b5cf6', '#ec4899'];
-    
+
     function initTowers() {
         towers = [[], [], []];
         moveCount = 0;
@@ -3361,19 +3922,19 @@ function initTowerOfHanoi() {
         //Reset animation state
         isAnimating = false;
         solveBtn.disabled = false;
-        
+
         for (let i = diskCount; i >= 1; i--) {
             towers[0].push(i);
         }
-        
+
         optimalMovesEl.textContent = Math.pow(2, diskCount) - 1;
         moveCountEl.textContent = '0';
         drawTowers();
     }
-    
+
     function drawTowers() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         // Draw bases and poles
         ctx.fillStyle = '#64748b';
         for (let i = 0; i < 3; i++) {
@@ -3382,7 +3943,7 @@ function initTowerOfHanoi() {
             // Base
             ctx.fillRect(towerX[i] - 80, baseY, 160, 10);
         }
-        
+
         // Draw disks
         for (let tower = 0; tower < 3; tower++) {
             for (let disk = 0; disk < towers[tower].length; disk++) {
@@ -3390,20 +3951,20 @@ function initTowerOfHanoi() {
                 const diskWidth = (maxDiskWidth * diskSize) / diskCount;
                 const x = towerX[tower] - diskWidth / 2;
                 const y = baseY - (disk + 1) * diskHeight;
-                
+
                 // Disk with gradient
                 const gradient = ctx.createLinearGradient(x, y, x + diskWidth, y + diskHeight);
                 gradient.addColorStop(0, colors[diskSize - 1]);
                 gradient.addColorStop(1, colors[diskSize - 1] + 'aa');
-                
+
                 ctx.fillStyle = gradient;
                 ctx.fillRect(x, y, diskWidth, diskHeight - 2);
-                
+
                 // Border
                 ctx.strokeStyle = '#1e293b';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(x, y, diskWidth, diskHeight - 2);
-                
+
                 // Number
                 ctx.fillStyle = 'white';
                 ctx.font = 'bold 12px Arial';
@@ -3412,30 +3973,30 @@ function initTowerOfHanoi() {
             }
         }
     }
-    
+
     async function moveDisk(from, to) {
-        if(shouldStop) return;
+        if (shouldStop) return;
 
         const disk = towers[from].pop();
         towers[to].push(disk);
         moveCount++;
         moveCountEl.textContent = moveCount;
-        
+
         drawTowers();
         await new Promise(resolve => setTimeout(resolve, 500));
     }
-    
+
     async function solveHanoi(n, from, to, aux) {
         if (n === 1) {
             await moveDisk(from, to);
             return;
         }
-        
+
         await solveHanoi(n - 1, from, aux, to);
         await moveDisk(from, to);
         await solveHanoi(n - 1, aux, to, from);
     }
-    
+
     async function solve() {
         if (isAnimating) return;
 
@@ -3443,25 +4004,25 @@ function initTowerOfHanoi() {
             alert("Visualization supports only 3 to 7 disks");
             return;
         }
-        
+
         isAnimating = true;
         solveBtn.disabled = true;
-        
+
         await solveHanoi(diskCount, 0, 2, 1);
 
         shouldStop = false;
-        
+
         isAnimating = false;
         solveBtn.disabled = false;
     }
-    
+
     solveBtn.addEventListener('click', solve);
     resetBtn.addEventListener('click', () => {
         shouldStop = true;
         initTowers();
     });
     diskCountInput.addEventListener('change', initTowers);
-    
+
     initTowers();
 }
 
@@ -3663,6 +4224,192 @@ function initTypingSpeedTester() {
     });
 }
 
+function getNumberConverterHTML() {
+    return `
+        <div class="project-content">
+            <h2>🔢 Number Converter</h2>
+            <div class="converter-box">
+                <div class="converter-row">
+                    <label for="converterInput">Number</label>
+                    <input id="converterInput" type="text" placeholder="Enter a value" value="1010">
+                </div>
+                <div class="converter-row">
+                    <label for="sourceBase">From</label>
+                    <select id="sourceBase">
+                        <option value="2">Binary</option>
+                        <option value="8">Octal</option>
+                        <option value="10" selected>Decimal</option>
+                        <option value="16">Hexadecimal</option>
+                    </select>
+                </div>
+                <div class="converter-row">
+                    <label for="targetBase">To</label>
+                    <select id="targetBase">
+                        <option value="2">Binary</option>
+                        <option value="8">Octal</option>
+                        <option value="10">Decimal</option>
+                        <option value="16" selected>Hexadecimal</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="convertNumberBtn">Convert</button>
+                <div id="converterResult" class="converter-result"></div>
+            </div>
+        </div>
+        <style>
+            .converter-box { max-width: 640px; margin: 0 auto; padding: 1.5rem; display: grid; gap: 1rem; }
+            .converter-row { display: grid; gap: 0.4rem; }
+            .converter-row label { font-weight: 600; }
+            .converter-row input, .converter-row select { padding: 0.9rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--surface-color); color: var(--text-color); }
+            .converter-result { min-height: 2rem; padding: 0.9rem 1rem; border-radius: 10px; background: var(--surface-color); border: 1px solid var(--border-color); font-weight: 700; }
+        </style>
+    `;
+}
+
+function initNumberConverter() {
+    const input = document.getElementById('converterInput');
+    const sourceBase = document.getElementById('sourceBase');
+    const targetBase = document.getElementById('targetBase');
+    const button = document.getElementById('convertNumberBtn');
+    const result = document.getElementById('converterResult');
+
+    if (!input || !sourceBase || !targetBase || !button || !result) return;
+
+    const convert = () => {
+        const value = input.value.trim();
+        const fromBase = Number(sourceBase.value);
+        const toBase = Number(targetBase.value);
+
+        if (!value) {
+            result.textContent = 'Enter a number to convert.';
+            return;
+        }
+
+        const parsed = parseInt(value, fromBase);
+        if (Number.isNaN(parsed)) {
+            result.textContent = 'Invalid input for the selected base.';
+            return;
+        }
+
+        result.textContent = `Result: ${parsed.toString(toBase).toUpperCase()}`;
+    };
+
+    button.addEventListener('click', convert);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') convert(); });
+    convert();
+}
+
+function getWhackaMoleHTML() {
+    return `
+        <div class="project-content">
+            <h2>🔨 Whack-a-Mole</h2>
+            <div class="whack-container">
+                <div class="whack-stats">
+                    <div>Score: <span id="whackScore">0</span></div>
+                    <div>Time: <span id="whackTime">30</span>s</div>
+                </div>
+                <div class="whack-board" id="whackBoard"></div>
+                <div class="whack-actions">
+                    <button class="btn-primary" id="startWhackBtn">Start Game</button>
+                    <button class="btn-primary" id="resetWhackBtn">Reset</button>
+                </div>
+                <div id="whackMessage" class="whack-message">Hit the mole when it appears.</div>
+            </div>
+        </div>
+        <style>
+            .whack-container { max-width: 720px; margin: 0 auto; padding: 1.5rem; text-align: center; }
+            .whack-stats { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; font-weight: 700; flex-wrap: wrap; }
+            .whack-board { display: grid; grid-template-columns: repeat(3, minmax(80px, 1fr)); gap: 0.8rem; margin: 1rem auto; max-width: 420px; }
+            .whack-hole { aspect-ratio: 1 / 1; border-radius: 18px; border: 2px solid var(--border-color); background: var(--surface-color); font-size: 2rem; cursor: pointer; display: grid; place-items: center; }
+            .whack-hole.active { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; }
+            .whack-actions { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+            .whack-message { margin-top: 1rem; font-weight: 600; min-height: 1.5rem; }
+        </style>
+    `;
+}
+
+function initWhackaMole() {
+    const board = document.getElementById('whackBoard');
+    const startBtn = document.getElementById('startWhackBtn');
+    const resetBtn = document.getElementById('resetWhackBtn');
+    const scoreEl = document.getElementById('whackScore');
+    const timeEl = document.getElementById('whackTime');
+    const messageEl = document.getElementById('whackMessage');
+
+    if (!board || !startBtn || !resetBtn || !scoreEl || !timeEl || !messageEl) return;
+
+    let score = 0;
+    let timeLeft = 30;
+    let gameActive = false;
+    let activeIndex = -1;
+    let timerId = null;
+    let moleId = null;
+
+    const holes = Array.from({ length: 9 }, (_, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'whack-hole';
+        button.setAttribute('aria-label', `Hole ${index + 1}`);
+        button.addEventListener('click', () => {
+            if (!gameActive || index !== activeIndex) return;
+            score += 1;
+            scoreEl.textContent = String(score);
+            messageEl.textContent = 'Hit!';
+            clearTimeout(moleId);
+            showMole();
+        });
+        board.appendChild(button);
+        return button;
+    });
+
+    function showMole() {
+        holes.forEach(hole => hole.classList.remove('active'));
+        activeIndex = Math.floor(Math.random() * holes.length);
+        holes[activeIndex].classList.add('active');
+        moleId = setTimeout(showMole, 850);
+    }
+
+    function stopGame(finalMessage) {
+        gameActive = false;
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        holes.forEach(hole => hole.classList.remove('active'));
+        messageEl.textContent = finalMessage;
+    }
+
+    function startGame() {
+        score = 0;
+        timeLeft = 30;
+        gameActive = true;
+        scoreEl.textContent = '0';
+        timeEl.textContent = '30';
+        messageEl.textContent = 'Go!';
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        showMole();
+        timerId = setInterval(() => {
+            timeLeft -= 1;
+            timeEl.textContent = String(timeLeft);
+            if (timeLeft <= 0) {
+                stopGame(`Time! Final score: ${score}`);
+            }
+        }, 1000);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', () => {
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        score = 0;
+        timeLeft = 30;
+        gameActive = false;
+        activeIndex = -1;
+        holes.forEach(hole => hole.classList.remove('active'));
+        scoreEl.textContent = '0';
+        timeEl.textContent = '30';
+        messageEl.textContent = 'Hit the mole when it appears.';
+    });
+}
+
 function getProjectileMotionHTML() {
     return `
         <div class="project-content">
@@ -3789,8 +4536,6 @@ function getProjectileMotionHTML() {
 
 
 
-
-
 function initProjectileMotion() {
     const g = 9.81;
     const canvas = document.getElementById('projectileCanvas');
@@ -3805,57 +4550,114 @@ function initProjectileMotion() {
     const heightEl = document.getElementById('projHeight');
     const resultEl = document.getElementById('projectileResult');
 
-    function drawScene(points, xMax, yMax) {
+   function drawScene(points, xMax, yMax) {
         const width = canvas.width;
         const height = canvas.height;
-        const marginLeft = 50;
-        const marginBottom = 35;
-        const marginTop = 20;
-        const usableWidth = width - marginLeft - 20;
-        const usableHeight = height - marginTop - marginBottom;
 
-        const mapX = (x) => marginLeft + (x / xMax) * usableWidth;
-        const mapY = (y) => height - marginBottom - (y / yMax) * usableHeight;
+        const marginLeft = 35;
+        const marginBottom = 25;
+        const marginTop = 10;
+        const marginRight = 10;
 
+        const usableWidth = width - marginLeft - marginRight;
+        const usableHeight = height - marginTop - marginBottom - 5;
+
+        // Maintain proportional scaling
+        const scale = Math.min(
+            usableWidth / xMax,
+            usableHeight / yMax
+        );
+
+        const mapX = (x) => marginLeft + x * scale;
+        const mapY = (y) => height - marginBottom - y * scale;
+
+        // Clear canvas
         ctx.clearRect(0, 0, width, height);
 
+        // Background
         ctx.fillStyle = '#0f172a10';
         ctx.fillRect(0, 0, width, height);
 
+        // Axes
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 2;
+
         ctx.beginPath();
+
+        // Y-axis
         ctx.moveTo(marginLeft, marginTop);
         ctx.lineTo(marginLeft, height - marginBottom);
-        ctx.lineTo(width - 20, height - marginBottom);
+
+        // X-axis
+        ctx.lineTo(width - marginRight, height - marginBottom);
+
         ctx.stroke();
 
+        // Axis labels
         ctx.fillStyle = '#64748b';
         ctx.font = '12px Arial';
-        ctx.fillText('Height (m)', 8, marginTop + 12);
-        ctx.fillText('Distance (m)', width - 95, height - 10);
 
+        ctx.fillText(
+            'Height (m)',
+            8,
+            marginTop + 12
+        );
+
+        ctx.fillText(
+            'Distance (m)',
+            width - 95,
+            height - 10
+        );
+
+        // Draw trajectory
         if (points.length > 1) {
             ctx.strokeStyle = '#2563eb';
             ctx.lineWidth = 3;
+
             ctx.beginPath();
-            ctx.moveTo(mapX(points[0].x), mapY(points[0].y));
+
+            ctx.moveTo(
+                mapX(points[0].x),
+                mapY(points[0].y)
+            );
+
             for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(mapX(points[i].x), mapY(points[i].y));
+                ctx.lineTo(
+                    mapX(points[i].x),
+                    mapY(points[i].y)
+                );
             }
+
             ctx.stroke();
 
+            // Landing point
             const landing = points[points.length - 1];
+
             ctx.fillStyle = '#ef4444';
+
             ctx.beginPath();
-            ctx.arc(mapX(landing.x), mapY(landing.y), 6, 0, Math.PI * 2);
+
+            ctx.arc(
+                mapX(landing.x),
+                mapY(landing.y),
+                6,
+                0,
+                Math.PI * 2
+            );
+
             ctx.fill();
         }
     }
-
     function simulate() {
         const speed = Math.max(1, Number(speedInput.value) || 1);
-        const angleDeg = Math.min(89, Math.max(1, Number(angleInput.value) || 45));
+        const rawAngle = Number(angleInput.value);
+
+        const angleDeg = Math.min(
+            89,
+            Math.max(1, isNaN(rawAngle) ? 45 : rawAngle)
+        );
+
+        angleInput.value = angleDeg;
 
         const angleRad = angleDeg * Math.PI / 180;
         const totalTime = (2 * speed * Math.sin(angleRad)) / g;
@@ -4740,16 +5542,16 @@ function getsnakeGameHTML() {
 }
 
 // --- GAME LOGIC ---
-let direction = {x: 0, y: 0}; 
-let speed = 7; 
+let direction = { x: 0, y: 0 };
+let speed = 7;
 let score = 0;
 let lastPaintTime = 0;
-let snakeArr = [{x: 13, y: 10}]; 
-let food = {x: 6, y: 7};
+let snakeArr = [{ x: 13, y: 10 }];
+let food = { x: 6, y: 7 };
 
 function main(ctime) {
     window.requestAnimationFrame(main);
-    if((ctime - lastPaintTime)/1000 < 1/speed){
+    if ((ctime - lastPaintTime) / 1000 < 1 / speed) {
         return;
     }
     lastPaintTime = ctime;
@@ -4759,50 +5561,50 @@ function main(ctime) {
 function isCollide(snake) {
     // Hits itself
     for (let i = 1; i < snakeArr.length; i++) {
-        if(snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
     }
     // Hits walls
-    if(snake[0].x >= 30 || snake[0].x < 0 || snake[0].y >= 20 || snake[0].y < 0) return true;
-    
+    if (snake[0].x >= 30 || snake[0].x < 0 || snake[0].y >= 20 || snake[0].y < 0) return true;
+
     return false;
 }
 
 function gameEngine() {
-    if(isCollide(snakeArr)){
-        direction = {x: 0, y: 0};
+    if (isCollide(snakeArr)) {
+        direction = { x: 0, y: 0 };
         document.getElementById('final-score').innerHTML = score;
         document.getElementById('game-over-overlay').classList.remove('hidden');
-        snakeArr = [{x: 13, y: 10}];
+        snakeArr = [{ x: 13, y: 10 }];
         score = 0;
         document.getElementById('score').innerHTML = score;
         return;
     }
 
     // Eating food
-    if(snakeArr[0].y === food.y && snakeArr[0].x === food.x){
+    if (snakeArr[0].y === food.y && snakeArr[0].x === food.x) {
         score += 1;
         document.getElementById('score').innerHTML = score;
-        snakeArr.unshift({x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y});
+        snakeArr.unshift({ x: snakeArr[0].x + direction.x, y: snakeArr[0].y + direction.y });
         let a = 2, b = 16;
-        food = {x: Math.round(a + (b-a)* Math.random()), y: Math.round(a + (b-a)* Math.random())};
+        food = { x: Math.round(a + (b - a) * Math.random()), y: Math.round(a + (b - a) * Math.random()) };
     }
 
     // Moving snake (only if direction is set)
     if (direction.x !== 0 || direction.y !== 0) {
-        for (let i = snakeArr.length - 2; i>=0; i--) { 
-            snakeArr[i+1] = {...snakeArr[i]};
+        for (let i = snakeArr.length - 2; i >= 0; i--) {
+            snakeArr[i + 1] = { ...snakeArr[i] };
         }
         snakeArr[0].x += direction.x;
         snakeArr[0].y += direction.y;
     }
 
     const canvas = document.getElementById('snakeCanvas');
-    if(!canvas) return;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw Snake
-    snakeArr.forEach((e, index)=>{
+    snakeArr.forEach((e, index) => {
         ctx.fillStyle = index === 0 ? "orange" : "#2ecc71";
         ctx.fillRect(e.x * 20, e.y * 20, 18, 18);
     });
@@ -4817,7 +5619,7 @@ function initSnakeGame() {
     window.requestAnimationFrame(main);
 
     document.getElementById('startGameBtn').addEventListener('click', () => {
-        direction = {x: 1, y: 0}; // Start moving right
+        direction = { x: 1, y: 0 }; // Start moving right
     });
 
     document.getElementById('restartSnakeBtn').addEventListener('click', () => {
@@ -4826,18 +5628,18 @@ function initSnakeGame() {
 
     document.getElementById('overlayRestartBtn').addEventListener('click', () => {
         document.getElementById('game-over-overlay').classList.add('hidden');
-        direction = {x: 0, y: 0};
-        snakeArr = [{x: 13, y: 10}];
+        direction = { x: 0, y: 0 };
+        snakeArr = [{ x: 13, y: 10 }];
         score = 0;
         document.getElementById('score').innerHTML = score;
     });
 
-    window.addEventListener('keydown', e =>{
+    window.addEventListener('keydown', e => {
         switch (e.key) {
-            case "ArrowUp":    if(direction.y !== 1) {direction.x = 0; direction.y = -1;} break;
-            case "ArrowDown":  if(direction.y !== -1) {direction.x = 0; direction.y = 1;} break;
-            case "ArrowLeft":  if(direction.x !== 1) {direction.x = -1; direction.y = 0;} break;
-            case "ArrowRight": if(direction.x !== -1) {direction.x = 1; direction.y = 0;} break;
+            case "ArrowUp": if (direction.y !== 1) { direction.x = 0; direction.y = -1; } break;
+            case "ArrowDown": if (direction.y !== -1) { direction.x = 0; direction.y = 1; } break;
+            case "ArrowLeft": if (direction.x !== 1) { direction.x = -1; direction.y = 0; } break;
+            case "ArrowRight": if (direction.x !== -1) { direction.x = 1; direction.y = 0; } break;
         }
     });
 }
