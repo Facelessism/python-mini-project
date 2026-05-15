@@ -3,6 +3,7 @@
 
 function getProjectHTML(projectName) {
     const projects = {
+        'tic-tac-toe': getTicTacToeHTML(),
         'rock-paper-scissor': getRockPaperScissorHTML(),
         'dice-rolling': getDiceRollingHTML(),
         'coin-flip': getCoinFlipHTML(),
@@ -23,7 +24,7 @@ function getProjectHTML(projectName) {
         'morse-code': getMorseCodeHTML(),
         'tower-of-hanoi': getTowerOfHanoiHTML(),
         'number-converter': getNumberConverterHTML(),
-        'typing-speed-tester': getTypingSpeedTesterHTML()
+        'typing-speed-tester': getTypingSpeedTesterHTML(),
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
         'whack-a-mole': getWhackaMoleHTML(),
@@ -34,6 +35,7 @@ function getProjectHTML(projectName) {
 
 function initializeProject(projectName) {
     const initializers = {
+        'tic-tac-toe': initTicTacToe,
         'rock-paper-scissor': initRockPaperScissor,
         'dice-rolling': initDiceRolling,
         'coin-flip': initCoinFlip,
@@ -296,6 +298,186 @@ function initRockPaperScissor() {
         document.getElementById('computerScore').textContent = computerScore;
     }
 }
+
+// ============================================
+// Tic Tac Toe
+// ============================================
+
+function getTicTacToeHTML() {
+    return `
+        <div class="project-content">
+            <h2>🧩 Tic-Tac-Toe</h2>
+        <div class="ttt-mode-buttons">
+            <button id="pvpMode" class="mode-btn active-mode">
+                👥 2 Players
+            </button>
+
+            <button id="aiMode" class="mode-btn">
+                you vs Computer
+            </button>
+        </div>
+            <div class="game-container">
+                <div class="tic-tac-toe-board" id="ticTacToeBoard">
+                    <button class="cell" data-cell="0"></button>
+                    <button class="cell" data-cell="1"></button>
+                    <button class="cell" data-cell="2"></button>
+                    <button class="cell" data-cell="3"></button>
+                    <button class="cell" data-cell="4"></button>
+                    <button class="cell" data-cell="5"></button>
+                    <button class="cell" data-cell="6"></button>
+                    <button class="cell" data-cell="7"></button>
+                    <button class="cell" data-cell="8"></button>
+                </div>
+
+                <p id="ticTacToeStatus">Player X's turn</p>
+
+                <button id="restartTicTacToe" class="game-btn">
+                    🔄 Restart Game
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function initTicTacToe() {
+    const cells = document.querySelectorAll('.cell');
+    const statusText = document.getElementById('ticTacToeStatus');
+    const restartBtn = document.getElementById('restartTicTacToe');
+    const twoPlayerBtn = document.getElementById('twoPlayerMode');
+    const computerBtn = document.getElementById('computerMode');
+
+    let vsComputer = false;
+    let currentPlayer = 'X';
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let gameActive = true;
+
+    
+
+    const pvpBtn = document.getElementById('pvpMode');
+    const aiBtn = document.getElementById('aiMode');
+
+    pvpBtn.addEventListener('click', () => {
+        vsComputer = false;
+
+        pvpBtn.classList.add('active-mode');
+        aiBtn.classList.remove('active-mode');
+
+        resetGame();
+        statusText.textContent = "2 Player Mode";
+    });
+
+    aiBtn.addEventListener('click', () => {
+        vsComputer = true;
+
+        aiBtn.classList.add('active-mode');
+        pvpBtn.classList.remove('active-mode');
+
+        resetGame();
+        statusText.textContent = "Playing vs Computer";
+    });
+
+    const winningCombinations = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ];
+
+    function checkWinner() {
+        for (let combo of winningCombinations) {
+            const [a, b, c] = combo;
+
+            if (
+                board[a] &&
+                board[a] === board[b] &&
+                board[a] === board[c]
+            ) {
+                statusText.textContent = `🎉 Player ${board[a]} wins!`;
+                gameActive = false;
+                return;
+            }
+        }
+
+        if (!board.includes('')) {
+            statusText.textContent = "🤝 It's a draw!";
+            gameActive = false;
+        }
+    }
+
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => {
+            const index = cell.dataset.cell;
+
+            if (board[index] || !gameActive) return;
+
+            board[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+
+            checkWinner();
+
+            if (vsComputer && gameActive && currentPlayer === 'X') {
+                currentPlayer = 'O';
+                statusText.textContent = "Computer's turn";
+
+                setTimeout(() => {
+                    computerMove();
+                }, 500);
+
+                return;
+            }
+
+            if (gameActive) {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                statusText.textContent = `Player ${currentPlayer}'s turn`;
+            }
+        });
+    });
+
+    function resetGame() {
+    board = ['', '', '', '', '', '', '', '', ''];
+    gameActive = true;
+    currentPlayer = 'X';
+
+    cells.forEach(cell => {
+        cell.textContent = '';
+    });
+
+    statusText.textContent = "Player X's turn";
+}
+
+function computerMove() {
+    let emptyCells = [];
+
+    board.forEach((cell, index) => {
+        if (cell === '') {
+            emptyCells.push(index);
+        }
+    });
+
+    if (emptyCells.length === 0) return;
+
+    const randomIndex =
+        emptyCells[Math.floor(Math.random() * emptyCells.length)];
+
+    board[randomIndex] = 'O';
+    cells[randomIndex].textContent = 'O';
+
+    checkWinner();
+
+    if (gameActive) {
+        currentPlayer = 'X';
+        statusText.textContent = "Player X's turn";
+    }
+}
+
+restartBtn.addEventListener('click', resetGame);
+}
+
+
 
 // ============================================
 // DICE ROLLING
@@ -1588,140 +1770,72 @@ function initFlames() {
     const name2Input = document.getElementById('name2');
     const resultDiv = document.getElementById('flamesResult');
 
+    if (!calculateBtn || !name1Input || !name2Input || !resultDiv) return;
+
     const relationshipData = {
-        'F': { name: 'Friends', emoji: '👫', message: 'You two are best friends forever!' },
-        'L': { name: 'Love', emoji: '❤️', message: 'True love is in the air!' },
-        'A': { name: 'Affection', emoji: '🥰', message: 'Sweet affection between you!' },
-        'M': { name: 'Marriage', emoji: '💍', message: 'Wedding bells are ringing!' },
-        'E': { name: 'Enemies', emoji: '😠', message: 'Maybe not the best match...' },
-        'S': { name: 'Siblings', emoji: '👨‍👩‍👧', message: 'Like brother and sister!' }
+        F: { rel: 'Friends', emoji: '🤝', metric: 'Bond Strength', vibe: 'A bond that never breaks!' },
+        L: { rel: 'Love', emoji: '❤️', metric: 'Compatibility Score', vibe: 'Pure romantic chemistry!' },
+        A: { rel: 'Affection', emoji: '😊', metric: 'Crush Intensity', vibe: 'Someone\'s blushing!' },
+        M: { rel: 'Marriage', emoji: '💍', metric: 'Marital Bliss', vibe: 'Start picking out the rings!' },
+        E: { rel: 'Enemies', emoji: '😈', metric: 'Rivalry Quotient', vibe: 'Keep your distance!' },
+        S: { rel: 'Siblings', emoji: '🏠', metric: 'Nuisance Factor', vibe: 'Stop touching my stuff!' }
     };
 
     function calculateFlames() {
-        const name1 = name1Input.value.toLowerCase().replace(/\s/g, '');
-        const name2 = name2Input.value.toLowerCase().replace(/\s/g, '');
-    if (!calculateBtn || !name1Input || !name2Input) return;
-
-    window.copyFlamesResult = (text) => {
-        navigator.clipboard.writeText(text).then(() => {
-            const btn = document.querySelector('.copy-btn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '✅ Copied!';
-            btn.style.background = '#2ecc71';
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = 'var(--accent-color, #6c5ce7)';
-            }, 2000);
-        }).catch(err => {
-            console.error('Failed to copy: ', err);
-        });
-    };
-
-    const calculateFlames = () => {
         const name1Raw = name1Input.value.trim();
         const name2Raw = name2Input.value.trim();
-        const name1 = name1Raw.toLowerCase().replace(/\s+/g, '');
-        const name2 = name2Raw.toLowerCase().replace(/\s+/g, '');
 
-        if (!name1 || !name2) {
+        if (!name1Raw || !name2Raw) {
             resultDiv.innerHTML = '<p style="color: var(--error-color, #ff4d4d);">⚠️ Please enter both names!</p>';
             return;
         }
 
-        const originalName1 = name1Input.value.trim();
-        const originalName2 = name2Input.value.trim();
+        const a = name1Raw.toLowerCase().replace(/\s+/g, '');
+        const b = name2Raw.toLowerCase().replace(/\s+/g, '');
+        const listA = a.split('');
+        const listB = b.split('');
 
-        // Convert to arrays
-        let name1List = name1.split('');
-        let name2List = name2.split('');
-
-        // Remove common characters
-        const name1Copy = [...name1List];
-        for (let char of name1Copy) {
-            const index2 = name2List.indexOf(char);
-            if (index2 !== -1) {
-                name1List.splice(name1List.indexOf(char), 1);
-                name2List.splice(index2, 1);
+        for (let i = listA.length - 1; i >= 0; i--) {
+            const ch = listA[i];
+            const matchIndex = listB.indexOf(ch);
+            if (matchIndex !== -1) {
+                listA.splice(i, 1);
+                listB.splice(matchIndex, 1);
             }
         }
 
-        const count = name1List.length + name2List.length;
+        const count = listA.length + listB.length;
+        const totalLen = a.length + b.length;
+        const score = totalLen > 0 ? 30 + Math.round(((totalLen - count) / totalLen) * 70) : 0;
 
-        // Calculate FLAMES
         const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
-        let index = 0;
-
-        let name1_list = name1.split('');
-        let name2_list = name2.split('');
-
-        for (let i = name1_list.length - 1; i >= 0; i--) {
-            const char = name1_list[i];
-            const indexIn2 = name2_list.indexOf(char);
-            if (indexIn2 !== -1) {
-                name1_list.splice(i, 1);
-                name2_list.splice(indexIn2, 1);
-            }
-        }
-
-        const count = name1_list.length + name2_list.length;
-        const total_len = name1.length + name2.length;
-        const matched_chars = total_len - count;
-        const score = total_len > 0 ? 30 + Math.round((matched_chars / total_len) * 70) : 0;
-
-        let flames = ['F', 'L', 'A', 'M', 'E', 'S'];
         let index = 0;
         while (flames.length > 1) {
             index = (index + count - 1) % flames.length;
             flames.splice(index, 1);
         }
 
-        const result = flames[0];
-        const relationship = relationshipData[result];
-
-        // Display result with animation
-        const mapping = {
-            'F': { rel: 'Friends', emoji: '🤝', metric: 'Bond Strength', vibe: 'A bond that never breaks!' },
-            'L': { rel: 'Love', emoji: '❤️', metric: 'Compatibility Score', vibe: 'Pure romantic chemistry!' },
-            'A': { rel: 'Affection', emoji: '😊', metric: 'Crush Intensity', vibe: 'Someone\'s blushing!' },
-            'M': { rel: 'Marriage', emoji: '💍', metric: 'Marital Bliss', vibe: 'Start picking out the rings!' },
-            'E': { rel: 'Enemies', emoji: '😈', metric: 'Rivalry Quotient', vibe: 'Keep your distance!' },
-            'S': { rel: 'Siblings', emoji: '🏠', metric: 'Nuisance Factor', vibe: 'Stop touching my stuff!' }
-        };
-
-        const final = mapping[flames[0]];
-        const capName1 = name1Raw.charAt(0).toUpperCase() + name1Raw.slice(1);
-        const capName2 = name2Raw.charAt(0).toUpperCase() + name2Raw.slice(1);
-        
-        const share_text = `🔥 FLAMES Report: ${capName1} + ${capName2} = ${final.rel} ${final.emoji}\n${final.metric}: ${score}%\nVibe: ${final.vibe}`;
+        const final = relationshipData[flames[0]];
+        const shareText = `🔥 FLAMES Report: ${name1Raw} + ${name2Raw} = ${final.rel} ${final.emoji}\n${final.metric}: ${score}%\nVibe: ${final.vibe}`;
 
         resultDiv.innerHTML = `
             <div class="result-card" style="text-align: center; animation: fadeIn 0.5s ease-out;">
                 <div class="result-emoji" style="font-size: 3rem; margin-bottom: 10px;">${final.emoji}</div>
-                <div class="result-names" style="font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${name1.toUpperCase()} & ${name2.toUpperCase()}</div>
+                <div class="result-names" style="font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${name1Raw.toUpperCase()} & ${name2Raw.toUpperCase()}</div>
                 <div class="result-relationship" style="font-size: 1.5rem; color: var(--accent-color, #a29bfe); margin-bottom: 15px;">${final.rel}</div>
-                
                 <div class="result-details" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
                     <div style="font-weight: bold;">${final.metric}: ${score}%</div>
                     <div style="font-size: 0.85rem; font-style: italic; opacity: 0.9; margin-top: 5px;">"${final.vibe}"</div>
                 </div>
-
-                <button class="copy-btn" 
-                        data-share="${share_text}" 
-                        onclick="copyFlamesResult(this.getAttribute('data-share'))" 
-                        style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">
-                    📋 Copy Result
-                </button>
+                <button class="copy-btn" data-share="${shareText}" onclick="navigator.clipboard?.writeText(this.getAttribute('data-share'))" style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">📋 Copy Result</button>
             </div>
         `;
-    };
+    }
 
     calculateBtn.addEventListener('click', calculateFlames);
-    
-    [name1Input, name2Input].forEach(input => {
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') calculateFlames();
-        });
-    });
+    [name1Input, name2Input].forEach(input => input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') calculateFlames();
+    }));
 }
 
 // ============================================
@@ -1980,11 +2094,6 @@ function initEmojiMemoryGame() {
             }
         });
     }
-
-    calculateBtn.addEventListener('click', calculateFlames);
-    name1Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
-    
     function showSequence() {
         isPlayingSequence = true;
         disableButtons(true);
@@ -4110,6 +4219,192 @@ function initTypingSpeedTester() {
             // Disable typing after completion
             inputElement.disabled = true;
         }
+    });
+}
+
+function getNumberConverterHTML() {
+    return `
+        <div class="project-content">
+            <h2>🔢 Number Converter</h2>
+            <div class="converter-box">
+                <div class="converter-row">
+                    <label for="converterInput">Number</label>
+                    <input id="converterInput" type="text" placeholder="Enter a value" value="1010">
+                </div>
+                <div class="converter-row">
+                    <label for="sourceBase">From</label>
+                    <select id="sourceBase">
+                        <option value="2">Binary</option>
+                        <option value="8">Octal</option>
+                        <option value="10" selected>Decimal</option>
+                        <option value="16">Hexadecimal</option>
+                    </select>
+                </div>
+                <div class="converter-row">
+                    <label for="targetBase">To</label>
+                    <select id="targetBase">
+                        <option value="2">Binary</option>
+                        <option value="8">Octal</option>
+                        <option value="10">Decimal</option>
+                        <option value="16" selected>Hexadecimal</option>
+                    </select>
+                </div>
+                <button class="btn-primary" id="convertNumberBtn">Convert</button>
+                <div id="converterResult" class="converter-result"></div>
+            </div>
+        </div>
+        <style>
+            .converter-box { max-width: 640px; margin: 0 auto; padding: 1.5rem; display: grid; gap: 1rem; }
+            .converter-row { display: grid; gap: 0.4rem; }
+            .converter-row label { font-weight: 600; }
+            .converter-row input, .converter-row select { padding: 0.9rem; border-radius: 10px; border: 2px solid var(--border-color); background: var(--surface-color); color: var(--text-color); }
+            .converter-result { min-height: 2rem; padding: 0.9rem 1rem; border-radius: 10px; background: var(--surface-color); border: 1px solid var(--border-color); font-weight: 700; }
+        </style>
+    `;
+}
+
+function initNumberConverter() {
+    const input = document.getElementById('converterInput');
+    const sourceBase = document.getElementById('sourceBase');
+    const targetBase = document.getElementById('targetBase');
+    const button = document.getElementById('convertNumberBtn');
+    const result = document.getElementById('converterResult');
+
+    if (!input || !sourceBase || !targetBase || !button || !result) return;
+
+    const convert = () => {
+        const value = input.value.trim();
+        const fromBase = Number(sourceBase.value);
+        const toBase = Number(targetBase.value);
+
+        if (!value) {
+            result.textContent = 'Enter a number to convert.';
+            return;
+        }
+
+        const parsed = parseInt(value, fromBase);
+        if (Number.isNaN(parsed)) {
+            result.textContent = 'Invalid input for the selected base.';
+            return;
+        }
+
+        result.textContent = `Result: ${parsed.toString(toBase).toUpperCase()}`;
+    };
+
+    button.addEventListener('click', convert);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter') convert(); });
+    convert();
+}
+
+function getWhackaMoleHTML() {
+    return `
+        <div class="project-content">
+            <h2>🔨 Whack-a-Mole</h2>
+            <div class="whack-container">
+                <div class="whack-stats">
+                    <div>Score: <span id="whackScore">0</span></div>
+                    <div>Time: <span id="whackTime">30</span>s</div>
+                </div>
+                <div class="whack-board" id="whackBoard"></div>
+                <div class="whack-actions">
+                    <button class="btn-primary" id="startWhackBtn">Start Game</button>
+                    <button class="btn-primary" id="resetWhackBtn">Reset</button>
+                </div>
+                <div id="whackMessage" class="whack-message">Hit the mole when it appears.</div>
+            </div>
+        </div>
+        <style>
+            .whack-container { max-width: 720px; margin: 0 auto; padding: 1.5rem; text-align: center; }
+            .whack-stats { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; font-weight: 700; flex-wrap: wrap; }
+            .whack-board { display: grid; grid-template-columns: repeat(3, minmax(80px, 1fr)); gap: 0.8rem; margin: 1rem auto; max-width: 420px; }
+            .whack-hole { aspect-ratio: 1 / 1; border-radius: 18px; border: 2px solid var(--border-color); background: var(--surface-color); font-size: 2rem; cursor: pointer; display: grid; place-items: center; }
+            .whack-hole.active { background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; }
+            .whack-actions { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+            .whack-message { margin-top: 1rem; font-weight: 600; min-height: 1.5rem; }
+        </style>
+    `;
+}
+
+function initWhackaMole() {
+    const board = document.getElementById('whackBoard');
+    const startBtn = document.getElementById('startWhackBtn');
+    const resetBtn = document.getElementById('resetWhackBtn');
+    const scoreEl = document.getElementById('whackScore');
+    const timeEl = document.getElementById('whackTime');
+    const messageEl = document.getElementById('whackMessage');
+
+    if (!board || !startBtn || !resetBtn || !scoreEl || !timeEl || !messageEl) return;
+
+    let score = 0;
+    let timeLeft = 30;
+    let gameActive = false;
+    let activeIndex = -1;
+    let timerId = null;
+    let moleId = null;
+
+    const holes = Array.from({ length: 9 }, (_, index) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'whack-hole';
+        button.setAttribute('aria-label', `Hole ${index + 1}`);
+        button.addEventListener('click', () => {
+            if (!gameActive || index !== activeIndex) return;
+            score += 1;
+            scoreEl.textContent = String(score);
+            messageEl.textContent = 'Hit!';
+            clearTimeout(moleId);
+            showMole();
+        });
+        board.appendChild(button);
+        return button;
+    });
+
+    function showMole() {
+        holes.forEach(hole => hole.classList.remove('active'));
+        activeIndex = Math.floor(Math.random() * holes.length);
+        holes[activeIndex].classList.add('active');
+        moleId = setTimeout(showMole, 850);
+    }
+
+    function stopGame(finalMessage) {
+        gameActive = false;
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        holes.forEach(hole => hole.classList.remove('active'));
+        messageEl.textContent = finalMessage;
+    }
+
+    function startGame() {
+        score = 0;
+        timeLeft = 30;
+        gameActive = true;
+        scoreEl.textContent = '0';
+        timeEl.textContent = '30';
+        messageEl.textContent = 'Go!';
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        showMole();
+        timerId = setInterval(() => {
+            timeLeft -= 1;
+            timeEl.textContent = String(timeLeft);
+            if (timeLeft <= 0) {
+                stopGame(`Time! Final score: ${score}`);
+            }
+        }, 1000);
+    }
+
+    startBtn.addEventListener('click', startGame);
+    resetBtn.addEventListener('click', () => {
+        clearInterval(timerId);
+        clearTimeout(moleId);
+        score = 0;
+        timeLeft = 30;
+        gameActive = false;
+        activeIndex = -1;
+        holes.forEach(hole => hole.classList.remove('active'));
+        scoreEl.textContent = '0';
+        timeEl.textContent = '30';
+        messageEl.textContent = 'Hit the mole when it appears.';
     });
 }
 
