@@ -75,7 +75,13 @@ const emptyState = document.getElementById('emptyState');
 const resultsList = document.getElementById('resultsList');
 const resultsSection = document.getElementById('resultsSection');
 const recentSearchesList = document.getElementById('recentSearchesList');
-let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+let recentSearches = [];
+try {
+    const parsed = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    recentSearches = Array.isArray(parsed) ? parsed : [];
+} catch (e) {
+    recentSearches = [];
+}
 let currentCategory = 'all';
 let currentSearchQuery = '';
 let selectedSuggestionIndex = -1;
@@ -281,7 +287,8 @@ tabs.forEach((tab, index) => {
 });
 
 // Initialize
-// renderRecentSearches();
+// renderRecentSearches() disabled: recentSearchesSection element
+// does not exist in current HTML, causing null reference error.
 
 // Modal Management
 const modal = document.getElementById('projectModal');
