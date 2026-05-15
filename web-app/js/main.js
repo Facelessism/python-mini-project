@@ -369,20 +369,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     tabs.forEach(tab => tab.addEventListener('click', () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); applyFilter(tab.getAttribute('data-category') || 'all'); }));
 
-    // Modal helpers
-    let removeTrap = null;
-    function openProjectSafe(name, trigger) {
-        if (!modal || !modalBody) return;
-        lastFocusedElement = trigger || document.activeElement;
-        if (modalTitle && trigger) {
-            const card = trigger.closest('.project-card');
-            const h = card?.querySelector('h3')?.textContent?.trim();
-            modalTitle.textContent = h || (name || 'Project');
-        }
-        modal.classList.add('active');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        setMainInert(true);
+// Random Project Generator
+const randomProjectBtn = document.getElementById('randomProjectBtn');
+
+function getRandomProject() {
+    // Get all visible project cards (based on current filter)
+    const visibleCards = Array.from(projectCards).filter(card => {
+        return card.style.display !== 'none';
+    });
+    
+    if (visibleCards.length === 0) {
+        // If no cards are visible (shouldn't happen), get all cards
+        return projectCards[Math.floor(Math.random() * projectCards.length)];
+    }
+    
+    return visibleCards[Math.floor(Math.random() * visibleCards.length)];
+}
+
+function selectRandomProject() {
+    const randomCard = getRandomProject();
+    
+    // Add shuffle animation to the button
+    randomProjectBtn.classList.add('shuffle');
+    
+    // Remove animation class after it completes
+    setTimeout(() => {
+        randomProjectBtn.classList.remove('shuffle');
+    }, 600);
+    
+    // Open the random project after a short delay for effect
+    setTimeout(() => {
+        const projectName = randomCard.getAttribute('data-project');
+        openProject(projectName);
+        
+        // Optional: Scroll to project card smoothly
+        randomCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+}
+
+randomProjectBtn.addEventListener('click', selectRandomProject);
+
+// Open Project Modal
+projectCards.forEach(card => {
+    const playButton = card.querySelector('.btn-play');
+    
+    playButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const projectName = card.getAttribute('data-project');
+        openProject(projectName);
+    });
+    
+    card.addEventListener('click', () => {
+        const projectName = card.getAttribute('data-project');
+        openProject(projectName);
+    });
+});
 
         // load content safely
         safeRun(() => {
