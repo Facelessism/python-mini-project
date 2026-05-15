@@ -1,4 +1,5 @@
-// Project HTML Templates and Logic
+// Project Registry
+// Each project's HTML and logic lives in its own file under js/projects/
 
 function getProjectHTML(projectName) {
     const projects = {
@@ -24,7 +25,7 @@ function getProjectHTML(projectName) {
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
     };
-    
+
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
 }
 
@@ -51,7 +52,7 @@ function initializeProject(projectName) {
         'tower-of-hanoi': initTowerOfHanoi,
         'snake-game': initSnakeGame,
     };
-    
+
     if (initializers[projectName]) {
         initializers[projectName]();
     }
