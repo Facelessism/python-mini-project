@@ -50,6 +50,46 @@
                         aria-selected="false" aria-controls="projectsGrid" tabindex="-1">🔢 Math</button>
                     <button type="button" class="tab" role="tab" id="tab-utilities" data-category="utilities"
                         aria-selected="false" aria-controls="projectsGrid" tabindex="-1">🔐 Utilities</button>
+    <!-- Search & Category Tabs -->
+    <section class="tabs-section" aria-label="Search and Project categories">
+        <div class="container">
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="projectSearch" placeholder="Search for projects (e.g. 'rock', 'dice', 'prime')..." aria-label="Search for projects">
+                </div>
+            </div>
+            <div class="tabs" role="tablist" aria-label="Filter projects by category">
+                <button type="button" class="tab active" role="tab" id="tab-all" data-category="all" aria-selected="true" aria-controls="projectsGrid" tabindex="0">🌟 All Projects</button>
+                <button type="button" class="tab" role="tab" id="tab-games" data-category="games" aria-selected="false" aria-controls="projectsGrid" tabindex="-1">🎮 Games</button>
+                <button type="button" class="tab" role="tab" id="tab-math" data-category="math" aria-selected="false" aria-controls="projectsGrid" tabindex="-1">🔢 Math</button>
+                <button type="button" class="tab" role="tab" id="tab-utilities" data-category="utilities" aria-selected="false" aria-controls="projectsGrid" tabindex="-1">🔐 Utilities</button>
+            </div>
+
+            <!-- Empty State Message -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <p>📭 No projects match your search.</p>
+                <p class="empty-state-hint">Try different keywords or browse all projects.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="projects-section" aria-label="Projects">
+        <div class="container">
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>No projects found</h3>
+                <p>Try adjusting your search or category filters</p>
+            </div>
+            <div class="projects-grid" id="projectsGrid">
+                
+                <!-- Games -->
+                <div class="project-card" data-category="games" data-project="rock-paper-scissor" data-tags="game,random,choice,strategy,decision">
+                    <div class="card-icon">🪨</div>
+                    <h3>Rock Paper Scissors</h3>
+                    <p>Battle against the computer!</p>
+                    <button class="btn-play">Play Now</button>
                 </div>
 
                 <!-- Empty State Message -->
