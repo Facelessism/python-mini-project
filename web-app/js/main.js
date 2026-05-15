@@ -45,27 +45,38 @@ themeToggle.innerHTML =
         : '<i class="fas fa-moon" aria-hidden="true"></i>';
 updateThemeToggleAria(savedTheme === 'light');
 
+// Audio Controller Setup
+const soundToggle = document.getElementById('soundToggle');
 
-// Back to Top Button
-const backToTopButton = document.getElementById('backToTop');
+function updateSoundToggleUI(isMuted) {
+    soundToggle.innerHTML = isMuted
+        ? '<i class="fas fa-volume-mute" aria-hidden="true"></i>'
+        : '<i class="fas fa-volume-up" aria-hidden="true"></i>';
+    soundToggle.setAttribute('aria-label', isMuted ? 'Unmute sounds' : 'Mute sounds');
+}
 
-const toggleBackToTopButton = () => {
-    backToTopButton.classList.toggle('visible', window.scrollY > 300);
-};
+// Initial UI state
+updateSoundToggleUI(audioController.isMuted);
 
-window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
-toggleBackToTopButton();
-
-backToTopButton.addEventListener('click', () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+// Toggle sound
+soundToggle.addEventListener('click', () => {
+    const isMuted = audioController.toggleMute();
+    updateSoundToggleUI(isMuted);
+    // Play a click sound if unmuted
+    if (!isMuted) {
+        audioController.play('click');
+    }
 });
 
 // Category Filtering
 // const tabs = document.querySelectorAll('.tab');
 
-// Category Filtering (tabs)
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+document.addEventListener('touchstart', initAudio);
 
+// Filtering Logic
+const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
 const projectCards = document.querySelectorAll('.project-card');
 const searchInput = document.getElementById('projectSearch');
 const searchClear = document.getElementById('searchClear');
