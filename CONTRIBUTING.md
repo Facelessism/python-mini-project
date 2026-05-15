@@ -70,6 +70,7 @@ git push origin feature/your-project-name
 # Go to GitHub and create a Pull Request
 ```
 
+
 ---
 
 ## 📋 Project Guidelines
@@ -329,6 +330,91 @@ New to contributing? Check these out:
 - [Emoji Cheat Sheet](https://github.com/ikatyang/emoji-cheat-sheet)
 
 ---
+## Issue Difficulty Levels
+
+To make contributing easier for everyone, we use difficulty levels for issues.  
+These levels help contributors understand how much experience or effort an issue may require before getting started.
+
+---
+
+### Level 1 (Beginner)
+
+Good for first-time contributors or people who are still learning the project structure.
+
+#### What to Expect
+- Small and simple changes
+- Easy to understand
+- Usually does not require deep project knowledge
+
+#### Criteria
+- Minor bug fixes
+- Simple documentation updates
+- Small UI/text changes
+- Basic code cleanup
+
+#### Example Issues
+- Fix spelling mistakes in documentation
+- Improve README formatting
+- Rename variables for better readability
+- Add comments to simple functions
+- Update broken links
+
+---
+
+### Level 2 (Intermediate)
+
+Best for contributors who are comfortable reading and understanding the codebase.
+
+#### What to Expect
+- Moderate coding tasks
+- Requires understanding of project flow
+- May involve working across multiple files
+
+#### Criteria
+- Feature improvements
+- Refactoring existing code
+- Writing tests
+- Fixing medium-level bugs
+
+#### Example Issues
+- Add validation to forms or APIs
+- Improve performance of an existing feature
+- Write unit tests for modules
+- Refactor repeated code into reusable functions
+- Improve error handling
+
+---
+
+### Level 3 (Advanced)
+
+Recommended for experienced contributors who understand the architecture of the project.
+
+#### What to Expect
+- Complex tasks
+- Requires strong debugging and problem-solving skills
+- May involve major feature development or architectural changes
+
+#### Criteria
+- Large feature implementations
+- System design changes
+- Complex bug fixes
+- Multi-module updates
+
+#### Example Issues
+- Design and implement a new module
+- Optimize database or backend architecture
+- Handle complex state management
+- Integrate third-party services
+- Major performance optimization tasks
+
+---
+
+## Recommendation for New Contributors
+
+If you are contributing for the first time, we strongly recommend starting with **Level 1** issues.  
+These tasks are beginner-friendly and help you understand the project structure, contribution workflow, and coding style before moving to more advanced issues.
+
+Once you feel comfortable, you can gradually try Level 2 and Level 3 tasks.
 
 ## 🤔 Questions?
 
