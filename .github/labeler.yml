@@ -1,0 +1,39 @@
+
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'docs/**'
+
+python:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.py'
+
+github-actions:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+enhancement:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/**'
+      - '*/**.py'
+
+level1:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+
+level2:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.py'
+
+level3:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+      - 'tests/**'
