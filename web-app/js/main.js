@@ -3,6 +3,7 @@ const themeToggle = document.getElementById('themeToggle');
 const themeColorMeta = document.getElementById('themeColorMeta');
 const html = document.documentElement;
 const mainContent = document.getElementById('main-content');
+let recentSearches = [];
 
 function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -44,14 +45,58 @@ themeToggle.innerHTML =
         : '<i class="fas fa-moon" aria-hidden="true"></i>';
 updateThemeToggleAria(savedTheme === 'light');
 
-// Filtering Logic
-const tabs = Array.from(document.querySelectorAll('.tab[role="tab"]'));
+
+// Back to Top Button
+const backToTopButton = document.getElementById('backToTop');
+
+const toggleBackToTopButton = () => {
+    backToTopButton.classList.toggle('visible', window.scrollY > 300);
+};
+
+window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
+toggleBackToTopButton();
+
+backToTopButton.addEventListener('click', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+});
+
+// Category Filtering
+// const tabs = document.querySelectorAll('.tab');
+
+// Category Filtering (tabs)
+
 const projectCards = document.querySelectorAll('.project-card');
 const searchInput = document.getElementById('projectSearch');
-const noResults = document.getElementById('noResults');
+const searchClear = document.getElementById('searchClear');
+const searchDropdown = document.getElementById('searchDropdown');
+const searchShortcut = document.getElementById('searchShortcut');
+const searchLoader = document.getElementById('searchLoader');
+const emptyState = document.getElementById('emptyState');
+const resultsList = document.getElementById('resultsList');
+const resultsSection = document.getElementById('resultsSection');
+const recentSearchesList = document.getElementById('recentSearchesList');
+let recentSearches = [];
+try {
+    const parsed = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+    recentSearches = Array.isArray(parsed) ? parsed : [];
+} catch (e) {
+    recentSearches = [];
+}
+let currentCategory = 'all';
+let currentSearchQuery = '';
+let selectedSuggestionIndex = -1;
+const recentSearchesSection = document.getElementById('recentSearchesSection');
+const tipsSection = document.getElementById('tipsSection');
 
-let activeCategory = 'all';
-let searchQuery = '';
+// Debounce function for smooth search performance
+function debounce(func, delay) {
+    let timeoutId;
+    return function (...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    };
+}
 
 function filterProjects() {
     let visibleCount = 0;
@@ -64,7 +109,78 @@ function filterProjects() {
         const matchesCategory = activeCategory === 'all' || category === activeCategory;
         const matchesSearch = title.includes(searchQuery) || description.includes(searchQuery);
 
-        if (matchesCategory && matchesSearch) {
+// Highlight matching text in suggestions
+function highlightMatch(text, query) {
+    const parts = text.split(new RegExp(`(${query})`, 'gi'));
+    return parts.map(part => 
+        part.toLowerCase() === query.toLowerCase() 
+            ? `<mark style="background: rgba(99, 102, 241, 0.3); color: var(--primary-color); font-weight: 600;">${part}</mark>`
+            : part
+    ).join('');
+}
+
+// Render recent searches
+function renderRecentSearches() {
+    if (recentSearchesSection) {
+    recentSearchesSection.style.display = 'none';
+    }
+
+    if (tipsSection) {
+    tipsSection.style.display = 'block';
+    }
+
+    if (resultsSection) {
+    resultsSection.style.display = 'none';
+    }
+    
+    if (recentSearchesList) {
+    recentSearchesList.innerHTML = '';
+    }
+    recentSearches.slice(0, 5).forEach((search) => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-recent-item';
+        item.innerHTML = `
+            <div class="dropdown-recent-text">
+                <i class="fas fa-history" style="opacity: 0.5; font-size: 0.9rem;"></i>
+                <span style="flex: 1; cursor: pointer; color: var(--text-secondary);">${search}</span>
+            </div>
+            <button class="dropdown-recent-remove" aria-label="Remove search">
+                <i class="fas fa-x"></i>
+            </button>
+        `;
+        
+        const textElement = item.querySelector('span');
+        const removeBtn = item.querySelector('.dropdown-recent-remove');
+        
+        textElement.addEventListener('click', () => {
+            searchInput.value = search;
+            currentSearchQuery = search;
+            performSearch();
+            closeDropdown();
+        });
+        
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            recentSearches = recentSearches.filter(s => s !== search);
+            localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+            renderRecentSearches();
+        });
+        
+        recentSearchesList.appendChild(item);
+    });
+    
+    if (recentSearchesSection && resultsSection && tipsSection) {
+    recentSearchesSection.style.display = 'block';
+    resultsSection.style.display = 'none';
+    tipsSection.style.display = 'block';
+}
+
+    
+}
+
+function applyCategoryFilter(category) {
+    projectCards.forEach((card) => {
+        if (category === 'all' || card.getAttribute('data-category') === category) {
             card.style.display = 'block';
             if (!prefersReducedMotion()) {
                 card.style.animation = 'fadeIn 0.6s ease';
@@ -132,11 +248,9 @@ tabs.forEach((tab, index) => {
     });
 });
 
-// Search Input Change
-searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    filterProjects();
-});
+// Initialize
+// renderRecentSearches() disabled: recentSearchesSection element
+// does not exist in current HTML, causing null reference error.
 
 // Modal Management
 const modal = document.getElementById('projectModal');

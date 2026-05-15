@@ -1,4 +1,5 @@
-// Project HTML Templates and Logic
+// Project Registry
+// Each project's HTML and logic lives in its own file under js/projects/
 
 function getProjectHTML(projectName) {
     const projects = {
@@ -8,6 +9,7 @@ function getProjectHTML(projectName) {
         'number-guessing': getNumberGuessingHTML(),
         'hangman': getHangmanHTML(),
         'flames': getFlamesHTML(),
+        'emoji-memory': getEmojiMemoryGameHTML(),
         'fibonacci': getFibonacciHTML(),
         'progression-recognizer': getProgressionRecognizerHTML(),
         'pascal-triangle': getPascalTriangleHTML(),
@@ -20,10 +22,12 @@ function getProjectHTML(projectName) {
         'derivative-calculator': getDerivativeCalculatorHTML(),
         'morse-code': getMorseCodeHTML(),
         'tower-of-hanoi': getTowerOfHanoiHTML(),
+        'number-converter': getNumberConverterHTML(),
+        'typing-speed-tester': getTypingSpeedTesterHTML()
         'snake-game': getsnakeGameHTML(),
         'password-forge': getPasswordForgeHTML(),
     };
-    
+
     return projects[projectName] || '<h2>Project Coming Soon!</h2>';
 }
 
@@ -35,6 +39,7 @@ function initializeProject(projectName) {
         'number-guessing': initNumberGuessing,
         'hangman': initHangman,
         'flames': initFlames,
+        'emoji-memory': initEmojiMemoryGame,
         'fibonacci': initFibonacci,
         'progression-recognizer': initProgressionRecognizer,
         'pascal-triangle': initPascalTriangle,
@@ -47,9 +52,11 @@ function initializeProject(projectName) {
         'derivative-calculator': initDerivativeCalculator,
         'morse-code': initMorseCode,
         'tower-of-hanoi': initTowerOfHanoi,
+        'number-converter': initNumberConverter,
+        'typing-speed-tester': initTypingSpeedTester,
         'snake-game': initSnakeGame,
     };
-    
+
     if (initializers[projectName]) {
         initializers[projectName]();
     }
@@ -189,6 +196,7 @@ function getRockPaperScissorHTML() {
                 cursor: pointer;
                 transition: var(--transition);
                 min-width: 120px;
+                color: var(--text-color);
             }
             
             .choice-btn:hover {
@@ -1419,7 +1427,8 @@ function getFlamesHTML() {
     return `
         <div class="project-content">
             <h2>💖 FLAMES Game</h2>
-            <p class="project-desc">Discover your relationship status!</p>
+            <p class="project-desc">Discover your <strong>relationship status</strong> and calculate your 
+    <strong>Compatibility, Rivalry, </strong> or <strong>Nuisance</strong> factor!</p>
             <div class="flames-container">
                 <div class="flames-legend">
                     <div class="legend-item">F - Friends</div>
@@ -1567,86 +1576,479 @@ function getFlamesHTML() {
 }
 
 function initFlames() {
+    const calculateBtn = document.getElementById('calculateFlames');
     const name1Input = document.getElementById('name1');
     const name2Input = document.getElementById('name2');
-    const calculateBtn = document.getElementById('calculateFlames');
     const resultDiv = document.getElementById('flamesResult');
-    
-    const relationshipData = {
-        'F': { name: 'Friends', emoji: '👫', message: 'You two are best friends forever!' },
-        'L': { name: 'Love', emoji: '❤️', message: 'True love is in the air!' },
-        'A': { name: 'Affection', emoji: '🥰', message: 'Sweet affection between you!' },
-        'M': { name: 'Marriage', emoji: '💍', message: 'Wedding bells are ringing!' },
-        'E': { name: 'Enemies', emoji: '😠', message: 'Maybe not the best match...' },
-        'S': { name: 'Siblings', emoji: '👨‍👩‍👧', message: 'Like brother and sister!' }
+
+    if (!calculateBtn || !name1Input || !name2Input) return;
+
+    window.copyFlamesResult = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            btn.style.background = '#2ecc71';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = 'var(--accent-color, #6c5ce7)';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     };
-    
-    function calculateFlames() {
-        const name1 = name1Input.value.toLowerCase().replace(/\s/g, '');
-        const name2 = name2Input.value.toLowerCase().replace(/\s/g, '');
-        
+
+    const calculateFlames = () => {
+        const name1Raw = name1Input.value.trim();
+        const name2Raw = name2Input.value.trim();
+        const name1 = name1Raw.toLowerCase().replace(/\s+/g, '');
+        const name2 = name2Raw.toLowerCase().replace(/\s+/g, '');
+
         if (!name1 || !name2) {
-            resultDiv.innerHTML = '<p style="color: var(--danger-color);">⚠️ Please enter both names!</p>';
+            resultDiv.innerHTML = '<p style="color: var(--error-color, #ff4d4d);">⚠️ Please enter both names!</p>';
             return;
         }
-        
-        const originalName1 = name1Input.value.trim();
-        const originalName2 = name2Input.value.trim();
-        
-        // Convert to arrays
-        let name1List = name1.split('');
-        let name2List = name2.split('');
-        
-        // Remove common characters
-        const name1Copy = [...name1List];
-        for (let char of name1Copy) {
-            const index2 = name2List.indexOf(char);
-            if (index2 !== -1) {
-                name1List.splice(name1List.indexOf(char), 1);
-                name2List.splice(index2, 1);
+
+        let name1_list = name1.split('');
+        let name2_list = name2.split('');
+
+        for (let i = name1_list.length - 1; i >= 0; i--) {
+            const char = name1_list[i];
+            const indexIn2 = name2_list.indexOf(char);
+            if (indexIn2 !== -1) {
+                name1_list.splice(i, 1);
+                name2_list.splice(indexIn2, 1);
             }
         }
-        
-        const count = name1List.length + name2List.length;
-        
-        // Calculate FLAMES
-        const flames = ['F', 'L', 'A', 'M', 'E', 'S'];
+
+        const count = name1_list.length + name2_list.length;
+        const total_len = name1.length + name2.length;
+        const matched_chars = total_len - count;
+        const score = total_len > 0 ? 30 + Math.round((matched_chars / total_len) * 70) : 0;
+
+        let flames = ['F', 'L', 'A', 'M', 'E', 'S'];
         let index = 0;
-        
         while (flames.length > 1) {
             index = (index + count - 1) % flames.length;
             flames.splice(index, 1);
-            if (index === flames.length && flames.length > 0) {
-                index = 0;
-            }
         }
+
+        const mapping = {
+            'F': { rel: 'Friends', emoji: '🤝', metric: 'Bond Strength', vibe: 'A bond that never breaks!' },
+            'L': { rel: 'Love', emoji: '❤️', metric: 'Compatibility Score', vibe: 'Pure romantic chemistry!' },
+            'A': { rel: 'Affection', emoji: '😊', metric: 'Crush Intensity', vibe: 'Someone\'s blushing!' },
+            'M': { rel: 'Marriage', emoji: '💍', metric: 'Marital Bliss', vibe: 'Start picking out the rings!' },
+            'E': { rel: 'Enemies', emoji: '😈', metric: 'Rivalry Quotient', vibe: 'Keep your distance!' },
+            'S': { rel: 'Siblings', emoji: '🏠', metric: 'Nuisance Factor', vibe: 'Stop touching my stuff!' }
+        };
+
+        const final = mapping[flames[0]];
+        const capName1 = name1Raw.charAt(0).toUpperCase() + name1Raw.slice(1);
+        const capName2 = name2Raw.charAt(0).toUpperCase() + name2Raw.slice(1);
         
-        const result = flames[0];
-        const relationship = relationshipData[result];
-        
-        // Display result with animation
+        const share_text = `🔥 FLAMES Report: ${capName1} + ${capName2} = ${final.rel} ${final.emoji}\n${final.metric}: ${score}%\nVibe: ${final.vibe}`;
+
         resultDiv.innerHTML = `
-            <div class="result-card">
-                <div class="result-emoji">${relationship.emoji}</div>
-                <div class="result-names">${originalName1} & ${originalName2}</div>
-                <div class="result-relationship">${relationship.name}</div>
-                <div class="result-details">
-                    <div>${relationship.message}</div>
-                    <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.9;">
-                        Remaining letters: ${count}
-                    </div>
+            <div class="result-card" style="text-align: center; animation: fadeIn 0.5s ease-out;">
+                <div class="result-emoji" style="font-size: 3rem; margin-bottom: 10px;">${final.emoji}</div>
+                <div class="result-names" style="font-weight: bold; letter-spacing: 1px; margin-bottom: 5px;">${name1.toUpperCase()} & ${name2.toUpperCase()}</div>
+                <div class="result-relationship" style="font-size: 1.5rem; color: var(--accent-color, #a29bfe); margin-bottom: 15px;">${final.rel}</div>
+                
+                <div class="result-details" style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="font-weight: bold;">${final.metric}: ${score}%</div>
+                    <div style="font-size: 0.85rem; font-style: italic; opacity: 0.9; margin-top: 5px;">"${final.vibe}"</div>
                 </div>
+
+                <button class="copy-btn" 
+                        data-share="${share_text}" 
+                        onclick="copyFlamesResult(this.getAttribute('data-share'))" 
+                        style="background: var(--accent-color, #6c5ce7); color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; transition: all 0.3s; margin-top: 10px;">
+                    📋 Copy Result
+                </button>
             </div>
         `;
+    };
+
+    calculateBtn.addEventListener('click', calculateFlames);
+    
+    [name1Input, name2Input].forEach(input => {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculateFlames();
+        });
+    });
+}
+
+// ============================================
+// EMOJI MEMORY GAME
+// ============================================
+function getEmojiMemoryGameHTML() {
+    return `
+        <div class="project-content">
+            <h2>🧠 Emoji Memory Game</h2>
+            <div class="emoji-memory-container">
+                <div class="game-status" id="gameStatus">
+                    <div class="status-item">
+                        <span class="status-label">Score</span>
+                        <span class="status-value" id="memoryScore">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Level</span>
+                        <span class="status-value" id="memoryLevel">1</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Sequence</span>
+                        <span class="status-value" id="sequenceLength">1</span>
+                    </div>
+                </div>
+                
+                <div class="game-instructions" id="instructions">
+                    👇 Click START to begin the game!
+                </div>
+                
+                <div class="sequence-display" id="sequenceDisplay">
+                    <div class="display-content" id="displayContent">
+                        Ready to test your memory?
+                    </div>
+                </div>
+                
+                <div class="emoji-buttons">
+                    <button class="emoji-btn" data-emoji="🍎">🍎</button>
+                    <button class="emoji-btn" data-emoji="🚗">🚗</button>
+                    <button class="emoji-btn" data-emoji="⚽">⚽</button>
+                    <button class="emoji-btn" data-emoji="🐍">🐍</button>
+                    <button class="emoji-btn" data-emoji="🎧">🎧</button>
+                    <button class="emoji-btn" data-emoji="🔥">🔥</button>
+                    <button class="emoji-btn" data-emoji="🌈">🌈</button>
+                    <button class="emoji-btn" data-emoji="🚀">🚀</button>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="btn-start" id="startGame">▶️ START</button>
+                    <button class="btn-reset" id="resetGame">🔄 RESET</button>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .emoji-memory-container {
+                padding: 2rem;
+                max-width: 600px;
+                margin: 0 auto;
+                text-align: center;
+            }
+            
+            .game-status {
+                display: flex;
+                justify-content: space-around;
+                margin-bottom: 2rem;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .status-item {
+                background: var(--surface-color);
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                border: 2px solid var(--border-color);
+                flex: 1;
+                min-width: 100px;
+            }
+            
+            .status-label {
+                display: block;
+                font-size: 0.9rem;
+                color: var(--text-secondary);
+                margin-bottom: 0.5rem;
+            }
+            
+            .status-value {
+                display: block;
+                font-size: 2rem;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+            
+            .game-instructions {
+                font-size: 1.3rem;
+                margin-bottom: 2rem;
+                padding: 1rem;
+                background: rgba(106, 88, 236, 0.1);
+                border-radius: 12px;
+                border: 2px solid var(--primary-color);
+            }
+            
+            .sequence-display {
+                background: var(--surface-color);
+                border: 3px dashed var(--primary-color);
+                border-radius: 15px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+                min-height: 100px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .display-content {
+                font-size: 3rem;
+                font-weight: bold;
+                word-wrap: break-word;
+                letter-spacing: 0.5rem;
+            }
+            
+            .emoji-buttons {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .emoji-btn {
+                font-size: 3rem;
+                padding: 1.5rem;
+                border: 3px solid var(--border-color);
+                background: var(--surface-color);
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                aspect-ratio: 1 / 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .emoji-btn:hover {
+                transform: scale(1.1);
+                border-color: var(--primary-color);
+                box-shadow: 0 0 20px rgba(106, 88, 236, 0.3);
+            }
+            
+            .emoji-btn:active {
+                transform: scale(0.95);
+            }
+            
+            .emoji-btn.disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+                pointer-events: none;
+            }
+            
+            .emoji-btn.active {
+                background: var(--primary-color);
+                color: white;
+                box-shadow: 0 0 30px rgba(106, 88, 236, 0.6);
+                animation: pulse 0.3s ease;
+            }
+            
+            .game-controls {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .btn-start, .btn-reset {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: bold;
+            }
+            
+            .btn-start {
+                background: linear-gradient(135deg, #6a58ec, #8b5cf6);
+                color: white;
+            }
+            
+            .btn-start:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(106, 88, 236, 0.4);
+            }
+            
+            .btn-reset {
+                background: var(--surface-color);
+                color: var(--text-color);
+                border: 2px solid var(--border-color);
+            }
+            
+            .btn-reset:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            
+            @media (max-width: 600px) {
+                .emoji-buttons {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+                
+                .emoji-btn {
+                    font-size: 2rem;
+                    padding: 1rem;
+                }
+                
+                .display-content {
+                    font-size: 2rem;
+                }
+            }
+        </style>
+    `;
+}
+
+function initEmojiMemoryGame() {
+    const emojis = ["🍎", "🚗", "⚽", "🐍", "🎧", "🔥", "🌈", "🚀"];
+    let sequence = [];
+    let userSequence = [];
+    let score = 0;
+    let level = 1;
+    let gameActive = false;
+    let isPlayingSequence = false;
+    
+    const startBtn = document.getElementById('startGame');
+    const resetBtn = document.getElementById('resetGame');
+    const scoreDisplay = document.getElementById('memoryScore');
+    const levelDisplay = document.getElementById('memoryLevel');
+    const sequenceLengthDisplay = document.getElementById('sequenceLength');
+    const instructionsDiv = document.getElementById('instructions');
+    const displayContent = document.getElementById('displayContent');
+    const emojiButtons = document.querySelectorAll('.emoji-btn');
+    
+    function disableButtons(disabled) {
+        emojiButtons.forEach(btn => {
+            if (disabled) {
+                btn.classList.add('disabled');
+            } else {
+                btn.classList.remove('disabled');
+            }
+        });
     }
     
-    calculateBtn.addEventListener('click', calculateFlames);
-    name1Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
+    function showSequence() {
+        isPlayingSequence = true;
+        disableButtons(true);
+        displayContent.textContent = "Watch the sequence...";
+        
+        let i = 0;
+        const playNextEmoji = () => {
+            if (i < sequence.length) {
+                const emoji = sequence[i];
+                const button = Array.from(emojiButtons).find(btn => btn.dataset.emoji === emoji);
+                
+                if (button) {
+                    button.classList.add('active');
+                    setTimeout(() => {
+                        button.classList.remove('active');
+                        i++;
+                        setTimeout(playNextEmoji, 500);
+                    }, 600);
+                }
+            } else {
+                isPlayingSequence = false;
+                disableButtons(false);
+                userSequence = [];
+                gameActive = true;
+                displayContent.textContent = "Your turn! Click the emojis...";
+                instructionsDiv.textContent = `👆 Repeat the sequence (${sequence.length} steps)`;
+            }
+        };
+        
+        playNextEmoji();
+    }
+    
+    function startNewRound() {
+        const newEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        sequence.push(newEmoji);
+        userSequence = [];
+        
+        sequenceLengthDisplay.textContent = sequence.length;
+        setTimeout(showSequence, 500);
+    }
+    
+    function handleEmojiClick(emoji, button) {
+        if (isPlayingSequence || !gameActive) return;
+        
+        userSequence.push(emoji);
+        button.classList.add('active');
+        
+        setTimeout(() => {
+            button.classList.remove('active');
+        }, 300);
+        
+        // Check if the emoji matches
+        if (userSequence[userSequence.length - 1] !== sequence[userSequence.length - 1]) {
+            gameOver();
+            return;
+        }
+        
+        // Check if the entire sequence is correct
+        if (userSequence.length === sequence.length) {
+            score += level * 10;
+            scoreDisplay.textContent = score;
+            level++;
+            levelDisplay.textContent = level;
+            
+            instructionsDiv.textContent = "✅ Correct! Get ready for the next round...";
+            gameActive = false;
+            setTimeout(startNewRound, 1500);
+        }
+    }
+    
+    function gameOver() {
+        gameActive = false;
+        disableButtons(true);
+        instructionsDiv.textContent = `❌ Game Over! You reached Level ${level} with Score: ${score}`;
+        displayContent.textContent = `Final Score: ${score}`;
+        startBtn.textContent = "▶️ PLAY AGAIN";
+    }
+    
+    function resetGame() {
+        sequence = [];
+        userSequence = [];
+        score = 0;
+        level = 1;
+        gameActive = false;
+        isPlayingSequence = false;
+        
+        scoreDisplay.textContent = '0';
+        levelDisplay.textContent = '1';
+        sequenceLengthDisplay.textContent = '0';
+        instructionsDiv.textContent = "👇 Click START to begin the game!";
+        displayContent.textContent = "Ready to test your memory?";
+        startBtn.textContent = "▶️ START";
+        
+        disableButtons(true);
+    }
+    
+    startBtn.addEventListener('click', () => {
+        resetGame();
+        gameActive = true;
+        instructionsDiv.textContent = "Watch the sequence...";
+        startNewRound();
     });
-    name2Input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') calculateFlames();
+    
+    resetBtn.addEventListener('click', resetGame);
+    
+    emojiButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const emoji = btn.dataset.emoji;
+            handleEmojiClick(emoji, btn);
+        });
     });
+    
+    // Initial state
+    disableButtons(true);
 }
 
 // ============================================
@@ -3787,8 +4189,6 @@ function getProjectileMotionHTML() {
 
 
 
-
-
 function initProjectileMotion() {
     const g = 9.81;
     const canvas = document.getElementById('projectileCanvas');
@@ -3803,57 +4203,114 @@ function initProjectileMotion() {
     const heightEl = document.getElementById('projHeight');
     const resultEl = document.getElementById('projectileResult');
 
-    function drawScene(points, xMax, yMax) {
+   function drawScene(points, xMax, yMax) {
         const width = canvas.width;
         const height = canvas.height;
-        const marginLeft = 50;
-        const marginBottom = 35;
-        const marginTop = 20;
-        const usableWidth = width - marginLeft - 20;
-        const usableHeight = height - marginTop - marginBottom;
 
-        const mapX = (x) => marginLeft + (x / xMax) * usableWidth;
-        const mapY = (y) => height - marginBottom - (y / yMax) * usableHeight;
+        const marginLeft = 35;
+        const marginBottom = 25;
+        const marginTop = 10;
+        const marginRight = 10;
 
+        const usableWidth = width - marginLeft - marginRight;
+        const usableHeight = height - marginTop - marginBottom - 5;
+
+        // Maintain proportional scaling
+        const scale = Math.min(
+            usableWidth / xMax,
+            usableHeight / yMax
+        );
+
+        const mapX = (x) => marginLeft + x * scale;
+        const mapY = (y) => height - marginBottom - y * scale;
+
+        // Clear canvas
         ctx.clearRect(0, 0, width, height);
 
+        // Background
         ctx.fillStyle = '#0f172a10';
         ctx.fillRect(0, 0, width, height);
 
+        // Axes
         ctx.strokeStyle = '#64748b';
         ctx.lineWidth = 2;
+
         ctx.beginPath();
+
+        // Y-axis
         ctx.moveTo(marginLeft, marginTop);
         ctx.lineTo(marginLeft, height - marginBottom);
-        ctx.lineTo(width - 20, height - marginBottom);
+
+        // X-axis
+        ctx.lineTo(width - marginRight, height - marginBottom);
+
         ctx.stroke();
 
+        // Axis labels
         ctx.fillStyle = '#64748b';
         ctx.font = '12px Arial';
-        ctx.fillText('Height (m)', 8, marginTop + 12);
-        ctx.fillText('Distance (m)', width - 95, height - 10);
 
+        ctx.fillText(
+            'Height (m)',
+            8,
+            marginTop + 12
+        );
+
+        ctx.fillText(
+            'Distance (m)',
+            width - 95,
+            height - 10
+        );
+
+        // Draw trajectory
         if (points.length > 1) {
             ctx.strokeStyle = '#2563eb';
             ctx.lineWidth = 3;
+
             ctx.beginPath();
-            ctx.moveTo(mapX(points[0].x), mapY(points[0].y));
+
+            ctx.moveTo(
+                mapX(points[0].x),
+                mapY(points[0].y)
+            );
+
             for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(mapX(points[i].x), mapY(points[i].y));
+                ctx.lineTo(
+                    mapX(points[i].x),
+                    mapY(points[i].y)
+                );
             }
+
             ctx.stroke();
 
+            // Landing point
             const landing = points[points.length - 1];
+
             ctx.fillStyle = '#ef4444';
+
             ctx.beginPath();
-            ctx.arc(mapX(landing.x), mapY(landing.y), 6, 0, Math.PI * 2);
+
+            ctx.arc(
+                mapX(landing.x),
+                mapY(landing.y),
+                6,
+                0,
+                Math.PI * 2
+            );
+
             ctx.fill();
         }
     }
-
     function simulate() {
         const speed = Math.max(1, Number(speedInput.value) || 1);
-        const angleDeg = Math.min(89, Math.max(1, Number(angleInput.value) || 45));
+        const rawAngle = Number(angleInput.value);
+
+        const angleDeg = Math.min(
+            89,
+            Math.max(1, isNaN(rawAngle) ? 45 : rawAngle)
+        );
+
+        angleInput.value = angleDeg;
 
         const angleRad = angleDeg * Math.PI / 180;
         const totalTime = (2 * speed * Math.sin(angleRad)) / g;
