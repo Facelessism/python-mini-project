@@ -68,6 +68,9 @@ python games/Rock-Paper-Scissor/Rock-Paper-Scissor.py
 
 ## 🙌 Contributors
 
+- NileshRaut2601
+
+
 <div align="center">
 
 A big thank you to everyone who's contributed to this project — your improvements keep it growing! If you'd like to contribute, please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
