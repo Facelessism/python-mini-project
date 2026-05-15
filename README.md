@@ -264,6 +264,16 @@ python games/Simon-Says/Simon-Says.py
 ```
 
 </td>
+<td width="50%">
+
+#### 🔍 Spot the Difference
+Find all the hidden differences between two interactive canvases!
+- 🎨 Programmatically drawn dynamic scenes
+- 🌟 Three distinct difficulty levels
+- ⏱️ Built-in timer and hint system
+- 🌐 *Web App Exclusive Project*
+
+</td>
 </tr>
 </table>
 
