@@ -17,8 +17,9 @@ An interactive web application showcasing Python mini projects with beautiful vi
 - **Dice Rolling** - 3D rolling animation with realistic dice faces
 - **Coin Flip** - Spinning coin with heads/tails statistics
 - **Number Guessing** - Interactive guessing with smart hints
-- **Hangman** - Classic word game (Coming Soon)
-- **FLAMES** - Relationship calculator (Coming Soon)
+- **Hangman** - Classic word game with onscreen keyboard
+- **Word Scramble** - Unscramble shuffled words with hints and score tracking
+- **FLAMES** - Relationship calculator
 
 ### 🔢 Math Tools
 - **Fibonacci Series** - Visual sequence with golden spiral
@@ -89,7 +90,7 @@ Edit CSS variables in `css/styles.css`:
 ```
 
 ### Add New Projects
-1. Add HTML template function in `js/projects-extended.js`
+1. Add HTML template function in `js/projects.js`
 2. Add initialization function
 3. Add card in `index.html` projects grid
 4. Link functions in `getProjectHTML()` and `initializeProject()`

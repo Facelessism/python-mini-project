@@ -6,7 +6,7 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Projects](https://img.shields.io/badge/projects-20-orange.svg)]()
+[![Projects](https://img.shields.io/badge/projects-21-orange.svg)]()
 [![Code Scanning](https://img.shields.io/badge/CodeQL-enabled-brightgreen.svg)]()
 
 **🚀 Perfect for beginners | 💡 Learn by doing | 🎨 Beautiful UI | ⚡ Zero setup required**
@@ -203,6 +203,17 @@ python games/FLAMES-Game/FLAMES-Game.py
 </td>
 <td width="50%">
 
+#### 🔤 Word Scramble Game
+Unscramble shuffled words before attempts run out!
+- 🧩 Random programming-themed words
+- 💡 Helpful hint for every round
+- 🔥 Score and streak tracking
+```bash
+python games/Word-Scramble-Game/Word-Scramble-Game.py
+```
+
+</td>
+</tr>
 
 <tr>
 <td width="50%">
