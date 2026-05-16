@@ -8,6 +8,7 @@ An interactive web application showcasing Python mini projects with beautiful vi
 - 🎨 **Beautiful UI** - Modern design with smooth animations
 - 🌓 **Dark/Light Mode** - Toggle between themes
 - 📱 **Responsive** - Works on desktop, tablet, and mobile
+- 🎲 **Random Project Generator** - Discover random projects with a single click!
 - 🚀 **Zero Setup** - Just open index.html and play!
 
 ## 🎯 Included Projects
@@ -17,8 +18,9 @@ An interactive web application showcasing Python mini projects with beautiful vi
 - **Dice Rolling** - 3D rolling animation with realistic dice faces
 - **Coin Flip** - Spinning coin with heads/tails statistics
 - **Number Guessing** - Interactive guessing with smart hints
-- **Hangman** - Classic word game (Coming Soon)
-- **FLAMES** - Relationship calculator (Coming Soon)
+- **Hangman** - Classic word game with onscreen keyboard
+- **Word Scramble** - Unscramble shuffled words with hints and score tracking
+- **FLAMES** - Relationship calculator
 
 ### 🔢 Math Tools
 - **Fibonacci Series** - Visual sequence with golden spiral
@@ -52,7 +54,7 @@ Deploy to GitHub Pages for free hosting:
 1. Push to GitHub
 2. Go to Settings → Pages
 3. Select main branch and /web-app folder
-4. Your site will be live at `https://yourusername.github.io/python-mini-project/`
+4. Your site will be live at `https://steam-bell-92.github.io/python-mini-project/` (replace `steam-bell-92` with your GitHub username if you fork)
 
 ### Option 3: Python HTTP Server
 ```bash
@@ -89,7 +91,7 @@ Edit CSS variables in `css/styles.css`:
 ```
 
 ### Add New Projects
-1. Add HTML template function in `js/projects-extended.js`
+1. Add HTML template function in `js/projects.js`
 2. Add initialization function
 3. Add card in `index.html` projects grid
 4. Link functions in `getProjectHTML()` and `initializeProject()`
@@ -114,9 +116,35 @@ Edit CSS variables in `css/styles.css`:
 ### UX Features
 - Smooth transitions and animations
 - Category filtering (All, Games, Math, Utilities)
+- **Random Project Generator** - Shuffles through projects based on current category
 - Modal system for focused project interaction
 - Responsive design for all screen sizes
 - Theme persistence with localStorage
+
+## 🎲 Random Project Generator
+
+### Overview
+Can't decide which project to try? Use the **Random Project 🎲** button to instantly discover a random project!
+
+### Features
+- **Smart Selection** - Only picks from projects in your current category filter
+- **Smooth Animation** - Button shuffles with a fun dice-roll animation
+- **Instant Discovery** - Opens the selected project automatically
+- **Fair Randomization** - Equal chance for all available projects
+- **Category-Aware** - Respects your current filter (Games, Math, Utilities, or All)
+
+### How to Use
+1. Click the **Random Project 🎲** button in the top navigation
+2. Watch the shuffle animation
+3. The project modal opens automatically with your randomly selected project
+4. Enjoy exploring something new!
+
+### Implementation Details
+- **Location**: Top navigation bar, next to category filters
+- **Animation**: Custom CSS shuffle animation (0.6s duration)
+- **Logic**: JavaScript function `selectRandomProject()` in `main.js`
+- **Selection**: Uses `Math.random()` for fair distribution
+- **Filtering**: Gets all visible project cards based on current category
 
 ## 📱 Browser Compatibility
 
@@ -142,7 +170,7 @@ Same as parent project - MIT License
 
 ## 🎉 Credits
 
-Web adaptation of the [Python Mini Projects](https://github.com/yourusername/python-mini-project) collection.
+Web adaptation of the [Python Mini Projects](https://github.com/steam-bell-92/python-mini-project) collection.
 
 Made with ❤️ for learners everywhere!
 
