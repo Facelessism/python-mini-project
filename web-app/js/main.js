@@ -331,15 +331,15 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
 
         projectCards.forEach(function (card) {
-            var category = card.getAttribute('data-category');
-            var title = card.querySelector('h3').textContent.toLowerCase();
+            var category    = card.getAttribute('data-category');
+            var title       = card.querySelector('h3').textContent.toLowerCase();
             var description = card.querySelector('p').textContent.toLowerCase();
-            var tags = (card.getAttribute('data-tags') || '').toLowerCase();
+            var tags        = (card.getAttribute('data-tags') || '').toLowerCase();
 
             var categoryMatch = currentCategory === 'all' || category === currentCategory;
-            var searchMatch = title.includes(query) ||
-                description.includes(query) ||
-                tags.includes(query);
+            var searchMatch   = title.includes(query) ||
+                                description.includes(query) ||
+                                tags.includes(query);
 
             card.style.display = (categoryMatch && searchMatch) ? '' : 'none';
         });
