@@ -504,6 +504,7 @@
 </head>
 
 <body>
+    <!-- <script src="js/hero-canvas.js"></script> -->
     <a href="#main-content" class="skip-link">
         🚀 Skip to main content
     </a>
@@ -576,6 +577,7 @@
         <!-- Hero Section -->
         <section class="hero-section" aria-label="Welcome">
             <div class="hero-background"></div>
+            <canvas id="boardCanvas"></canvas>
             <div class="container">
                 <div class="hero-content">
                     <h2 class="hero-title">Learn Python the Fun Way!</h2>
@@ -1105,6 +1107,7 @@
     ──────────────────────────────────────────────────────────────── -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="js/audio.js"></script>
+    
     <script src="js/projects/rock-paper-scissor.js"></script>
     <script src="js/projects/dice-rolling.js"></script>
     <script src="js/projects/coin-flip.js"></script>
@@ -1150,6 +1153,11 @@
 
     <!-- Main app logic -->
     <script src="js/main.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+    <script src="js/hero-canvas.js"></script>
+
     <script>
         lucide.createIcons();
     </script>
