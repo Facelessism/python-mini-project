@@ -107,8 +107,11 @@ def move():
         score += 1
         if score > high_score:
             high_score = score
-            with open(highscore_path, "w") as file:
-                file.write(str(high_score))
+            try:
+                with open(highscore_path, "w") as file:
+                    file.write(str(high_score))
+            except Exception as e:
+                print(f"⚠️ Warning: Could not save high score: {e}")
 
     if not inside(bird):
         game_over = True
