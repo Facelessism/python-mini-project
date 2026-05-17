@@ -86,7 +86,10 @@ class Game2048:
         return 0
 
     def save_high_score(self):
-        HIGH_SCORE_PATH.write_text(str(self.high_score))
+        try:
+            HIGH_SCORE_PATH.write_text(str(self.high_score))
+        except Exception as e:
+            print(f"⚠️ Warning: Could not save high score: {e}")
 
     def create_grid(self):
         for row in range(GRID_SIZE):
@@ -268,22 +271,22 @@ class Game2048:
                 self.game_over()
 
     def game_over(self):
-        game_over_label = tk.Label(
+        self.game_over_label = tk.Label(
             self.root,
             text="GAME OVER",
             font=("Arial", 24, "bold"),
             fg="red"
         )
-
-        game_over_label.grid(pady=10)
+        self.game_over_label.grid(pady=10)
 
     def restart_game(self):
+        if hasattr(self, 'game_over_label'):
+            self.game_over_label.destroy()
+            
         self.board = [[0] * GRID_SIZE for _ in range(GRID_SIZE)]
         self.score = 0
-
         self.add_new_tile()
         self.add_new_tile()
-
         self.update_grid()
 
 
