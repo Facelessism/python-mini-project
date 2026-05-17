@@ -1,8 +1,9 @@
+import re
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.util import ngrams
 
-nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -20,25 +21,73 @@ clean_words = [
     if w.isalnum() and w not in stop_words
 ]
 
+# Phrase tokens
+bigrams = [' '.join(bg) for bg in ngrams(clean_words, 2)]
+
+# Skill aliases
+skill_aliases = {
+
+    # Languages
+    "py": "python",
+    "js": "javascript",
+    "ts": "typescript",
+    "cpp": "c++",
+
+    # Databases
+    "postgres": "postgresql",
+    "mongo": "mongodb",
+
+    # AI / ML
+    "ml": "machine learning",
+    "dl": "deep learning",
+    "cv": "computer vision",
+
+    # Frameworks
+    "reactjs": "react",
+    "react.js": "react",
+    "nodejs": "node.js",
+    "expressjs": "express",
+
+    # Cloud / DevOps
+    "aws": "amazon web services",
+    "gcp": "google cloud platform",
+
+    # Tools
+    "gitlab": "git",
+    "github": "git",
+}
+
+normalized_words = [
+    skill_aliases.get(word, word)
+    for word in clean_words
+]
+
+normalized_bigrams = [
+    skill_aliases.get(bg, bg)
+    for bg in bigrams
+]
+
 # Skills
 skills = [
     "python", "java", "c++", "django", "sql",
-    "machine", "learning", "html", "css",
+    "machine learning", "html", "css",
     "javascript", "communication", "teamwork"
 ]
 
 found_skills = []
 
 for skill in skills:
-    if skill in clean_words:
+    if skill in normalized_words or skill in normalized_bigrams:
         found_skills.append(skill)
 
-# Education / Experience detection
-education_keywords = ["btech", "bachelor", "degree", "university", "college"]
-experience_keywords = ["internship", "experience", "worked", "project", "developer"]
+# Resume section parsing
+education_pattern = r"(education|academic|qualification)"
+experience_pattern = r"(experience|internship|work experience)"
+project_pattern = r"(projects|project)"
 
-edu_found = any(word in resume for word in education_keywords)
-exp_found = any(word in resume for word in experience_keywords)
+edu_found = bool(re.search(education_pattern, resume))
+exp_found = bool(re.search(experience_pattern, resume))
+project_found = bool(re.search(project_pattern, resume))
 
 # OUTPUT
 print("\n📊 === Analysis Result ===")
@@ -47,13 +96,25 @@ print("\n✅ Skills detected:")
 for s in found_skills:
     print("-", s)
 
-# Score system
-score = len(found_skills) * 10
+# Improved score system
+score = 0
 
+# Skill score
+score += min(len(found_skills) * 8, 40)
+
+# Section score
 if edu_found:
     score += 20
+
 if exp_found:
-    score += 20
+    score += 25
+
+if project_found:
+    score += 15
+
+# Resume quality bonus
+if len(found_skills) >= 5:
+    score += 10
 
 if score > 100:
     score = 100
@@ -80,7 +141,8 @@ for m in missing_skills[:5]:
 print("\n📄 Resume Sections:")
 
 print("- Education:", "✅ Found" if edu_found else "❌ Missing")
-print("- Experience/Projects:", "✅ Found" if exp_found else "❌ Missing")
+print("- Experience:", "✅ Found" if exp_found else "❌ Missing")
+print("- Projects:", "✅ Found" if project_found else "❌ Missing")
 
 # Final
 print("\n🚀 Analysis Completed")

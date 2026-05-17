@@ -28,6 +28,65 @@ function safeRun(fn) {
     try { fn(); } catch (err) { console.error(err); }
 }
 
+themeToggle.addEventListener('click', () => {
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    syncThemeColor(newTheme);
+
+    themeToggle.innerHTML =
+        newTheme === 'light'
+            ? '<i class="fas fa-sun" aria-hidden="true"></i>'
+            : '<i class="fas fa-moon" aria-hidden="true"></i>';
+    updateThemeToggleAria(newTheme === 'light');
+});
+
+const savedTheme = localStorage.getItem('theme') || 'dark';
+html.setAttribute('data-theme', savedTheme);
+syncThemeColor(savedTheme);
+themeToggle.innerHTML =
+    savedTheme === 'light'
+        ? '<i class="fas fa-sun" aria-hidden="true"></i>'
+        : '<i class="fas fa-moon" aria-hidden="true"></i>';
+updateThemeToggleAria(savedTheme === 'light');
+
+
+// Back to Top Button
+const backToTopButton = document.getElementById('backToTop');
+
+const toggleBackToTopButton = () => {
+    backToTopButton.classList.toggle('visible', window.scrollY > 300);
+};
+
+window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
+toggleBackToTopButton();
+
+backToTopButton.addEventListener('click', () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+});
+
+// Category Filtering
+const tabs = document.querySelectorAll('.tab');
+
+// Category Filtering (tabs)
+
+const projectCards = document.querySelectorAll('.project-card');
+const gameTabs = document.querySelectorAll('.tab');
+const searchInput = document.getElementById('projectSearch');
+const searchClear = document.getElementById('searchClear');
+const searchDropdown = document.getElementById('searchDropdown');
+const searchShortcut = document.getElementById('searchShortcut');
+const searchLoader = document.getElementById('searchLoader');
+const emptyState = document.getElementById('emptyState');
+const resultsList = document.getElementById('resultsList');
+const resultsSection = document.getElementById('resultsSection');
+const recentSearchesList = document.getElementById('recentSearchesList');
+const recentSearchesSection = document.getElementById('recentSearchesSection');
+const tipsSection = document.getElementById('tipsSection');
+
 // Debounce function for smooth search performance
 function debounce(func, delay) {
     var timeoutId;
@@ -38,54 +97,37 @@ function debounce(func, delay) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+let recentSearches = [];
 
-    // ── Core DOM references ──────────────────────────────────────────
-    var html = document.documentElement;
-    var themeColorMeta = document.getElementById('themeColorMeta');
-    var themeToggle = document.getElementById('themeToggle');
-    var soundToggle = document.getElementById('soundToggle');
-    var backToTopButton = document.getElementById('backToTop');
-    var tabs = Array.from(document.querySelectorAll('.tab'));
-    var projectCards = Array.from(document.querySelectorAll('.project-card'));
-    var modal = document.getElementById('projectModal');
-    var modalClose = document.getElementById('modalClose');
-    var modalBody = document.getElementById('modalBody');
-    var modalTitle = document.getElementById('modalDialogTitle');
-    var randomProjectBtn = document.getElementById('randomProjectBtn');
-
-    // ── PLAYGROUND: sections we need to show / hide ──────────────────
-    var projectsSection = document.querySelector('.projects-section');   // ← PLAYGROUND ADD
-    var playgroundSection = document.getElementById('playgroundSection');  // ← PLAYGROUND ADD
-
-    // Search elements
-    var searchInput = document.getElementById('projectSearch');
-    var searchClear = document.getElementById('searchClear');
-    var searchDropdown = document.getElementById('searchDropdown');
-    var searchShortcut = document.getElementById('searchShortcut');
-    var searchLoader = document.getElementById('searchLoader');
-    var emptyState = document.getElementById('emptyState');
-    var resultsList = document.getElementById('resultsList');
-    var resultsSection = document.getElementById('resultsSection');
-    var recentSearchesList = document.getElementById('recentSearchesList');
-    var recentSearchesSection = document.getElementById('recentSearchesSection');
-    var tipsSection = document.getElementById('tipsSection');
-
-    var recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
-    var currentSearchQuery = '';
-    var selectedSuggestionIndex = -1;
-    var currentCategory = 'all';
-    var lastFocusedElement = null;
-    var removeTrap = null;
-
-    // ── PLAYGROUND: track whether playground tab is active ──────────
-    var playgroundActive = false;  // ← PLAYGROUND ADD
-
-    // ── Theme ────────────────────────────────────────────────────────
-    function syncThemeColor(theme) {
-        if (!themeColorMeta) return;
-        themeColorMeta.setAttribute('content', theme === 'light' ? '#f8fafc' : '#0f172a');
-    }
+// Get all matching projects for search query
+function getMatchingProjects(query) {
+    if (!query) return [];
+    
+    const matches = [];
+    projectCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const description = card.querySelector('p').textContent.toLowerCase();
+        const tags = (card.getAttribute('data-tags') || '').toLowerCase();
+        
+        const categoryMatch = currentCategory === 'all' || category === currentCategory;
+        const searchMatch = title.includes(query) || 
+                           description.includes(query) || 
+                           tags.includes(query);
+        
+        if (categoryMatch && searchMatch) {
+            const project = {
+                card: card,
+                title: card.querySelector('h3').textContent,
+                tags: card.getAttribute('data-tags') || '',
+                category: category
+            };
+            matches.push(project);
+        }
+    });
+    
+    return matches;
+}
 
     function updateThemeToggleAria(isLightTheme) {
         if (!themeToggle) return;
@@ -150,8 +192,50 @@ document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
         toggleBackToTopButton();
 
-        backToTopButton.addEventListener('click', function () {
-            window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+// Render recent searches
+function renderRecentSearches() {
+
+    if (
+        !recentSearchesSection ||
+        !tipsSection ||
+        !resultsSection
+    ) {
+        return;
+    }
+
+    if (recentSearches.length === 0) {
+
+        recentSearchesSection.style.display = 'none';
+        tipsSection.style.display = 'block';
+        resultsSection.style.display = 'none';
+
+        return;
+    }
+
+    recentSearchesSection.style.display = 'block';
+    
+    recentSearchesList.innerHTML = '';
+    recentSearches.slice(0, 5).forEach((search) => {
+        const item = document.createElement('div');
+        item.className = 'dropdown-recent-item';
+        item.innerHTML = `
+            <div class="dropdown-recent-text">
+                <i class="fas fa-history" style="opacity: 0.5; font-size: 0.9rem;"></i>
+                <span style="flex: 1; cursor: pointer; color: var(--text-secondary);">${search}</span>
+            </div>
+            <button class="dropdown-recent-remove" aria-label="Remove search">
+                <i class="fas fa-x"></i>
+            </button>
+        `;
+        
+        const textElement = item.querySelector('span');
+        const removeBtn = item.querySelector('.dropdown-recent-remove');
+        
+        textElement.addEventListener('click', () => {
+            searchInput.value = search;
+            currentSearchQuery = search;
+            performSearch();
+            closeDropdown();
         });
     }
 
@@ -184,14 +268,20 @@ document.addEventListener('DOMContentLoaded', function () {
         /* ── PLAYGROUND ADD end ── */
 
         currentCategory = category;
+        var visibleCount = 0;
         projectCards.forEach(function (card) {
             if (category === 'all' || card.getAttribute('data-category') === category) {
                 card.style.display = '';
                 card.style.animation = prefersReducedMotion() ? 'none' : 'fadeIn 0.6s ease';
+                visibleCount++;
             } else {
                 card.style.display = 'none';
             }
         });
+        
+        if (emptyState) {
+            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
     }
 
     function moveTabFocus(fromIndex, delta) {
@@ -330,6 +420,7 @@ document.addEventListener('DOMContentLoaded', function () {
         recentSearches = recentSearches.slice(0, 10);
         localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
 
+        var visibleCount = 0;
         projectCards.forEach(function (card) {
             var category    = card.getAttribute('data-category');
             var title       = card.querySelector('h3').textContent.toLowerCase();
@@ -341,8 +432,17 @@ document.addEventListener('DOMContentLoaded', function () {
                                 description.includes(query) ||
                                 tags.includes(query);
 
-            card.style.display = (categoryMatch && searchMatch) ? '' : 'none';
+            if (categoryMatch && searchMatch) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
         });
+        
+        if (emptyState) {
+            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
     }
 
     function closeDropdown() {
@@ -350,6 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderRecentSearches() {
+        if (noResultsMessage) noResultsMessage.style.display = 'none';
         if (!recentSearchesSection) return;
 
         if (recentSearches.length === 0) {
@@ -416,6 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function renderSuggestions(query) {
+        if (searchLoader) searchLoader.style.display = 'none';
         if (!query) { renderRecentSearches(); return; }
 
         var matches = getMatchingProjects(query);
@@ -424,8 +526,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (resultsSection) resultsSection.style.display = 'none';
             if (recentSearchesSection) recentSearchesSection.style.display = 'none';
             if (tipsSection) tipsSection.style.display = 'block';
+            if (noResultsMessage) noResultsMessage.style.display = 'block';
             return;
         }
+        
+        if (noResultsMessage) noResultsMessage.style.display = 'none';
 
         if (resultsList) {
             resultsList.innerHTML = '';
@@ -491,6 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (searchInput) searchInput.value = '';
             currentSearchQuery = '';
             searchClear.style.display = 'none';
+            if (searchLoader) searchLoader.style.display = 'none';
             applyCategoryFilter(currentCategory);
             closeDropdown();
         });
