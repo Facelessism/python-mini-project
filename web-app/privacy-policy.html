@@ -5,60 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - py.mini()</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        /* Color Variables based on your landing page UI */
+        /* ==========================================================================
+           COLOR TOKENS & ROOT STYLES (Defaults to Dark Theme)
+           ========================================================================== */
         :root {
-            --bg-main: #060b13;       /* Deep dark blue background */
-            --bg-card: #0a1322;       /* Slightly lighter blue for the text container */
+            --bg-main: #060b13;       
+            --bg-card: #0a1322;       
             --text-primary: #ffffff;
-            --text-muted: #8fa0b7;    /* Slate gray-blue for dense paragraphs */
-            --accent-green: #00e676;  /* Neon green branding accent */
-            --border-color: #17263c;
+            --text-muted: #8fa0b7;    
+            --accent-green: #22c55e;  /* Exactly matches the navbar green line */
+            --border-color: rgba(255, 255, 255, 0.06);
+            --header-bg: #071227;
+        }
+
+        /* ==========================================================================
+           DYNAMIC LIGHT THEME STATE
+           ========================================================================== */
+        html[data-theme="light"], body.light-mode {
+            --bg-main: #f8fafc;       /* Slate-50 background */
+            --bg-card: #ffffff;       
+            --text-primary: #0f172a;  /* Slate-900 typography */
+            --text-muted: #475569;    /* Slate-600 paragraphs */
+            --border-color: #e2e8f0;  /* Slate-200 dividers */
+            --accent-green: #16a34a;  /* Deeper contrast green for accessibility */
+            --header-bg: #ffffff;
         }
 
         body {
             background-color: var(--bg-main);
             color: var(--text-primary);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
             line-height: 1.7;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Header Layout */
+        /* ==========================================================================
+           NAVIGATION HEADER
+           ========================================================================== */
         .privacy-header {
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 92px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
-            max-width: 1100px;
-            margin: 0 auto;
         }
 
-        .logo {
-            font-weight: bold;
-            font-size: 1.3rem;
-            letter-spacing: 0.5px;
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
         }
 
-        .logo-accent {
-            color: var(--accent-green);
+        .logo-py { color: var(--text-muted); }
+        .logo-mini { color: var(--text-primary); }
+        .logo-parens { color: var(--accent-green); }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .back-btn, .theme-toggle-btn {
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border: none;
         }
 
         .back-btn {
+            background: transparent;
             color: var(--text-muted);
-            text-decoration: none;
+            padding: 0 1.25rem;
+            border: 1px solid var(--border-color);
             font-size: 0.95rem;
-            transition: color 0.2s ease;
         }
 
         .back-btn:hover {
             color: var(--accent-green);
+            border-color: var(--accent-green);
+            transform: translateY(-1px);
         }
 
-        /* Main Wrapper and Content Container */
+        .theme-toggle-btn {
+            width: 48px;
+            background: var(--accent-green);
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        /* ==========================================================================
+           MAIN CONTAINER CONTENT
+           ========================================================================== */
         .privacy-wrapper {
-            padding: 2rem 1rem 5rem 1rem;
+            padding: 3rem 1rem 5rem 1rem;
             display: flex;
             justify-content: center;
         }
@@ -68,14 +141,15 @@
             max-width: 850px;
             width: 100%;
             padding: 3.5rem;
-            border-radius: 12px;
+            border-radius: 16px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Typography elements */
         .privacy-card h1 {
-            font-size: 2.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.75rem;
             margin-top: 0;
             margin-bottom: 0.5rem;
             letter-spacing: -0.5px;
@@ -84,7 +158,7 @@
         .last-updated {
             color: var(--accent-green);
             font-size: 0.9rem;
-            font-family: monospace;
+            font-family: 'IBM Plex Mono', monospace;
             margin-bottom: 2.5rem;
         }
 
@@ -96,12 +170,13 @@
         }
 
         .privacy-card h2 {
+            font-family: 'Space Grotesk', sans-serif;
             color: var(--text-primary);
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             margin-top: 2.5rem;
             margin-bottom: 1rem;
             border-left: 3px solid var(--accent-green);
-            padding-left: 10px;
+            padding-left: 12px;
         }
 
         .privacy-card p, .privacy-card ul {
@@ -110,19 +185,13 @@
             margin-bottom: 1.5rem;
         }
 
-        .privacy-card ul {
-            padding-left: 1.5rem;
-        }
+        .privacy-card ul { padding-left: 1.5rem; }
+        .privacy-card li { margin-bottom: 0.5rem; }
+        .privacy-card strong { color: var(--text-primary); }
 
-        .privacy-card li {
-            margin-bottom: 0.5rem;
-        }
-
-        .privacy-card strong {
-            color: var(--text-primary);
-        }
-
-        /* Footer Alignment */
+        /* ==========================================================================
+           FOOTER BASE
+           ========================================================================== */
         .privacy-footer {
             text-align: center;
             padding: 2.5rem;
@@ -131,29 +200,31 @@
             border-top: 1px solid var(--border-color);
         }
 
-        /* Responsive Design Breakpoints */
+        /* ==========================================================================
+           RESPONSIVE STRUCTURAL TWEAKS
+           ========================================================================== */
         @media (max-width: 768px) {
-            .privacy-card {
-                padding: 2rem 1.5rem;
-            }
-            
-            .privacy-card h1 {
-                font-size: 2rem;
-            }
-            
-            .privacy-header {
-                padding: 1.5rem 1rem;
-            }
+            .privacy-card { padding: 2.5rem 1.5rem; }
+            .privacy-card h1 { font-size: 2.25rem; }
+            .header-container { padding: 0 1rem; }
+            .logo-wrap { font-size: 1.6rem; }
         }
     </style>
 </head>
 <body>
 
     <header class="privacy-header">
-        <div class="logo">
-            🐍 py.mini<span class="logo-accent">()</span>
+        <div class="header-container">
+            <div class="logo-wrap">
+                <span class="logo-py">py</span><span class="logo-mini">.mini</span><span class="logo-parens">()</span>
+            </div>
+            <div class="controls-row">
+                <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Home</a>
+                <button type="button" class="theme-toggle-btn" id="privacyThemeToggle" aria-label="Toggle visual theme">
+                    <i class="fas fa-sun" id="themeIcon"></i>
+                </button>
+            </div>
         </div>
-        <a href="index.html" class="back-btn">← Back to Home</a>
     </header>
 
     <main class="privacy-wrapper">
@@ -226,8 +297,43 @@
     </main>
 
     <footer class="privacy-footer">
-        <p>Made with ❤️ for Python learners everywhere © 2026</p>
+        <p>Made with ❤️ for Python learners everywhere &copy; 2026</p>
     </footer>
 
+    <script>
+        const themeToggleBtn = document.getElementById('privacyThemeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlElement = document.documentElement;
+
+        // 1. Sync theme immediately on load based on localStorage values set by index.html
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+        }
+
+        // 2. Change appropriate tokens and attributes dynamically
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                htmlElement.setAttribute('data-theme', 'light');
+                document.body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-moon'; // Icon turns into Moon to allow going back to dark
+            } else {
+                htmlElement.removeAttribute('data-theme');
+                document.body.classList.remove('light-mode');
+                themeIcon.className = 'fas fa-sun'; // Icon turns into Sun to toggle light mode
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        // 3. User can explicitly override it directly on the privacy page
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+        });
+
+        // Initialize immediately
+        initTheme();
+    </script>
 </body>
 </html>
