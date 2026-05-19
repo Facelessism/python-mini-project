@@ -106,14 +106,18 @@ function getFlappyGameHTML() {
                 border: 3px solid var(--border-color);
                 background: #0f172a; /* Sleek dark slate background */
                 overflow: hidden;
-                width: 400px;
-                height: 400px;
+                width: 100%;
+                max-width: 400px;
+                aspect-ratio: 1 / 1;
                 border-radius: 8px;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                touch-action: none;
             }
             #flappyCanvas {
                 display: block;
                 cursor: pointer;
+                width: 100%;
+                height: 100%;
             }
             .flappy-controls {
                 display: flex;
@@ -241,7 +245,8 @@ function initFlappyGame() {
         draw();
     }
 
-    function tap() {
+    function tap(e) {
+        if (e && e.preventDefault) e.preventDefault();
         if (gameOver) {
             resetGame();
         } else {
@@ -250,6 +255,7 @@ function initFlappyGame() {
     }
 
     canvas.addEventListener('mousedown', tap);
+    canvas.addEventListener('touchstart', tap, { passive: false });
 
     // UI Event Listeners
     startBtn.addEventListener('click', () => {

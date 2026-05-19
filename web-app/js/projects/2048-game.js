@@ -69,27 +69,30 @@ function get2048GameHTML() {
                 }
 
                 #grid-container {
-                    width: 440px;
+                    width: 100%;
+                    max-width: 440px;
                     margin: auto;
                     display: grid;
-                    grid-template-columns: repeat(4, 100px);
+                    grid-template-columns: repeat(4, 1fr);
                     gap: 10px;
                     background: var(--panel-color);
                     border: 2px solid var(--accent-border);
                     padding: 10px;
                     border-radius: 10px;
+                    touch-action: none;
                 }
 
                 .tile {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
     background: var(--control-color);
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    font-size: 28px;
+    font-size: clamp(16px, 5vw, 28px);
     font-weight: bold;
 
     border-radius: 12px;
@@ -398,6 +401,38 @@ bestDisplay.textContent = bestScore;
             drawBoard();
         }
     });
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    gridContainer.addEventListener('touchstart', e => {
+        e.preventDefault();
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: false });
+
+    gridContainer.addEventListener('touchend', e => {
+        e.preventDefault();
+        let touchEndX = e.changedTouches[0].screenX;
+        let touchEndY = e.changedTouches[0].screenY;
+        
+        let dx = touchEndX - touchStartX;
+        let dy = touchEndY - touchStartY;
+        let moved = false;
+        
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 30) moved = moveRight();
+            else if (dx < -30) moved = moveLeft();
+        } else {
+            if (dy > 30) moved = moveDown();
+            else if (dy < -30) moved = moveUp();
+        }
+
+        if(moved) {
+            addNewTile();
+            drawBoard();
+        }
+    }, { passive: false });
 
     document
         .getElementById("restart-btn")

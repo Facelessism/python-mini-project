@@ -90,6 +90,10 @@ html {
     box-sizing: border-box;
 }
 
+a, button, input, select, textarea, .project-card, .whack-hole {
+    touch-action: manipulation; /* Removes 300ms mobile click delay globally */
+}
+
 body {
     font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
     background: var(--bg-color);
@@ -1424,11 +1428,10 @@ body {
 
 .project-card {
     position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: start;
-    column-gap: 0.8rem;
-    row-gap: 0.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
     background: transparent;
     padding: 0.95rem 1rem;
     border-radius: 10px;
@@ -1442,25 +1445,10 @@ body {
     z-index: 1;
 }
 
+/* Remove problematic pseudo elements */
+.project-card::before,
 .project-card::after {
-    content: 'launch';
-    grid-column: 2;
-    color: var(--accent-color);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    opacity: 0.78;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-/* Gradient border on hover */
-.project-card::before {
-    content: '◉';
-    grid-row: 1 / span 3;
-    color: var(--accent-color);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    opacity: 0.9;
+    display: none;
 }
 
 .project-card:hover {
@@ -1491,32 +1479,30 @@ body {
 }
 
 .project-card h3 {
-    grid-column: 2;
-    font-size: 0.98rem;
+    font-size: 1.1rem;
     line-height: 1.25;
     margin-bottom: 0.18rem;
     color: var(--text-color);
     font-weight: 700;
+    width: 100%;
 }
 
 .project-card p {
-    grid-column: 2;
     color: var(--text-secondary);
     margin-bottom: 0;
     font-size: 0.84rem;
     line-height: 1.35;
+    width: 100%;
 }
 
 .btn-play {
-    grid-column: 2;
-    justify-self: start;
     background: transparent;
     color: var(--accent-color);
     border: none;
-    padding: 0;
+    padding: 0.25rem 0 0 0;
     border-radius: 0;
     cursor: pointer;
-    font-size: 0;
+    font-size: 0.9rem;
     font-weight: 700;
     transition: color 0.2s ease;
     width: auto;
@@ -1611,12 +1597,14 @@ body {
     border-radius: 20px;
     max-width: 900px;
     width: 90%;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
     animation: slideUp 0.3s ease;
     box-shadow: var(--shadow-modal);
     border: 1px solid var(--border-color);
+    margin: auto;
 }
 
 .modal-close {
@@ -2369,8 +2357,20 @@ body {
     .hero-section { padding: 7rem 0; min-height: 400px; }
     .hero-title   { font-size: 2.3rem; }
     .hero-subtitle { font-size: 1rem; margin-bottom: 2rem; }
-    .hero-features { gap: 1rem; margin-bottom: 2rem; }
-    .feature-badge { padding: 0.6rem 1.2rem; font-size: 0.95rem; }
+    .hero-features { 
+        gap: 0.75rem; 
+        margin-bottom: 2rem; 
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        padding-bottom: 0.5rem;
+        justify-content: flex-start;
+    }
+    .hero-features::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+    }
+    .feature-badge { padding: 0.6rem 1rem; font-size: 0.9rem; flex-shrink: 0; }
 
     .tabs-section { padding: 2rem 0 1.5rem; }
     .tabs-section .container { gap: 1.5rem; }
@@ -2382,9 +2382,9 @@ body {
     .btn-random-project { width: 100%; justify-content: center; padding: 0.75rem 1.25rem; font-size: 0.95rem; }
 
     .projects-section { padding: 2.5rem 0; }
-    .projects-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-    .project-card { padding: 1.75rem 1.5rem; }
-    .card-icon { font-size: 3.25rem; margin-bottom: 0.85rem; }
+    .projects-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .project-card { padding: 1.25rem 1rem; }
+    .card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
     .project-card h3 { font-size: 1.15rem; }
 
     .search-wrapper { height: 50px; padding: 0 1.1rem; }
