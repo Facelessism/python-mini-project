@@ -1,4 +1,4 @@
-// Project Registry
+﻿// Project Registry
 // Each project's HTML and logic lives in its own file under js/projects/
 
 //To Prevent duplicate intialisation
@@ -6,40 +6,12 @@ let activeProject=null;
 
 function getProjectHTML(projectName) {
     const projects = {
-        'rock-paper-scissor': getRockPaperScissorHTML(),
-        'dice-rolling': getDiceRollingHTML(),
-        'coin-flip': getCoinFlipHTML(),
-        'number-guessing': getNumberGuessingHTML(),
-        'hangman': getHangmanHTML(),
-        'flames': getFlamesHTML(),
-        'emoji-memory': getEmojiMemoryGameHTML(),
-        'fibonacci': getFibonacciHTML(),
-        'progression-recognizer': getProgressionRecognizerHTML(),
-        'pascal-triangle': getPascalTriangleHTML(),
-        'armstrong': getArmstrongHTML(),
-        'calculator': getCalculatorHTML(),
-        'collatz': getCollatzHTML(),
-        'prime-analyzer': getPrimeAnalyzerHTML(),
-        'projectile-motion': getProjectileMotionHTML(),
-        'coordinate-polar-transform': getCoordinatePolarTransformHTML(),
-        'derivative-calculator': getDerivativeCalculatorHTML(),
-        'morse-code': getMorseCodeHTML(),
-        'tower-of-hanoi': getTowerOfHanoiHTML(),
-        'number-converter': getNumberConverterHTML(),
-        'typing-speed-tester': getTypingSpeedTesterHTML(),
-        'snake-game': getsnakeGameHTML(),
-        'password-forge': getPasswordForgeHTML(),
-        'whack-a-mole': getWhackaMoleHTML(),
-        'tic-tac-toe': () => getTicTacToeHTML(),
         'rock-paper-scissor': () => getRockPaperScissorHTML(),
         'dice-rolling': () => getDiceRollingHTML(),
         'coin-flip': () => getCoinFlipHTML(),
-        'Blackjack-21': () => getBlackjackHTML(),
         'number-guessing': () => getNumberGuessingHTML(),
         'hangman': () => getHangmanHTML(),
-        'word-scramble': () => getWordScrambleHTML(),
         'flames': () => getFlamesHTML(),
-        'dots-boxes': () => getDotsBoxesHTML(),
         'emoji-memory': () => getEmojiMemoryGameHTML(),
         'fibonacci': () => getFibonacciHTML(),
         'progression-recognizer': () => getProgressionRecognizerHTML(),
@@ -57,13 +29,17 @@ function getProjectHTML(projectName) {
         'typing-speed-tester': () => getTypingSpeedTesterHTML(),
         'snake-game': () => getSnakeGameHTML(),
         'password-forge': () => getPasswordForgeHTML(),
-        'math-quiz': () => getMathQuizHTML(),
         'whack-a-mole': () => getWhackaMoleHTML(),
+        'tic-tac-toe': () => getTicTacToeHTML(),
+        'blackjack-21': () => getBlackjackHTML(),
+        'word-scramble': () => getWordScrambleHTML(),
+        'dots-boxes': () => getDotsBoxesHTML(),
+        'math-quiz': () => getMathQuizHTML(),
         'simon-says': () => getSimonSaysHTML(),
         'spot-the-difference': () => getSpotTheDifferenceHTML(),
         'flappy-game': () => getFlappyGameHTML(),
         '2048-game': () => get2048GameHTML(),
-        "productive-pet": () => getProductivePetHTML(),
+        'productive-pet': () => getProductivePetHTML(),
         'color-palette': () => getColorPaletteHTML(),
     };
 
@@ -1982,6 +1958,7 @@ function initFlames() {
         gameActive = true;
         instructionsDiv.textContent = "Watch the sequence...";
         startNewRound();
+    });
     
     calculateBtn.addEventListener('click', calculateFlames);
     name1Input.addEventListener('keypress', (e) => {
