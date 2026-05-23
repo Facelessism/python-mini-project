@@ -1,175 +1,20 @@
-<style>
-.welcome-hero {
-    text-align: center;
-    padding: 3rem 2rem;
-    background: linear-gradient(135deg, #22c55e 0%, #06b6d4 50%, #a855f7 100%);
-    background-size: 300% 300%;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    animation: gradientShift 8s ease infinite;
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-}
+# 🚀 Web App Architecture Guide
 
-.welcome-title {
-    font-size: 3rem;
-    font-weight: 900;
-    color: #fff;
-    margin: 0;
-    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    animation: slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
+<div align="center">
 
-.welcome-emoji {
-    display: inline-block;
-    margin: 0 0.5rem;
-    animation: float 3s ease-in-out infinite;
-}
+![Web App Guide Header](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=32&duration=3000&pause=1000&color=22C55E&center=true&vCenter=true&width=900&lines=🚀+Web+App+Architecture+Guide;⚡+Interactive+Frontend+Documentation;🐍+Vanilla+JavaScript+%26+Pyodide+%26+Web+Workers)
 
-.welcome-emoji:nth-child(1) { animation-delay: 0s; }
-.welcome-emoji:nth-child(2) { animation-delay: 0.2s; }
-.welcome-emoji:nth-child(3) { animation-delay: 0.4s; }
-.welcome-emoji:nth-child(4) { animation-delay: 0.6s; }
-
-.welcome-subtitle {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.95);
-    margin: 1rem 0 0 0;
-    font-weight: 500;
-    animation: fadeInUp 1s ease 0.3s both;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.welcome-tags {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 1.5rem;
-    animation: fadeInUp 1s ease 0.6s both;
-}
-
-.tag {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-.tag:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.welcome-pulse {
-    display: inline-block;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    25% {
-        transform: translateY(-15px) rotate(5deg);
-    }
-    75% {
-        transform: translateY(-10px) rotate(-5deg);
-    }
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-    }
-}
-
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
-    }
-    50% {
-        box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
-    }
-}
-
-@media (max-width: 768px) {
-    .welcome-hero {
-        padding: 2rem 1rem;
-    }
-    .welcome-title {
-        font-size: 2rem;
-    }
-    .welcome-tags {
-        gap: 0.5rem;
-    }
-    .tag {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-    }
-}
-</style>
-
-<div class="welcome-hero">
-    <h1 class="welcome-title">
-        <span class="welcome-emoji">🚀</span>
-        <span class="welcome-emoji">🎨</span>
-        <span class="welcome-emoji">⚡</span>
-        <span class="welcome-emoji">🐍</span>
-    </h1>
-    <h1 class="welcome-title">Web App Architecture Guide</h1>
-    <p class="welcome-subtitle">
-        <span class="welcome-pulse">✨</span>
-        Interactive Frontend Documentation
-        <span class="welcome-pulse">✨</span>
-    </p>
-    <p class="welcome-subtitle" style="font-weight: 400; font-size: 0.95rem; opacity: 0.9;">
-        A modern, accessible web experience powered by vanilla JavaScript, Pyodide, and Web Workers.
-    </p>
-    <div class="welcome-tags">
-        <span class="tag">🎯 Architecture</span>
-        <span class="tag">🎨 Components</span>
-        <span class="tag">♿ Accessibility</span>
-        <span class="tag">⚡ Performance</span>
-    </div>
 </div>
+
+> **Python Mini Projects** — Interactive Frontend Documentation  
+> A modern, accessible web experience powered by vanilla JavaScript, Pyodide, and Web Workers.
+
+```
+════════════════════════════════════════════════════════════════
+                   🎨 Welcome to the Guide                         
+        Architecture | Components | Design | Accessibility    
+════════════════════════════════════════════════════════════════
+```
 
 
 ## 📑 Quick Navigation
