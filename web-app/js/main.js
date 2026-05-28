@@ -490,8 +490,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Show sun for dark theme, moon for light theme so reload displays sun by default.
     themeToggle.innerHTML =
       savedTheme === "dark"
-        ? '<i class="fas fa-sun"></i>'
-        : '<i class="fas fa-moon"></i>';
+        ? '<i class="fas fa-sun" aria-hidden="true"></i>'
+        : '<i class="fas fa-moon" aria-hidden="true"></i>';
     updateThemeToggleAria(savedTheme === "light");
 
     themeToggle.addEventListener("click", function () {
@@ -503,8 +503,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // After toggling, show sun when the new theme is dark, moon when it's light.
       themeToggle.innerHTML =
         next === "dark"
-          ? '<i class="fas fa-sun"></i>'
-          : '<i class="fas fa-moon"></i>';
+          ? '<i class="fas fa-sun" aria-hidden="true"></i>'
+          : '<i class="fas fa-moon" aria-hidden="true"></i>';
       updateThemeToggleAria(next === "light");
     });
   }
@@ -512,9 +512,14 @@ document.addEventListener("DOMContentLoaded", function () {
   /* ── Sound Toggle ─────────────────────────────────────────── */
   if (soundToggle && window.audioController) {
     function updateSoundIcon() {
-      soundToggle.innerHTML = window.audioController.isMuted
-        ? '<i class="fas fa-volume-mute"></i>'
-        : '<i class="fas fa-volume-up"></i>';
+      var isMuted = window.audioController.isMuted;
+      soundToggle.innerHTML = isMuted
+        ? '<i class="fas fa-volume-mute" aria-hidden="true"></i>'
+        : '<i class="fas fa-volume-up" aria-hidden="true"></i>';
+      soundToggle.setAttribute(
+        "aria-label",
+        isMuted ? "Unmute sound" : "Mute sound"
+      );
     }
     updateSoundIcon();
     soundToggle.addEventListener("click", function () {
@@ -1210,6 +1215,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeDropdown() {
     if (searchDropdown) searchDropdown.classList.remove("active");
+    if (searchInput) searchInput.setAttribute("aria-expanded", "false");
   }
 
   function renderRecentSearches() {
@@ -1302,6 +1308,11 @@ document.addEventListener('DOMContentLoaded', () => {
         item.className =
           "dropdown-item" +
           (index === selectedSuggestionIndex ? " selected" : "");
+        item.setAttribute("role", "option");
+        item.id = "search-option-" + index;
+        if (index === selectedSuggestionIndex) {
+          item.setAttribute("aria-selected", "true");
+        }
 
         var iconBox = document.createElement("div");
         iconBox.className = "dropdown-item-icon";
@@ -1343,8 +1354,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!resultsList) return;
     var items = resultsList.querySelectorAll(".dropdown-item");
     items.forEach(function (item, i) {
-      item.classList.toggle("selected", i === selectedSuggestionIndex);
+      var isSelected = i === selectedSuggestionIndex;
+      item.classList.toggle("selected", isSelected);
+      item.setAttribute("aria-selected", isSelected ? "true" : "false");
     });
+    // Update aria-activedescendant on the search input
+    if (searchInput) {
+      if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < items.length) {
+        searchInput.setAttribute("aria-activedescendant", "search-option-" + selectedSuggestionIndex);
+      } else {
+        searchInput.removeAttribute("aria-activedescendant");
+      }
+    }
   }
 
   function selectSuggestion(title) {
@@ -1437,6 +1458,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchInput.addEventListener("focus", function () {
       if (searchDropdown) searchDropdown.classList.add("active");
+      searchInput.setAttribute("aria-expanded", "true");
       if (!currentSearchQuery) renderRecentSearches();
     });
 
@@ -1444,6 +1466,44 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === "Escape") {
         closeDropdown();
         searchInput.blur();
+        return;
+      }
+
+      // Arrow key navigation within search suggestions
+      var items = resultsList
+        ? resultsList.querySelectorAll(".dropdown-item")
+        : [];
+      if (items.length === 0) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        selectedSuggestionIndex =
+          selectedSuggestionIndex < items.length - 1
+            ? selectedSuggestionIndex + 1
+            : 0;
+        updateSuggestionHighlight();
+        // Scroll the selected item into view within the dropdown
+        if (items[selectedSuggestionIndex]) {
+          items[selectedSuggestionIndex].scrollIntoView({ block: "nearest" });
+        }
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        selectedSuggestionIndex =
+          selectedSuggestionIndex > 0
+            ? selectedSuggestionIndex - 1
+            : items.length - 1;
+        updateSuggestionHighlight();
+        if (items[selectedSuggestionIndex]) {
+          items[selectedSuggestionIndex].scrollIntoView({ block: "nearest" });
+        }
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (
+          selectedSuggestionIndex >= 0 &&
+          selectedSuggestionIndex < items.length
+        ) {
+          items[selectedSuggestionIndex].click();
+        }
       }
     });
   }

@@ -3514,6 +3514,97 @@ body.sidebar-active .hero-controls {
 }
 
 /* ═══════════════════════════════════════
+   FOCUS-VISIBLE — KEYBOARD ACCESSIBILITY
+═══════════════════════════════════════ */
+
+/* Global fallback for any interactive element */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Search input */
+#searchInput:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 0;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+/* Sidebar tabs */
+.sidebar-tab:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Search dropdown items — keyboard highlight */
+.dropdown-item:focus-visible,
+.dropdown-item.selected {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: -2px;
+  background: var(--accent-soft);
+  color: var(--text);
+}
+
+/* Project cards */
+.project-card:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+/* Play / Try-It buttons */
+.btn-play:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Hero CTA buttons */
+.btn-primary-hero:focus-visible,
+.btn-secondary-hero:focus-visible,
+.btn-contribution-hero:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  outline-offset: 3px;
+}
+
+/* Sound & Theme toggles */
+.sound-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Random project button */
+.btn-random-project:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Favorite & share buttons on cards */
+.btn-favorite:focus-visible,
+.btn-share:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Modal close button */
+.modal-close:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Mobile sidebar toggle */
+.mobile-sidebar-toggle:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════
    BACK TO TOP
 ═══════════════════════════════════════ */
 .back-to-top {
